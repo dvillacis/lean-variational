@@ -9,50 +9,63 @@ Legend: ✓ formalized (no `sorry`), ◐ partially formalized (what is missing i
 
 ## Chapter 1. Constructions of generalized differentiation
 
+All numbered theorems, propositions, corollaries, lemmas and definitions of Ch. 1 are formalized,
+except the three items marked ◐ below. The worked examples (1.5, 1.14, 1.16, 1.21, 1.31, 1.35) and
+the exercises (1.39–1.87, except 1.62) are not.
+
 | # | Statement | Status | Lean | CV |
 |---|---|---|---|---|
 | (1.1) | Painlevé–Kuratowski outer limit | ✓ | `outerLimit` | §6.1 |
 | (1.3) | Euclidean projector | ✓ | `euclideanProj` | |
 | 1.1 | Def: basic normals (via projections) | ✓ | `projNormalCone`; equal to `normalCone` by Thm 1.6 | |
-| 1.2 | Normal cone characterization of boundary points | ✓ | `exists_ne_zero_mem_normalCone_iff` | |
+| 1.2 | Normal cone characterization of boundary points | ✓ | `exists_ne_zero_mem_normalCone_iff` (finite-dimensional normed spaces; Hilbert version `_inner`) | |
 | 1.3 | Robustness of basic normals | ✓ | `normalCone_eq_outerLimit_normalCone` | Cor 18.9 |
-| 1.4 | Normals to products of sets | ☐ | | |
+| 1.4 | Normals to products of sets | ✓ | `coprod_mem_normalCone_prod_iff`, `mem_normalCone_prod_iff`; regular normals: `coprod_mem_regularNormalCone_prod_iff` | |
 | 1.5 | Ex: nonconvexity of the basic normal cone | ☐ | | Ex 18.1 |
 | (1.5), (1.6) | Regular normals and `ω`-normals | ✓ | `regularNormalCone`, `epsNormalCone` | (18.2), (18.7) |
-| 1.6 | Equivalent descriptions of basic normals | ✓ | `toDual_projNormalCone`, `normalCone_eq_outerLimit_epsNormalCone` (Step 1: `toDual_sub_mem_regularNormalCone`) | Thm 18.2 |
+| 1.6 | Equivalent descriptions of basic normals | ✓ | `toDual_projNormalCone`; `ω`-representation: `normalCone_eq_outerLimit_epsNormalCone` (finite-dimensional normed spaces, via `toEuclidean`; Hilbert version `_inner`); Step 1: `toDual_sub_mem_regularNormalCone` | Thm 18.2 |
 | 1.7 | Normals to convex sets | ✓ | `mem_epsNormalCone_of_convex`, `mem_regularNormalCone_of_convex`, `normalCone_eq_regularNormalCone_of_convex`, `mem_normalCone_of_convex` | Lemma 18.6 |
-| 1.8 | Def: contingent cone | ✓ | `contingentCone` (by its sequential representation; (1.11) as a theorem and the link to Mathlib's `posTangentConeAt` are ☐) | (18.1) |
+| 1.8 | Def: contingent cone | ✓ | `contingentCone` (sequential representation); (1.11): `contingentCone_eq_outerLimit` | (18.1) |
 | 1.9 | Duality between prenormal and contingent cones | ✓ | `regularNormalCone_eq_polar_contingentCone` (inclusion in any normed space: `regularNormalCone_subset_polar_contingentCone`) | Lemma 18.10 |
-| 1.10 | Smooth variational description of regular normals | ◐ | (i): `mem_regularNormalCone_iff_exists_localMax`; (ii) ☐ | |
-| 1.11 | Def: basic coderivative | ✓ | `coderiv`; regular coderivative (1.16): `regularCoderiv`; limiting representation (1.17) ☐ | §20.1 |
+| 1.10 | Smooth variational description of regular normals | ✓ | (i): `mem_regularNormalCone_iff_exists_localMax`; (ii): `mem_regularNormalCone_iff_exists_concave` (inner product spaces; the `C¹` convex majorant is built by integration, `convexMajorant`) | |
+| 1.11 | Def: basic coderivative | ✓ | `coderiv`; (1.16): `regularCoderiv`; (1.17): `coderiv_eq_outerLimit` | §20.1 |
 | 1.12 | Coderivatives of smooth mappings | ✓ | `coderiv_of_hasFDerivAt_of_continuousAt`, `regularCoderiv_of_hasFDerivAt` | Thm 20.14 |
-| 1.13 | Coderivatives of convex-graph mappings | ☐ | | |
+| 1.13 | Coderivatives of convex-graph mappings | ✓ | `coderiv_eq_regularCoderiv_of_convex`, `mem_coderiv_of_convex` | |
 | 1.14 | Ex: coderivative calculations | ☐ | | §20.3 |
-| 1.15, 1.16 | Extremal property of convex-valued mappings | ☐ | | |
-| 1.17 | Basic normals to epigraphs | ◐ | sign `ℓ (0, 1) ≤ 0`: `apply_zero_one_nonpos_of_mem_normalCone_epi`; the representation through `D`, `D^∞` ☐ | |
+| 1.15 | Extremal property of convex-valued mappings | ✓ | `apply_le_of_mem_coderiv`; inner limit (1.20): `innerLimit` | |
+| 1.16 | Ex: assumptions of Thm 1.15 are essential | ☐ | | |
+| 1.17 | Basic normals to epigraphs | ✓ | `mem_normalCone_epi_iff`, `apply_zero_one_nonpos_of_mem_normalCone_epi` | |
 | 1.18 | Def: basic and singular subdifferentials | ✓ | `subdiff`, `singularSubdiff` | (16.5) |
-| 1.19 | Subgradients of indicator functions | ◐ | `∂δ_Ω = N`: `subdiff_convex_indicator`; `∂^∞δ_Ω = N` ☐ | |
-| 1.20 | Robustness of basic and singular subdifferentials | ☐ | | |
+| 1.19 | Subgradients of indicator functions | ✓ | `subdiff_convex_indicator`, `singularSubdiff_convex_indicator` | |
+| 1.20 | Robustness of basic and singular subdifferentials | ✓ | `subdiff_eq_outerLimit_subdiff`, `singularSubdiff_eq_outerLimit_singularSubdiff` | |
 | 1.21 | Ex: subgradients of simple functions on ℝ | ☐ | | Ex 16.5, 16.7 |
-| 1.22 | Subdifferentials of locally Lipschitzian functions | ☐ | | |
-| 1.23 | Subdifferentials from coderivatives | ☐ | | |
+| 1.22 | Subdifferentials of locally Lipschitzian functions | ◐ | "only if": `singularSubdiff_eq_zero_of_lipschitz`, `subdiff_nonempty_of_lipschitz`, (1.27): `norm_le_of_mem_subdiff_of_lipschitz`, (1.28): `norm_comp_inl_le_of_mem_normalCone_epi`; "if" ☐ (the book proves it with Thm 3.3 or Thm 4.15) | |
+| 1.23 | Subdifferentials from coderivatives | ✓ | (1.30): `subdiff_eq_coderiv_one` (`⊆` for every real-valued `f`: `subdiff_subset_coderiv_one`); (1.31): `singularSubdiff_subset_coderiv_zero` | |
 | 1.24 | Subgradients of smooth functions | ✓ | `subdiff_of_hasFDerivAt_of_continuousAt` | Thm 16.9 |
 | (1.33), (1.34) | Regular subgradients and `ω`-subgradients | ✓ | `regularSubdiff`, `epsSubdiff`; `∂̂f = {f'}`: `regularSubdiff_of_hasFDerivAt` | (16.2), Thm 16.4 |
-| 1.25 | Subgradients of convex functions | ◐ | `ω = 0`: `mem_regularSubdiff_of_convex`, `subdiff_eq_regularSubdiff_of_convex`, `mem_subdiff_of_convex`; `ω > 0` and `∂^∞φ = N(·; dom φ)` ☐ | Thm 16.3, 16.8 |
-| 1.26 | Geometric descriptions of regular subgradients | ◐ | first inclusion (`ω ≥ 0`): `coprod_mem_epsNormalCone_of_mem_epsSubdiff`; (1.36): `mem_regularSubdiff_iff_coprod_mem`; converse for `0 < ω < 1` ☐ | |
-| 1.27 | Smooth variational descriptions of regular subgradients | ☐ | | |
-| 1.28 | Limiting representations of basic and singular subgradients | ◐ | first representation in (1.37): `subdiff_eq_outerLimit`; `ω`-representation and (1.38) ☐ | (16.5) |
-| 1.29 | Singular subgradients under Lipschitzian additions | ☐ | | |
-| 1.30 | Elementary rules | ◐ | (i): `zero_mem_regularSubdiff_of_isLocalMin`, `zero_mem_subdiff_of_isLocalMin`; (ii) regular: `mem_regularSubdiff_add_iff`; (ii) basic ☐ | Thm 16.2, Cor 16.6, Thm 16.13, Cor 25.27 |
+| 1.25 | Subgradients of convex functions | ✓ | `mem_epsSubdiff_of_convex`, `mem_regularSubdiff_of_convex`, `subdiff_eq_regularSubdiff_of_convex`, `mem_subdiff_of_convex`, `singularSubdiff_eq_normalCone_dom_of_convex` | Thm 16.3, 16.8 |
+| 1.26 | Geometric descriptions of regular subgradients | ✓ | `coprod_mem_epsNormalCone_of_mem_epsSubdiff`, `mem_epsSubdiff_of_coprod_mem_epsNormalCone`, (1.36): `mem_regularSubdiff_iff_coprod_mem` | |
+| 1.27 | Smooth variational descriptions of regular subgradients | ✓ | first part: `mem_regularSubdiff_iff_exists_support`; second part: `exists_concave_support_of_mem_regularSubdiff` (inner product spaces) | |
+| 1.28 | Limiting representations of basic and singular subgradients | ◐ | (1.37): `subdiff_eq_outerLimit`, `subdiff_eq_outerLimit_epsSubdiff`; (1.38) `⊇`: `outerLimit_smul_regularSubdiff_subset_singularSubdiff`; (1.38) `⊆` ☐ (the book omits this proof and cites [Rockafellar–Wets, Thm 8.9]) | (16.5) |
+| 1.29 | Singular subgradients under Lipschitzian additions | ✓ | `singularSubdiff_add_of_lipschitz` | |
+| 1.30 | Elementary rules | ✓ | (i): `zero_mem_regularSubdiff_of_isLocalMin`, `zero_mem_subdiff_of_isLocalMin`; (ii): `mem_regularSubdiff_add_iff`, `mem_subdiff_add_iff` | Thm 16.2, Cor 16.6, Thm 16.13, Cor 25.27 |
 | 1.31 | Ex: subdifferentials of Lipschitzian functions | ☐ | | Ex 16.11 |
-| 1.32 | Coderivative scalarization | ☐ | | |
-| 1.33–1.38 | Subgradients of the distance function; right-sided subdifferential | ☐ | | |
+| 1.32 | Coderivative scalarization | ✓ | `subdiff_comp_subset_coderiv` (`f` continuous at `x₀`), `subdiff_comp_eq_coderiv` (`f` Lipschitz, finite dimensions) | |
+| 1.33 | Subdifferentiation of the distance function | ✓ | `distFun`; (i): `regularSubdiff_distFun_of_mem` (any normed space), `subdiff_distFun_of_mem` (closed `Ω`, finite dimensions); Step 2: `mem_regularNormalCone_of_mem_regularSubdiff_distFun`; (ii): `regularSubdiff_distFun_of_proj_eq`, `regularSubdiff_distFun_eq_empty`, `regularSubdiff_distFun_subset`, `subdiff_distFun_of_notMem` (Euclidean, closed `Ω`) | |
+| 1.34 | Regular subgradients of the distance function via enlargements | ✓ | `regularSubdiff_distFun_eq_of_pos`; (1.49): `enlargement`; (1.51): `infDist_enlargement` | |
+| 1.35 | Ex: basic subgradients vs. normals to enlargements | ☐ | | |
+| 1.36 | Def: right-sided subdifferential | ✓ | `rightSubdiff`; `regularSubdiff_subset_rightSubdiff`, `rightSubdiff_subset_subdiff` | |
+| 1.37 | Properties of the right-sided subdifferential | ◐ | (i): `rightSubdiff_eq_subdiff_of_isLocalMin`, `zero_mem_rightSubdiff_of_isLocalMin`; (ii) ☐: the book's proof only says to proceed as for (1.37), and that argument does not keep the constraint `φ x ≥ φ x₀` | |
+| 1.38 | Right-sided subgradients of the distance function | ✓ | (1.55): `rightSubdiff_distFun_subset` (unit normals); (1.56): `mem_normalCone_enlargement_iff` (finite dimensions) | |
 | Ex 1.62 | Slanted regular normals to epigraphs | ✓ | `eq_of_mem_regularNormalCone_epi` | |
 
 Also formalized, with no numbered statement in the book: `regularNormalCone` and `normalCone` are
-closed cones (CV Thm 18.8) and trivial at interior points; `N̂ ⊆ N` (CV Thm 18.5(ii));
+closed cones (CV Thm 18.8) and trivial at interior points; `N̂ ⊆ N` (CV Thm 18.5(ii)); regular
+normals are antitone in the set (Ex 1.39(iii), `regularNormalCone_anti`);
 `N̂(x; Ω) = ∂̂δ_Ω(x)` (CV Cor 18.7): `regularSubdiff_convex_indicator`; `∂̂ ⊆ ∂`:
-`regularSubdiff_subset_subdiff`.
+`regularSubdiff_subset_subdiff`; normal cones and subdifferentials only depend on the data near
+the point (`normalCone_congr`, `regularSubdiff_congr`, `subdiff_congr`, `singularSubdiff_congr`);
+normals pull back along linear isomorphisms (`mem_normalCone_image_iff`).
 
 ## Chapter 2. Fundamental principles of variational analysis
 
@@ -117,12 +130,10 @@ closed cones (CV Thm 18.8) and trivial at interior points; `N̂ ⊆ N` (CV Thm 1
 
 ## Suggested order of work
 
-1. Finish Ch. 1: products (Prop 1.4), robustness of subdifferentials (Prop 1.20), the
-   `ω`-representation in Thm 1.28 (transport Thm 1.6 to `E × ℝ` through a Euclidean norm),
-   singular subgradients (Props 1.19, 1.25, 1.29), and the Lipschitz case (Thm 1.22, which gives
-   `∂^∞φ = {0}`).
-2. Ekeland's variational principle (Cor 2.13), then the extremal principle (Thm 2.3) and its
+1. Ekeland's variational principle (Cor 2.13), then the extremal principle (Thm 2.3) and its
    consequences: intersection rule (Thm 2.16) and sum rules (Thm 2.19).
-3. Well-posedness (Ch. 3): the Mordukhovich criterion for the Lipschitz-like property and
-   metric regularity (Thm 3.3), and coderivative calculus.
-4. Ch. 4 calculus rules, then the bilevel optimality conditions of Ch. 6.
+2. Well-posedness (Ch. 3): the Mordukhovich criterion for the Lipschitz-like property and
+   metric regularity (Thm 3.3), and coderivative calculus. This also gives the converse of
+   Thm 1.22.
+3. Ch. 4 calculus rules, then the bilevel optimality conditions of Ch. 6.
+4. Remaining Ch. 1 items: (1.38) `⊆`, Prop 1.37(ii), the worked examples.

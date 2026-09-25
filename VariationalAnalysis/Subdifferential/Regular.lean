@@ -29,6 +29,8 @@ of a set is `Set.convex_indicator` (`0` on the set, `⊤` off it).
   Prop. 1.30(i)], [Clason–Valkonen, Thm. 16.2].
 * `regularSubdiff_of_hasFDerivAt`: `∂̂f(x₀) = {f'(x₀)}` for differentiable `f`
   [Mordukhovich 2018, p. 28], [Clason–Valkonen, Thm. 16.4].
+* `mem_regularSubdiff_iff_exists_support`: Thm. 1.27 of [Mordukhovich 2018], first part (smooth
+  variational description of regular subgradients).
 * `mem_regularSubdiff_add_iff`: sum rule with a differentiable function
   [Mordukhovich 2018, Prop. 1.30(ii)].
 * `epsSubdiff_convex_indicator`: `∂̂_ω δ_Ω(x₀) = N̂_ω(x₀; Ω)` [Mordukhovich 2018, p. 29],
@@ -61,7 +63,8 @@ def regularSubdiff (φ : E → EReal) (x₀ : E) : Set (StrongDual ℝ E) :=
     ∀ ε > 0, ∀ᶠ x in 𝓝 x₀, ((r + v (x - x₀) - ε * ‖x - x₀‖ : ℝ) : EReal) ≤ φ x}
 
 /-- Cancelling a finite summand in `EReal`: `A ≤ y + c ↔ A - c ≤ y`. -/
-theorem coe_le_add_coe_iff {A c : ℝ} {y : EReal} : (A : EReal) ≤ y + c ↔ ((A - c : ℝ) : EReal) ≤ y := by
+theorem coe_le_add_coe_iff {A c : ℝ} {y : EReal} :
+    (A : EReal) ≤ y + c ↔ ((A - c : ℝ) : EReal) ≤ y := by
   induction y with
   | bot => simp only [EReal.bot_add, le_bot_iff, EReal.coe_ne_bot]
   | top => simp
@@ -73,7 +76,8 @@ theorem convex_indicator_of_mem {α : Type*} {Ω : Set α} {x : α} (h : x ∈ �
     Ω.convex_indicator x = ((0 : ℝ) : EReal) := by
   simp [Set.convex_indicator, h]
 
-theorem convex_indicator_of_notMem {α : Type*} {Ω : Set α} {x : α} (h : x ∉ Ω) : Ω.convex_indicator x = ⊤ := by
+theorem convex_indicator_of_notMem {α : Type*} {Ω : Set α} {x : α} (h : x ∉ Ω) :
+    Ω.convex_indicator x = ⊤ := by
   simp [Set.convex_indicator, h]
 
 theorem epsSubdiff_zero : epsSubdiff 0 φ x₀ = regularSubdiff φ x₀ := by
@@ -101,6 +105,18 @@ theorem regularSubdiff_subset_epsSubdiff (hω : 0 ≤ ω) :
     regularSubdiff φ x₀ ⊆ epsSubdiff ω φ x₀ := by
   refine fun v ⟨r, hr, h⟩ ↦ ⟨r, hr, fun ε hε ↦ (h ε hε).mono fun x hx ↦ le_trans ?_ hx⟩
   exact EReal.coe_le_coe_iff.2 (by nlinarith [norm_nonneg (x - x₀)])
+
+/-- If `φ ≤ ψ` near `x₀` with equality at `x₀`, then `∂̂φ(x₀) ⊆ ∂̂ψ(x₀)`. -/
+theorem regularSubdiff_subset_of_le {ψ : E → EReal} (hle : ∀ᶠ x in 𝓝 x₀, φ x ≤ ψ x)
+    (heq : φ x₀ = ψ x₀) : regularSubdiff φ x₀ ⊆ regularSubdiff ψ x₀ := by
+  rintro v ⟨r, hr, h⟩
+  exact ⟨r, heq ▸ hr, fun ε hε ↦ ((h ε hε).and hle).mono fun x hx ↦ hx.1.trans hx.2⟩
+
+/-- Regular subgradients only depend on the function near the point. -/
+theorem regularSubdiff_congr {ψ : E → EReal} (h : φ =ᶠ[𝓝 x₀] ψ) :
+    regularSubdiff φ x₀ = regularSubdiff ψ x₀ :=
+  subset_antisymm (regularSubdiff_subset_of_le (h.mono fun _ hx ↦ hx.le) h.self_of_nhds)
+    (regularSubdiff_subset_of_le (h.mono fun _ hx ↦ hx.ge) h.self_of_nhds.symm)
 
 /-- Prop. 1.30(i) of [Mordukhovich 2018], Thm. 16.2 of [Clason–Valkonen] (generalized Fermat
 rule): at a local minimizer where `φ` is finite, `0 ∈ ∂̂φ(x₀)`. -/
@@ -190,6 +206,48 @@ theorem regularSubdiff_of_hasFDerivAt {f : E → ℝ} {f' : StrongDual ℝ E}
     rw [hv]
     exact zero_mem_regularSubdiff_of_isLocalMin isLocalMin_const (r := 0) (by simp)
 
+/-- Thm. 1.27 of [Mordukhovich 2018], first part (smooth variational description of regular
+subgradients): `v ∈ ∂̂φ(x₀)` iff there is a function `ψ` differentiable at `x₀` with
+`∇ψ(x₀) = v`, `ψ x₀ = φ x₀` and `ψ ≤ φ` near `x₀`. -/
+theorem mem_regularSubdiff_iff_exists_support (hr : φ x₀ = r) :
+    v ∈ regularSubdiff φ x₀ ↔
+      ∃ ψ : E → ℝ, HasFDerivAt ψ v x₀ ∧ ψ x₀ = r ∧ ∀ᶠ x in 𝓝 x₀, (ψ x : EReal) ≤ φ x := by
+  constructor
+  · intro hv
+    rw [mem_regularSubdiff_iff hr] at hv
+    classical
+    set g : E → ℝ := fun x ↦ r + v (x - x₀)
+    set ψ : E → ℝ := fun x ↦ if φ x < g x then (φ x).toReal else g x
+    have hψ0 : ψ x₀ = r := by simp [ψ, hr, g]
+    refine ⟨ψ, ?_, hψ0, ?_⟩
+    · refine HasFDerivAt.of_isLittleO (Asymptotics.IsLittleO.of_bound fun c hc ↦ ?_)
+      filter_upwards [hv c hc] with x hx
+      rw [hψ0]
+      simp only [ψ, g]
+      split_ifs with hlt
+      · have hbot : φ x ≠ ⊥ := ne_bot_of_le_ne_bot (EReal.coe_ne_bot _) hx
+        have htop : φ x ≠ ⊤ := ne_top_of_lt hlt
+        have h1 : r + v (x - x₀) - c * ‖x - x₀‖ ≤ (φ x).toReal := by
+          rw [← EReal.coe_le_coe_iff, EReal.coe_toReal htop hbot]; exact hx
+        have h2 : (φ x).toReal < r + v (x - x₀) := by
+          rw [← EReal.coe_lt_coe_iff, EReal.coe_toReal htop hbot]; exact hlt
+        rw [Real.norm_eq_abs, abs_le]
+        constructor <;> linarith
+      · simpa using mul_nonneg hc.le (norm_nonneg (x - x₀))
+    · filter_upwards [hv 1 one_pos] with x hx
+      simp only [ψ, g]
+      split_ifs with hlt
+      · have hbot : φ x ≠ ⊥ := ne_bot_of_le_ne_bot (EReal.coe_ne_bot _) hx
+        rw [EReal.coe_toReal (ne_top_of_lt hlt) hbot]
+      · exact not_lt.1 hlt
+  · rintro ⟨ψ, hψ, hψr, hle⟩
+    refine ⟨r, hr, fun ε hε ↦ ?_⟩
+    filter_upwards [hle, hψ.isLittleO.def hε] with x hx hx'
+    refine le_trans (EReal.coe_le_coe_iff.2 ?_) hx
+    rw [Real.norm_eq_abs, abs_le] at hx'
+    rw [hψr] at hx'
+    linarith [hx'.1]
+
 section Epigraph
 
 /-- Thm. 1.26 of [Mordukhovich 2018], first inclusion: `ω`-subgradients give `ω`-normals
@@ -247,6 +305,65 @@ theorem eq_of_mem_regularNormalCone_epi {x : E} {α : ℝ} {ℓ : StrongDual ℝ
     mul_one] at this
   linarith
 
+/-- Thm. 1.26 of [Mordukhovich 2018], converse inclusion: if `0 ≤ ω < 1` and `(v, -1)` is an
+`ω`-normal to the epigraph at `(x₀, φ x₀)`, then `v` is an `ω₁`-subgradient with
+`ω₁ = ω (1 + ‖v‖) / (1 - ω)`. (The book uses the sum norm on `E × ℝ`; the same `ω₁` works for the
+max norm, which is smaller.) -/
+theorem mem_epsSubdiff_of_coprod_mem_epsNormalCone {ω : ℝ} (hω0 : 0 ≤ ω) (hω1 : ω < 1)
+    (hr : φ x₀ = r) (hN : v.coprod (-1) ∈ epsNormalCone ω (φ.Epi univ) (x₀, r)) :
+    v ∈ epsSubdiff (ω * (1 + ‖v‖) / (1 - ω)) φ x₀ := by
+  set ω₁ := ω * (1 + ‖v‖) / (1 - ω) with hω₁
+  have hω₁0 : 0 ≤ ω₁ := div_nonneg (mul_nonneg hω0 (by positivity)) (by linarith)
+  have hω₁eq : ω₁ * (1 - ω) = ω * (1 + ‖v‖) := div_mul_cancel₀ _ (by linarith)
+  rw [mem_epsSubdiff_iff hr]
+  intro ε hε
+  set C : ℝ := 1 + ‖v‖ + ω₁ + ε with hC_def
+  have hC : 0 < C := by positivity
+  set ε' : ℝ := ε * (1 - ω) / (2 * C) with hε'_def
+  have hε' : 0 < ε' := div_pos (mul_pos hε (by linarith)) (by positivity)
+  have hkey : (ω + ε') * C < ω₁ + ε := by
+    have : ε' * C = ε * (1 - ω) / 2 := by rw [hε'_def]; field_simp
+    nlinarith
+  set β : E → ℝ := fun x ↦ r + v (x - x₀) - (ω₁ + ε) * ‖x - x₀‖ with hβ_def
+  have hβ : Tendsto (fun x ↦ (x, β x)) (𝓝 x₀) (𝓝 (x₀, r)) := by
+    have hcont : Continuous fun x ↦ (x, β x) :=
+      continuous_id.prodMk ((continuous_const.add (v.continuous.comp
+        (continuous_id.sub continuous_const))).sub
+        (continuous_const.mul (continuous_id.sub continuous_const).norm))
+    simpa [β] using hcont.tendsto x₀
+  filter_upwards [hβ.eventually (eventually_nhdsWithin_iff.1 (hN.2 ε' hε'))] with x hx
+  by_contra hlt
+  rw [not_le] at hlt
+  have h := hx ⟨mem_univ _, hlt.le⟩
+  simp only [Prod.mk_sub_mk, ContinuousLinearMap.coprod_apply, neg_apply, Prod.norm_mk] at h
+  change v (x - x₀) + -(β x - r) ≤ _ at h
+  have hβr : β x - r = v (x - x₀) - (ω₁ + ε) * ‖x - x₀‖ := by simp only [hβ_def]; ring
+  have hvb : |v (x - x₀)| ≤ ‖v‖ * ‖x - x₀‖ := by
+    rw [← Real.norm_eq_abs]; exact v.le_opNorm _
+  have hb : ‖β x - r‖ ≤ (‖v‖ + ω₁ + ε) * ‖x - x₀‖ := by
+    rw [Real.norm_eq_abs, hβr]
+    calc |v (x - x₀) - (ω₁ + ε) * ‖x - x₀‖| ≤ |v (x - x₀)| + |(ω₁ + ε) * ‖x - x₀‖| :=
+          abs_sub _ _
+      _ ≤ ‖v‖ * ‖x - x₀‖ + (ω₁ + ε) * ‖x - x₀‖ := by
+          rw [abs_of_nonneg (mul_nonneg (by linarith) (norm_nonneg _))]; linarith
+      _ = (‖v‖ + ω₁ + ε) * ‖x - x₀‖ := by ring
+  have hC1 : 1 ≤ C := by rw [hC_def]; linarith [norm_nonneg v]
+  have hC2 : ‖v‖ + ω₁ + ε ≤ C := by rw [hC_def]; linarith
+  have hmax : max ‖x - x₀‖ ‖β x - r‖ ≤ C * ‖x - x₀‖ :=
+    max_le (le_mul_of_one_le_left (norm_nonneg _) hC1)
+      (hb.trans (mul_le_mul_of_nonneg_right hC2 (norm_nonneg _)))
+  have hlhs : v (x - x₀) + -(β x - r) = (ω₁ + ε) * ‖x - x₀‖ := by rw [hβr]; ring
+  rw [hlhs] at h
+  have h2 : (ω₁ + ε) * ‖x - x₀‖ ≤ (ω + ε') * C * ‖x - x₀‖ := by
+    calc (ω₁ + ε) * ‖x - x₀‖ ≤ (ω + ε') * max ‖x - x₀‖ ‖β x - r‖ := h
+      _ ≤ (ω + ε') * (C * ‖x - x₀‖) := by gcongr
+      _ = (ω + ε') * C * ‖x - x₀‖ := by ring
+  have h0 : ‖x - x₀‖ = 0 := by nlinarith [norm_nonneg (x - x₀)]
+  rw [norm_eq_zero, sub_eq_zero] at h0
+  subst h0
+  rw [hr] at hlt
+  simp at hlt
+
 /-- Thm. 1.26, (1.36), of [Mordukhovich 2018] (geometric description of regular subgradients):
 `v ∈ ∂̂φ(x₀)` iff `(v, -1)` is a regular normal to the epigraph at `(x₀, φ x₀)`. -/
 theorem mem_regularSubdiff_iff_coprod_mem (hr : φ x₀ = r) :
@@ -256,60 +373,22 @@ theorem mem_regularSubdiff_iff_coprod_mem (hr : φ x₀ = r) :
     rw [← epsNormalCone_zero]
     exact coprod_mem_epsNormalCone_of_mem_epsSubdiff le_rfl hr (by rwa [epsSubdiff_zero])
   · intro hN
-    rw [mem_regularSubdiff_iff hr]
-    intro ε hε
-    set c : ℝ := ‖v‖ + ε + 1 with hc_def
-    have hc : 1 ≤ c := by linarith [norm_nonneg v]
-    set β : E → ℝ := fun x ↦ r + v (x - x₀) - ε * ‖x - x₀‖ with hβ_def
-    have hβ : Tendsto (fun x ↦ (x, β x)) (𝓝 x₀) (𝓝 (x₀, r)) := by
-      have hcont : Continuous fun x ↦ (x, β x) :=
-        continuous_id.prodMk ((continuous_const.add (v.continuous.comp
-          (continuous_id.sub continuous_const))).sub
-          (continuous_const.mul (continuous_id.sub continuous_const).norm))
-      simpa [β] using hcont.tendsto x₀
-    have hev := eventually_nhdsWithin_iff.1
-      (hN.2 (ε / (2 * c)) (div_pos hε (by linarith)))
-    filter_upwards [hβ.eventually hev] with x hx
-    by_contra hlt
-    rw [not_le] at hlt
-    have h := hx ⟨mem_univ _, hlt.le⟩
-    simp only [Prod.mk_sub_mk, ContinuousLinearMap.coprod_apply, neg_apply, Prod.norm_mk] at h
-    change v (x - x₀) + -(β x - r) ≤ _ at h
-    have hvb : |v (x - x₀)| ≤ ‖v‖ * ‖x - x₀‖ := by
-      rw [← Real.norm_eq_abs]; exact v.le_opNorm _
-    have hβr : β x - r = v (x - x₀) - ε * ‖x - x₀‖ := by simp only [hβ_def]; ring
-    have hb : ‖β x - r‖ ≤ c * ‖x - x₀‖ := by
-      rw [Real.norm_eq_abs, hβr]
-      calc |v (x - x₀) - ε * ‖x - x₀‖| ≤ |v (x - x₀)| + |ε * ‖x - x₀‖| := abs_sub _ _
-        _ ≤ ‖v‖ * ‖x - x₀‖ + ε * ‖x - x₀‖ := by
-            rw [abs_of_nonneg (mul_nonneg hε.le (norm_nonneg _))]; linarith
-        _ ≤ c * ‖x - x₀‖ := by rw [hc_def]; nlinarith [norm_nonneg (x - x₀)]
-    have hmax : max ‖x - x₀‖ ‖β x - r‖ ≤ c * ‖x - x₀‖ :=
-      max_le (by nlinarith [norm_nonneg (x - x₀)]) hb
-    have hlhs : v (x - x₀) + -(β x - r) = ε * ‖x - x₀‖ := by
-      rw [hβ_def]; ring
-    rw [hlhs] at h
-    have h2 : ε * ‖x - x₀‖ ≤ ε / 2 * ‖x - x₀‖ := by
-      calc ε * ‖x - x₀‖ ≤ ε / (2 * c) * max ‖x - x₀‖ ‖β x - r‖ := h
-        _ ≤ ε / (2 * c) * (c * ‖x - x₀‖) := by gcongr
-        _ = ε / 2 * ‖x - x₀‖ := by field_simp
-    have h0 : ‖x - x₀‖ = 0 := by nlinarith [norm_nonneg (x - x₀)]
-    rw [norm_eq_zero, sub_eq_zero] at h0
-    subst h0
-    rw [hr] at hlt
-    simp at hlt
+    have := mem_epsSubdiff_of_coprod_mem_epsNormalCone le_rfl one_pos hr
+      (by rwa [epsNormalCone_zero])
+    simpa [epsSubdiff_zero] using this
 
-/-- Prop. 1.25 of [Mordukhovich 2018] for regular subgradients: if the epigraph of `φ` is
-convex, `v ∈ ∂̂φ(x₀)` iff `v` is a subgradient in the sense of convex analysis. -/
-theorem mem_regularSubdiff_of_convex (hconv : Convex ℝ (φ.Epi univ)) (hr : φ x₀ = r) :
-    v ∈ regularSubdiff φ x₀ ↔ ∀ x, ((r + v (x - x₀) : ℝ) : EReal) ≤ φ x := by
+/-- Prop. 1.25 of [Mordukhovich 2018] (`ω`-subgradients of convex functions): if the epigraph
+of `φ` is convex and `ω ≥ 0`, then `v ∈ ∂̂_ω φ(x₀)` iff
+`⟨v, x - x₀⟩ ≤ φ x - φ x₀ + ω ‖x - x₀‖` for all `x`. -/
+theorem mem_epsSubdiff_of_convex {ω : ℝ} (hconv : Convex ℝ (φ.Epi univ)) (hr : φ x₀ = r) :
+    v ∈ epsSubdiff ω φ x₀ ↔ ∀ x, ((r + v (x - x₀) - ω * ‖x - x₀‖ : ℝ) : EReal) ≤ φ x := by
   constructor
   · intro hv x
-    rw [mem_regularSubdiff_iff hr] at hv
-    suffices h : ∀ α : ℝ, φ x ≤ α → r + v (x - x₀) ≤ α by
+    rw [mem_epsSubdiff_iff hr] at hv
+    suffices h : ∀ α : ℝ, φ x ≤ α → r + v (x - x₀) - ω * ‖x - x₀‖ ≤ α by
       induction hφx : φ x with
       | bot =>
-        have := h (r + v (x - x₀) - 1) (by rw [hφx]; exact bot_le)
+        have := h (r + v (x - x₀) - ω * ‖x - x₀‖ - 1) (by rw [hφx]; exact bot_le)
         linarith
       | top => exact le_top
       | coe s => exact EReal.coe_le_coe_iff.2 (h s hφx.le)
@@ -334,6 +413,13 @@ theorem mem_regularSubdiff_of_convex (hconv : Convex ℝ (φ.Epi univ)) (hr : φ
   · intro h
     refine ⟨r, hr, fun ε hε ↦ Eventually.of_forall fun x ↦ le_trans ?_ (h x)⟩
     exact EReal.coe_le_coe_iff.2 (by nlinarith [norm_nonneg (x - x₀)])
+
+/-- Prop. 1.25 of [Mordukhovich 2018] for regular subgradients: if the epigraph of `φ` is
+convex, `v ∈ ∂̂φ(x₀)` iff `v` is a subgradient in the sense of convex analysis. -/
+theorem mem_regularSubdiff_of_convex (hconv : Convex ℝ (φ.Epi univ)) (hr : φ x₀ = r) :
+    v ∈ regularSubdiff φ x₀ ↔ ∀ x, ((r + v (x - x₀) : ℝ) : EReal) ≤ φ x := by
+  rw [← epsSubdiff_zero, mem_epsSubdiff_of_convex hconv hr]
+  simp
 
 end Epigraph
 

@@ -31,10 +31,13 @@ This file works in a real inner product space `H`, with vectors identified with 
   regular normal at any projection `w ∈ Π(x; Ω)`.
 * `toDual_projNormalCone`: Thm. 1.6 of [Mordukhovich 2018]: `N(x₀; Ω)` from (1.4) is the
   limiting normal cone, for `Ω` locally closed around `x₀` in finite dimensions.
-* `normalCone_eq_outerLimit_epsNormalCone`: Thm. 1.6, second representation in (1.7):
+* `normalCone_eq_outerLimit_epsNormalCone_inner`: Thm. 1.6, second representation in (1.7):
   `N(x₀; Ω) = Lim sup_{x →Ω x₀, ω ↓ 0} N̂_ω(x; Ω)`.
-* `exists_ne_zero_mem_normalCone_iff`: Prop. 1.2 of [Mordukhovich 2018]: `x₀ ∈ Ω` is a boundary
-  point iff `N(x₀; Ω) ≠ {0}`.
+* `exists_ne_zero_mem_normalCone_iff_inner`: Prop. 1.2 of [Mordukhovich 2018]: `x₀ ∈ Ω` is a
+  boundary point iff `N(x₀; Ω) ≠ {0}`.
+
+The last two results hold in every finite-dimensional normed space; see
+`VariationalAnalysis.Normal.Transport`.
 -/
 
 open Filter Topology Set Metric InnerProductSpace
@@ -229,7 +232,7 @@ theorem toDual_projNormalCone [FiniteDimensional ℝ H] (hx₀ : x₀ ∈ Ω)
 
 /-- Thm. 1.6 of [Mordukhovich 2018], second representation in (1.7): for `Ω` locally closed
 around `x₀ ∈ Ω` in finite dimensions, `N(x₀; Ω) = Lim sup_{x →Ω x₀, ω ↓ 0} N̂_ω(x; Ω)`. -/
-theorem normalCone_eq_outerLimit_epsNormalCone [FiniteDimensional ℝ H] (hx₀ : x₀ ∈ Ω)
+theorem normalCone_eq_outerLimit_epsNormalCone_inner [FiniteDimensional ℝ H] (hx₀ : x₀ ∈ Ω)
     (hloc : ∃ r > 0, IsClosed (Ω ∩ closedBall x₀ r)) :
     normalCone Ω x₀ =
       outerLimit (𝓝[Ω] x₀ ×ˢ 𝓝[≥] (0 : ℝ)) (fun p ↦ epsNormalCone p.2 Ω p.1) := by
@@ -347,7 +350,7 @@ theorem normalCone_eq_outerLimit_epsNormalCone [FiniteDimensional ℝ H] (hx₀ 
 /-- Prop. 1.2 of [Mordukhovich 2018] (normal cone characterization of boundary points): for `Ω`
 locally closed around `x₀ ∈ Ω` in finite dimensions, `x₀` is a boundary point of `Ω` iff the
 normal cone `N(x₀; Ω)` is nontrivial. -/
-theorem exists_ne_zero_mem_normalCone_iff [FiniteDimensional ℝ H] (hx₀ : x₀ ∈ Ω)
+theorem exists_ne_zero_mem_normalCone_iff_inner [FiniteDimensional ℝ H] (hx₀ : x₀ ∈ Ω)
     (hloc : ∃ r > 0, IsClosed (Ω ∩ closedBall x₀ r)) :
     (∃ v ∈ normalCone Ω x₀, v ≠ 0) ↔ x₀ ∈ frontier Ω := by
   rw [frontier, Set.mem_sdiff, and_iff_right (subset_closure hx₀)]

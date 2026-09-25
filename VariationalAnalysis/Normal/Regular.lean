@@ -97,6 +97,12 @@ theorem add_mem_regularNormalCone (hv : v ∈ regularNormalCone Ω x₀)
   simp only [add_apply]
   linarith
 
+/-- Regular normals are antitone in the set: if `x₀ ∈ Ω₂ ⊆ Ω₁`, then
+`N̂(x₀; Ω₁) ⊆ N̂(x₀; Ω₂)` [Mordukhovich 2018, Exercise 1.39(iii)]. -/
+theorem regularNormalCone_anti {Ω₁ Ω₂ : Set E} (h : Ω₂ ⊆ Ω₁) (hx : x₀ ∈ Ω₂) :
+    regularNormalCone Ω₁ x₀ ⊆ regularNormalCone Ω₂ x₀ :=
+  fun _ hv ↦ ⟨hx, fun ε hε ↦ nhdsWithin_mono _ h (hv.2 ε hε)⟩
+
 /-- `N̂(x₀; Ω)` is convex [Mordukhovich 2018, p. 4]. -/
 theorem convex_regularNormalCone : Convex ℝ (regularNormalCone Ω x₀) := by
   intro v hv w hw a b ha hb _

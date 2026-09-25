@@ -92,6 +92,14 @@ theorem eq_coprod_neg_one (ℓ : StrongDual ℝ (E × ℝ)) (h : ℓ (0, 1) = -1
   ext
   simp [h]
 
+/-- A dual element `ℓ` on `E × ℝ` with `ℓ (0, 1) = 0` is `(ℓ ∘ inl, 0)`. -/
+theorem eq_coprod_zero (ℓ : StrongDual ℝ (E × ℝ)) (h : ℓ (0, 1) = 0) :
+    ℓ = (ℓ.comp (ContinuousLinearMap.inl ℝ E ℝ)).coprod 0 := by
+  conv_lhs => rw [← ContinuousLinearMap.coprod_comp_inl_inr ℓ]
+  congr 1
+  ext
+  simp [h]
+
 end Product
 
 end VariationalAnalysis

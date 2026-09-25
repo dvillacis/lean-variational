@@ -23,6 +23,7 @@ the mode of convergence of the arguments: `𝓝 x₀` for `x → x₀`, `𝓝[Ω
 ## Main declarations
 
 * `outerLimit l F`: the outer limit of `F` along `l`.
+* `innerLimit l F`: the inner limit of `F` along `l` (M (1.20)).
 * `funNhds φ x₀`: the filter of `φ`-attentive convergence `x →φ x₀` [Mordukhovich 2018, p. 19].
 * `outerLimit_nhdsWithin_diag`: a diagonal argument; outer limits of outer limits along
   `x →Ω x₀` are outer limits.
@@ -70,6 +71,13 @@ theorem subset_outerLimit {l : Filter α} {x : α} (h : pure x ≤ l) (F : α �
     F x ⊆ outerLimit l F := fun y hy ↦
   ⟨fun _ ↦ x, fun _ ↦ y, tendsto_pure.2 (Eventually.of_forall fun _ ↦ rfl) |>.mono_right h,
     tendsto_const_nhds, fun _ ↦ hy⟩
+
+/-- The Painlevé–Kuratowski inner limit [Mordukhovich 2018, (1.20)] of a set-valued map `F`
+along a filter `l`: the points `y` such that every sequence `xₖ → l` admits `yₖ → y` with
+`yₖ ∈ F xₖ` for all large `k`. -/
+def innerLimit (l : Filter α) (F : α → Set E) : Set E :=
+  {y | ∀ a : ℕ → α, Tendsto a atTop l →
+    ∃ v : ℕ → E, Tendsto v atTop (𝓝 y) ∧ ∀ᶠ k in atTop, v k ∈ F (a k)}
 
 /-- The filter of `φ`-attentive convergence `x →φ x₀` [Mordukhovich 2018, p. 19]:
 `x → x₀` together with `φ x → φ x₀`. -/

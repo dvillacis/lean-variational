@@ -1,11 +1,20 @@
 -- Root of the VariationalAnalysis library (see README.md, ROADMAP.md)
+import VariationalAnalysis.Analysis.ConvexMajorant
 import VariationalAnalysis.Basic
 import VariationalAnalysis.Coderivative.Basic
 import VariationalAnalysis.Normal.Limiting
+import VariationalAnalysis.Normal.Product
 import VariationalAnalysis.Normal.Projection
 import VariationalAnalysis.Normal.Regular
+import VariationalAnalysis.Normal.Transport
 import VariationalAnalysis.SetValued.OuterLimit
 import VariationalAnalysis.Subdifferential.Bridge
+import VariationalAnalysis.Subdifferential.Coderivative
+import VariationalAnalysis.Subdifferential.Distance
+import VariationalAnalysis.Subdifferential.DistanceEuclidean
 import VariationalAnalysis.Subdifferential.Limiting
+import VariationalAnalysis.Subdifferential.Lipschitz
 import VariationalAnalysis.Subdifferential.Regular
+import VariationalAnalysis.Subdifferential.RightSided
+import VariationalAnalysis.Subdifferential.SmoothSupport
 import VariationalAnalysis.Tangent.Contingent
