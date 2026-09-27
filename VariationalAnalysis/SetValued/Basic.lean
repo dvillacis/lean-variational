@@ -19,6 +19,7 @@ of Ch. 2–4 are stated), and the regularity notions under which these rules hol
 * `InnerSemicontinuousAt S x₀ y₀`: `S` is inner semicontinuous at `(x₀, y₀) ∈ gph S`
   [Mordukhovich 2018, Exercise 2.46]: every `xₖ → x₀` in `dom S` admits `yₖ ∈ S xₖ` with
   `yₖ → y₀`.
+* `locallyClosed_graph_of_continuousOn`: graphs of continuous maps are locally closed.
 * `LocallyBoundedAt S x₀`: `S` is locally (uniformly) bounded around `x₀`
   [Mordukhovich 2018, Subsection 1.2.1].
 * `NormallyRegularAt Ω x₀`: `N(x₀; Ω) = N̂(x₀; Ω)` [Mordukhovich 2018, (1.55)].
@@ -76,6 +77,28 @@ theorem LocallyBoundedAt.mono {T : E → Set F} (h : LocallyBoundedAt S x₀)
   simp only [iUnion_subset_iff]
   intro x hx y hy
   exact mem_biUnion hx.1 (hx.2 hy)
+
+omit [NormedSpace ℝ E] [NormedSpace ℝ F] in
+/-- The graph of a single-valued mapping continuous on a neighborhood of `x₀` is locally closed
+around `(x₀, f x₀)`. -/
+theorem locallyClosed_graph_of_continuousOn {f : E → F} {x₀ : E} {U : Set E} (hU : U ∈ 𝓝 x₀)
+    (hf : ContinuousOn f U) :
+    ∃ ρ > 0, IsClosed (graph (fun x ↦ ({f x} : Set F)) ∩ Metric.closedBall (x₀, f x₀) ρ) := by
+  obtain ⟨ρ, hρ, hsub⟩ := Metric.nhds_basis_closedBall.mem_iff.1 hU
+  refine ⟨ρ, hρ, ?_⟩
+  have hmaps : MapsTo Prod.fst (Metric.closedBall (x₀, f x₀) ρ) U := fun p hp ↦ hsub (by
+    rw [Metric.mem_closedBall, Prod.dist_eq, max_le_iff] at hp
+    exact Metric.mem_closedBall.2 hp.1)
+  have hc : ContinuousOn (fun p : E × F ↦ (p.2, f p.1)) (Metric.closedBall (x₀, f x₀) ρ) :=
+    continuous_snd.continuousOn.prodMk (hf.comp continuous_fst.continuousOn hmaps)
+  have : graph (fun x ↦ ({f x} : Set F)) ∩ Metric.closedBall (x₀, f x₀) ρ =
+      Metric.closedBall (x₀, f x₀) ρ ∩ (fun p : E × F ↦ (p.2, f p.1)) ⁻¹' diagonal F := by
+    ext p
+    simp only [graph, mem_inter_iff, mem_ofPred_eq, mem_singleton_iff, mem_preimage,
+      mem_diagonal_iff]
+    tauto
+  rw [this]
+  exact hc.preimage_isClosed_of_isClosed Metric.isClosed_closedBall isClosed_diagonal
 
 end SetValued
 
