@@ -154,9 +154,9 @@ result below has its singular counterpart (`singular…`).
 | 4.3 | Local Lipschitz continuity of marginal functions | ✓ | `exists_lipschitzOnWith_marginal_of_lipschitzLikeAt`, `…_of_locallyBoundedAt` | |
 | 4.4 | Infimal convolutions | ✓ | `subdiff_infConv_subset`, `infConv_subset_of_innerSemicontinuousAt`, `infConv_subset_of_locallyBoundedAt` | |
 | 4.5 | General compositions `φ(x, g x)` | ✓ | (i): `subdiff_generalComp_subset` (4.10), `singularSubdiff_generalComp_subset` (4.11), equalities `generalComp_eq_of_hasFDerivAt`, `generalComp_eq_of_lowerRegularAt`; (ii): `subdiff_comp_strict_eq` (4.12), with coderivatives `subdiff_comp_strict_eq_coderiv` | |
-| 4.6 | Chain rules | ✓ | `subdiff_comp_lipschitz_subset`, `singularSubdiff_comp_lipschitz_subset`; full rank (Ex 1.72): `subdiff_comp_of_surjective` | Thm 25.16 |
-| 4.7 | Product rules | ✓ | `subdiff_mul_eq`, `subdiff_mul_subset`, `subdiff_mul_eq_add` | Cor 25.30 |
-| 4.8 | Quotient rules | ✓ | `subdiff_div_eq`, `subdiff_div_subset`, `subdiff_div_eq_add` (the book's second formula has a sign error: `− ∂(φ₁(x̄)φ₂)` must be `+ ∂(−φ₁(x̄)φ₂)`; counterexample `f₁ = 1`, `f₂ = 1 − |x|`) | Cor 25.31 |
+| 4.6 | Chain rules | ✓ | `subdiff_comp_lipschitz_subset`, `singularSubdiff_comp_lipschitz_subset`; full rank (Ex 1.72): `subdiff_comp_of_surjective` | Cor 25.29 |
+| 4.7 | Product rules | ✓ | `subdiff_mul_eq`, `subdiff_mul_subset`, `subdiff_mul_eq_add` | Cor 25.31 |
+| 4.8 | Quotient rules | ✓ | `subdiff_div_eq`, `subdiff_div_subset`, `subdiff_div_eq_add` (the book's second formula has a sign error: `− ∂(φ₁(x̄)φ₂)` must be `+ ∂(−φ₁(x̄)φ₂)`; counterexample `f₁ = 1`, `f₂ = 1 − |x|`) | |
 | 4.9 | Minimum functions | ✓ | `subdiff_iInf_subset` | |
 | 4.10 | Maximum functions | ✓ | (i): `subdiff_iSup_subset`, equality `iSup_eq_of_epiRegularAt`; (ii): `subdiff_iSup_lipschitz_subset`, `iSup_lipschitz_eq_of_lowerRegularAt` | |
 | (1.74)–(1.76), (4.18) | Upper and symmetric subdifferentials | ✓ | `upperRegularSubdiff`, `upperSubdiff`, `symmSubdiff`, `symmSingularSubdiff` | |

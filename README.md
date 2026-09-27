@@ -30,12 +30,27 @@ subgradients and the port of OptLib), pinned in `lakefile.toml`.
 | Coderivatives | `Coderivative/Basic` | `coderiv`, `regularCoderiv` (M Def. 1.11, (1.16), (1.17)); smooth mappings (M Prop. 1.12); convex-graph mappings (M Prop. 1.13); extremal property of convex-valued mappings (M Thm. 1.15) |
 | Subgradients and coderivatives | `Subdifferential/Coderivative` | `∂f = D*f(1)`, `∂^∞f ⊆ D*f(0)` (M Thm. 1.23); coderivative scalarization (M Thm. 1.32) |
 | Distance function | `Subdifferential/Distance`, `Subdifferential/DistanceEuclidean`, `Subdifferential/RightSided` | subgradients of `dist(·; Ω)` at in-set and out-of-set points (M Thm. 1.33, Lemma 1.34); right-sided subdifferential (M Def. 1.36, Prop. 1.37(i)); normals to enlargements (M Thm. 1.38) |
+| Set-valued vocabulary | `SetValued/Basic` | domain, inverse, inner semicontinuity, local boundedness; normal, graphical, lower and epigraphical regularity |
+| Variational principles | `Principle/Variational`, `Principle/AlmostStationary` | general variational principle, Ekeland's principle, almost stationary points, fixed points (M Thm. 2.12–Prop. 2.15); density of `dom ∂̂φ` (M Ex. 2.25) |
+| Extremal principle | `Extremal/Basic` | local extremality, separation, basic and approximate extremal principles (M Def. 2.1–Cor. 2.5) |
+| Intersection rule | `Normal/Intersection` | normals to intersections and sums of sets (M Thm. 2.16–Cor. 2.18) |
+| Sum rules | `Subdifferential/SumRule`, `Subdifferential/EpigraphClosed`, `Subdifferential/StrictSum` | subdifferential sum rules (M Thm. 2.19–Cor. 2.21); sum rule with a strictly differentiable function and M Thm. 4.5(ii) |
+| Smooth changes of variables | `Normal/Diffeomorphism`, `Coderivative/Smooth`, `Subdifferential/SmoothChain` | normals to preimages under `C¹` maps with surjective derivative (M Ex. 1.54); coderivative sum rule (3.24) and full-rank chain rule (M Thm. 3.11(iii)); subdifferential chain rule (M Ex. 1.72) |
+| Well-posedness | `WellPosedness/Basic`, `WellPosedness/Coderivative`, `WellPosedness/Criterion`, `WellPosedness/Corollaries` | covering, metric regularity, Lipschitz-like property and their equivalence (M Def. 3.1, Thm. 3.2); coderivative criteria with exact bounds (M Thm. 3.3, Cor. 3.5–3.8) |
+| Coderivative calculus | `Coderivative/SumRule`, `Coderivative/ChainRule`, `Coderivative/BinaryOperation`, `Coderivative/Implicit` | sum and chain rules, normals to inverse images, binary operations (M Thm. 3.9–Cor. 3.15); implicit multifunctions ([Mordukhovich 2006, Cor. 4.34]) |
+| Parametric variational systems | `Coderivative/Variational`, `Coderivative/SecondOrder`, `Coderivative/CompositeField`, `WellPosedness/Variational`, `WellPosedness/Failure` | coderivatives of PVS, second-order subdifferential (M Prop. 3.16–3.19); metric regularity of PVS and its failure (M Thm. 3.20–3.31) |
+| Monotone and prox-regular functions | `WellPosedness/Monotone`, `WellPosedness/Gateaux`, `WellPosedness/ProxRegular`, `WellPosedness/MaximalMonotone` | local, global and maximal monotonicity; Lipschitz-like monotone operators (M Prop. 3.24); amenable and prox-regular functions (M Def. 3.23, 3.27, Lemma 3.28); maximal monotonicity of convex subdifferentials |
+| Marginal functions and compositions | `Subdifferential/Marginal`, `Subdifferential/MarginalLipschitz`, `Subdifferential/InfConvolution`, `Subdifferential/ChainRule`, `Subdifferential/ProductRule`, `Subdifferential/MinMax` | M Thm. 4.1–Thm. 4.10 |
+| Mean value theorems | `Subdifferential/MeanValue`, `Subdifferential/MeanValueIneq`, `Subdifferential/SymmetricMeanValue`, `Subdifferential/Characterizations`, `Subdifferential/MonotoneConvex` | approximate and symmetric mean value theorems; characterizations of Lipschitz continuity (completing M Thm. 1.22), constancy, strict differentiability, monotonicity and convexity (M Thm. 4.11–4.19) |
 
 M = [Mordukhovich 2018], CV = [Clason–Valkonen]. `ROADMAP.md` lists every statement of
 [Mordukhovich 2018, Ch. 1–6] with its Lean name or status, and the corresponding results of
-[Clason–Valkonen]. All numbered results of Ch. 1 are formalized except the converse of Thm. 1.22
-(which the book derives from Ch. 3–4), the inclusion `⊆` in (1.38) and Prop. 1.37(ii); the
-worked examples are not.
+[Clason–Valkonen]. All numbered results of Ch. 1, 3 and 4 are formalized, and those of Ch. 2
+except Cor. 2.4, the bound `‖x̄ − x₀‖ ≤ λ` in Thm. 2.14, the epi-regular part of Thm. 2.19 and
+the countable extremal principles of Sect. 2.2. In Ch. 1, the inclusion `⊆` in (1.38) and
+Prop. 1.37(ii) remain; the worked examples are not formalized. `ROADMAP.md` also records the
+places where a statement of the book had to be corrected (Thm. 2.12, 2.14, 3.14, 3.25, 4.1,
+Cor. 4.8, Thm. 4.18).
 
 ## Conventions
 
@@ -70,6 +85,6 @@ lake exe cache get && lake build
 
 ## Status
 
-All 20 files compile against Mathlib v4.33.1 with no `sorry`.
+All 58 files compile against Mathlib v4.33.1 with no `sorry`.
 `lake env lean scripts/AuditAxioms.lean` checks that no declaration depends on an axiom beyond
-`propext`, `Classical.choice`, `Quot.sound` (271 declarations checked).
+`propext`, `Classical.choice`, `Quot.sound` (1107 declarations checked).
