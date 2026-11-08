@@ -15,8 +15,9 @@ For a function `f` Lipschitz around `x₀` in finite dimensions,
 `∂(-f)(x₀) ⊆ -co ∂f(x₀)`. In [Mordukhovich 2018] this follows from the symmetry
 `∂̄(-f)(x₀) = -∂̄f(x₀)` of the convexified (Clarke) subdifferential (1.79) and its representation
 `∂̄f(x₀) = co ∂f(x₀)` (1.83); it is used in the proof of Thm. 6.21 for `f = μ`, the lower-level
-value function of a bilevel program. The convexified subdifferential is not formalized here; the
-inclusion is proved directly.
+value function of a bilevel program. The inclusion is proved directly here; it is also a
+consequence of `subdiff_neg_subset_neg_clarkeSubdiff` and `clarkeSubdiff_eq_convexHull` in
+`VariationalAnalysis.Subdifferential.Clarke`, which formalizes the convexified subdifferential.
 
 ## Main results
 
