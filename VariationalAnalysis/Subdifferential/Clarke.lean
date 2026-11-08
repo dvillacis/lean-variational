@@ -53,6 +53,10 @@ In finite dimensions, for `f` Lipschitz around `x₀`:
   analysis.
 * `clarkeSubdiff_add_subset`, `clarkeSubdiff_const_mul`: the sum rule
   `∂̄(f + g)(x₀) ⊆ ∂̄f(x₀) + ∂̄g(x₀)` [Thm. 7.32, (7.44)] and `∂̄(t f)(x₀) = t ∂̄f(x₀)` [(7.54)].
+* `clarkeSubdiff_add_eq_of_hasStrictFDerivAt`: `∂̄(f + g)(x₀) = ∇f(x₀) + ∂̄g(x₀)` for `f`
+  strictly differentiable and `g` Lipschitz.
+* `clarkeSubdiff_comp_fst`, `clarkeSubdiff_sub_comp_fst`: `∂̄(ψ ∘ fst)(x, y) = ∂̄ψ(x) × {0}` and
+  `∂̄(φ - μ ∘ fst)(p) = ∇φ(p) - ∂̄μ(p.1) × {0}`.
 
 ## Implementation notes
 
@@ -241,7 +245,61 @@ theorem zero_mem_clarkeSubdiff_of_isLocalMax (h : IsLocalMax f x₀) :
   have := zero_mem_clarkeSubdiff_of_isLocalMin (f := fun x ↦ -f x) h.neg
   rwa [clarkeSubdiff_neg, Set.mem_neg, neg_zero] at this
 
+theorem clarkeDeriv_zero : clarkeDeriv f x₀ 0 = 0 := by
+  simp only [clarkeDeriv, smul_zero, add_zero, sub_self, zero_div, EReal.coe_zero]
+  exact limsup_const 0
+
+omit [NormedSpace ℝ E] in
+theorem lipschitzOnWith_neg {U : Set E} {K : ℝ≥0} (hf : LipschitzOnWith K f U) :
+    LipschitzOnWith K (fun x ↦ -f x) U :=
+  LipschitzOnWith.of_dist_le_mul fun x hx y hy ↦ by
+    rw [dist_neg_neg]
+    exact hf.dist_le_mul x hx y hy
+
 end Normed
+
+section Projection
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+
+/-- `(ψ ∘ fst)°((x, y); v) = ψ°(x; v.1)`. -/
+theorem clarkeDeriv_comp_fst (ψ : E → ℝ) (p v : E × F) :
+    clarkeDeriv (fun q : E × F ↦ ψ q.1) p v = clarkeDeriv ψ p.1 v.1 := by
+  have hfun : (fun q : (E × F) × ℝ ↦ (((ψ (q.1 + q.2 • v).1 - ψ q.1.1) / q.2 : ℝ) : EReal)) =
+      (fun r : E × ℝ ↦ (((ψ (r.1 + r.2 • v.1) - ψ r.1) / r.2 : ℝ) : EReal)) ∘
+        fun q ↦ (q.1.1, q.2) := by
+    funext q
+    simp
+  have hmap : map (fun q : (E × F) × ℝ ↦ (q.1.1, q.2)) (𝓝 p ×ˢ 𝓝[>] 0) =
+      𝓝 p.1 ×ˢ 𝓝[>] (0 : ℝ) := by
+    have := (prod_map_map_eq (f₁ := 𝓝 p) (f₂ := 𝓝[>] (0 : ℝ)) (m₁ := Prod.fst)
+      (m₂ := id)).symm
+    rwa [map_fst_nhds, map_id] at this
+  unfold clarkeDeriv
+  rw [hfun, limsup_comp, hmap]
+
+/-- The generalized gradient of `ψ ∘ fst` is `∂̄ψ × {0}`. -/
+theorem clarkeSubdiff_comp_fst (ψ : E → ℝ) (p : E × F) :
+    clarkeSubdiff (fun q : E × F ↦ ψ q.1) p =
+      (fun u : StrongDual ℝ E ↦ u.comp (ContinuousLinearMap.fst ℝ E F)) '' clarkeSubdiff ψ p.1 := by
+  ext ξ
+  simp only [clarkeSubdiff, mem_ofPred_eq, mem_image, clarkeDeriv_comp_fst]
+  constructor
+  · intro h
+    have h0 : ∀ w : F, ξ (0, w) = 0 := fun w ↦ by
+      have h1 := h (0, w)
+      have h2 := h (0, -w)
+      simp only [clarkeDeriv_zero, EReal.coe_nonpos] at h1 h2
+      have : ξ (0, -w) = -ξ (0, w) := by rw [← map_neg]; simp
+      linarith
+    refine ⟨ξ.comp (ContinuousLinearMap.inl ℝ E F), fun w ↦ by simpa using h (w, 0), ?_⟩
+    refine ContinuousLinearMap.ext fun v ↦ ?_
+    have hv : ξ v = ξ (v.1, 0) + ξ (0, v.2) := by rw [← map_add]; simp
+    simp [hv, h0]
+  · rintro ⟨u, hu, rfl⟩ v
+    simpa using hu v.1
+
+end Projection
 
 /-! ### Finite dimensions -/
 
@@ -497,6 +555,55 @@ theorem clarkeSubdiff_const_mul (hU : U ∈ 𝓝 x₀) (hL : LipschitzOnWith L f
     rfl
   · exact hpos t ht
 
+/-- `∂̄(f + g)(x₀) = ∇f(x₀) + ∂̄g(x₀)` if `f` is strictly differentiable at `x₀` and `g` is
+Lipschitz around `x₀` [Mordukhovich–Nam 2022, Cor. of Thm. 7.32 and Prop. 7.5]. -/
+theorem clarkeSubdiff_add_eq_of_hasStrictFDerivAt {f' : StrongDual ℝ E}
+    (hf : HasStrictFDerivAt f f' x₀) (hU : U ∈ 𝓝 x₀) (hg : LipschitzOnWith L g U) :
+    clarkeSubdiff (fun x ↦ f x + g x) x₀ = {f'} + clarkeSubdiff g x₀ := by
+  obtain ⟨K', V', hV', hK'⟩ := hf.exists_lipschitzOnWith
+  refine subset_antisymm ?_ ?_
+  · have := clarkeSubdiff_add_subset hV' hK' hU hg
+    rwa [clarkeSubdiff_eq_singleton_of_hasStrictFDerivAt hf] at this
+  · rintro x ⟨a', ha', ξ, hξ, hx⟩
+    rw [mem_singleton_iff] at ha'
+    simp only at hx
+    rw [← hx, ha']
+    have hfg : LipschitzOnWith (K' + L) (fun x ↦ f x + g x) (V' ∩ U) :=
+      (hK'.mono inter_subset_left).add (hg.mono inter_subset_right)
+    have h := clarkeSubdiff_add_subset (inter_mem hV' hU) hfg hV' (lipschitzOnWith_neg hK')
+    have hg' : (fun x ↦ (f x + g x) + -f x) = g := by funext x; ring
+    rw [hg', clarkeSubdiff_neg, clarkeSubdiff_eq_singleton_of_hasStrictFDerivAt hf,
+      neg_singleton] at h
+    obtain ⟨a, ha, b, hb, hab⟩ := h hξ
+    rw [mem_singleton_iff] at hb
+    simp only at hab
+    subst hb
+    have : f' + ξ = a := by rw [← hab]; abel
+    rw [this]
+    exact ha
+
 end FiniteDimensional
+
+section ProjectionFiniteDimensional
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ E]
+  [FiniteDimensional ℝ F]
+
+/-- `∂̄(φ - μ ∘ fst)(p) = ∇φ(p) - ∂̄μ(p.1) × {0}` for `φ` strictly differentiable at `p` and `μ`
+Lipschitz around `p.1`. -/
+theorem clarkeSubdiff_sub_comp_fst {φ : E × F → ℝ} {φ' : StrongDual ℝ (E × F)} {p : E × F}
+    (hφ : HasStrictFDerivAt φ φ' p) {μ : E → ℝ} {U : Set E} {L : ℝ≥0} (hU : U ∈ 𝓝 p.1)
+    (hL : LipschitzOnWith L μ U) :
+    clarkeSubdiff (fun q ↦ φ q - μ q.1) p =
+      {φ'} - (fun u : StrongDual ℝ E ↦ u.comp (ContinuousLinearMap.fst ℝ E F)) ''
+        clarkeSubdiff μ p.1 := by
+  have hU' : Prod.fst ⁻¹' U ∈ 𝓝 p := continuous_fst.continuousAt.preimage_mem_nhds hU
+  have hL' : LipschitzOnWith (L * 1) (fun q : E × F ↦ μ q.1) (Prod.fst ⁻¹' U) :=
+    hL.comp LipschitzWith.prod_fst.lipschitzOnWith fun _ hq ↦ hq
+  rw [show (fun q ↦ φ q - μ q.1) = fun q ↦ φ q + -μ q.1 from funext fun q ↦ sub_eq_add_neg _ _,
+    clarkeSubdiff_add_eq_of_hasStrictFDerivAt hφ hU' (lipschitzOnWith_neg hL'),
+    clarkeSubdiff_neg, clarkeSubdiff_comp_fst, sub_eq_add_neg]
+
+end ProjectionFiniteDimensional
 
 end VariationalAnalysis

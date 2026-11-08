@@ -245,14 +245,20 @@ are `LowerLevelRegular`, `UpperLevelRegular`.
 | Thm 7.31 | full duality `f°(x̄; v) = max {⟨x*, v⟩ \| x* ∈ ∂̄f(x̄)}` | ✓ | `clarkeDeriv_eq_iSup_clarkeSubdiff`, `exists_mem_clarkeSubdiff_eq` | finite dimensions, via Thm 7.69 instead of Hahn–Banach |
 | Prop 7.5 | `C¹` (strictly differentiable) functions | ✓ | `clarkeSubdiff_eq_singleton_of_hasStrictFDerivAt` | finite dimensions |
 | after Def 7.21, Prop 7.4 | convex functions | ✓ | `clarkeSubdiff_eq_of_convexOn` | finite dimensions |
-| Thm 7.32 | sum rule (7.44) | ◐ | `clarkeSubdiff_add_subset` | the inclusion; equality under directional regularity not yet |
+| Thm 7.32 | sum rule (7.44) | ◐ | `clarkeSubdiff_add_subset`, `clarkeSubdiff_add_eq_of_hasStrictFDerivAt` | the inclusion, and equality when one term is strictly differentiable; equality under directional regularity not yet |
 | (7.54) | `∂̄(αf)(x̄) = α ∂̄f(x̄)` | ✓ | `clarkeSubdiff_neg`, `clarkeSubdiff_const_mul` | |
 | — | Fermat's rule at local minima and maxima | ✓ | `zero_mem_clarkeSubdiff_of_isLocalMin`, `zero_mem_clarkeSubdiff_of_isLocalMax` | |
 | Ex 7.148 | `∂f(x̄) ⊆ ∂̄f(x̄)` | ✓ | `subdiff_subset_clarkeSubdiff`, `regularSubdiff_subset_clarkeSubdiff`, `subdiff_neg_subset_neg_clarkeSubdiff` | normed spaces |
 | Thm 7.69 | `∂̄f(x̄) = co ∂f(x̄)` in `ℝⁿ` (7.89); `f°(x̄; v) = sup {⟨x*, v⟩ \| x* ∈ ∂f(x̄)}` (7.91) | ✓ | `clarkeSubdiff_eq_convexHull`, `clarkeDeriv_eq_iSup`, `exists_mem_subdiff_eq_clarkeDeriv` | proof via the mean value inequality (M Cor. 4.14(ii)) and robustness of `∂f` (`eventually_forall_mem_subdiff_apply_le`); the weak* closure version in Asplund spaces is out of scope |
 | Def 7.1(b), 7.21(b), Prop 7.2–7.3 | contingent derivative and subdifferential, directional regularity | ☐ | | |
-| Thm 7.33–7.36 | chain rules, maxima | ☐ | | |
+| Thm 7.33–7.36 | chain rules, maxima | ◐ | `clarkeDeriv_comp_fst`, `clarkeSubdiff_comp_fst`, `clarkeSubdiff_sub_comp_fst` | only composition with the projection `E × F → E`; the general chain rules and maxima not yet |
 | Sect. 7.4–7.6 | Lebourg mean value theorem, strict differentiability, Rademacher representation | ☐ | | |
+
+## Auxiliary results
+
+| # | Statement | Status | Lean | Notes |
+|---|---|---|---|---|
+| [Mordukhovich 2024, Lemma 3.1] | Motzkin's theorem of the alternative | ✓ | `exists_multipliers_of_not_exists_direction` (`Analysis/Motzkin`) | finite dimensions, with equality constraints `⟨ξₖ, d⟩ = 0`; via separation |
 
 ## Suggested order of work
 
