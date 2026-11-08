@@ -180,11 +180,27 @@ result below has its singular counterpart (`singular…`).
 
 ## Chapter 6. Nondifferentiable and bilevel optimization
 
-| # | Statement | Status |
-|---|---|---|
-| 6.1–6.12 | Lower and upper subdifferential optimality conditions; nondifferentiable programming | ☐ |
-| 6.13–6.20 | Bilevel programs: value function approach, partial calmness, weak sharp minima | ☐ |
-| 6.21–6.27 | Optimality conditions for smooth and Lipschitzian bilevel programs | ☐ |
+Sect. 6.1 is formalized in `Optimality/GeometricConstraints` (problems (6.1), (6.9)) and
+`Optimality/Programming` (problem (6.11)). In (6.11) the functional data are indexed by one
+finite type `K`: `φ : K → E → ℝ` (or `EReal` in Thm 6.5(i)), a cost index `k₀`, and a set
+`Q ∌ k₀` of equality indices; the feasible set is `feasibleSet Q k₀ Ω φ` and the Lagrangian
+`lagrangian φ λ = ∑ₖ λₖ φₖ`. "Lipschitz data" means all `φₖ` are `L`-Lipschitz on a common
+neighborhood of `x₀`.
+
+| # | Statement | Status | Lean | Notes |
+|---|---|---|---|---|
+| 6.1 | Optimality conditions with a single geometric constraint | ✓ | (i): `neg_upperRegularSubdiff_subset_regularNormalCone`, `neg_upperRegularSubdiff_subset_normalCone`; (ii): `zero_mem_subdiff_add_normalCone_of_isLocalMinOn`, `exists_mem_subdiff_neg_mem_normalCone_of_isLocalMinOn` | (ii) assumes `φ ≠ ⊥` near `x₀` (in `EReal`, `⊥ + ⊤ = ⊥`) |
+| 6.2 | Upper vs. lower subdifferential conditions | ◐ | (i): `neg_mem_regularNormalCone_of_hasFDerivAt`, `mem_upperRegularSubdiff_of_hasFDerivAt` | (ii)–(iv) are discussion and examples |
+| 6.3 | DC optimization problems | ✓ | `isLocalMin_sub_iff_isLocalMinOn_epi`, `neg_upperRegularSubdiff_subset_normalCone_epi_iff`, `subdiff_subset_subdiff_of_isLocalMin_sub` | `φ₂ : E → ℝ` convex (so `∞ - ∞` never occurs); the equivalence uses continuity of `φ₂` at `x₀` and no convexity of `φ₁` |
+| 6.4 | Optimality conditions with many geometric constraints | ✓ | (i): `neg_upperRegularSubdiff_subset_sum_normalCone`; (ii): `zero_mem_subdiff_add_sum_normalCone_of_isLocalMinOn` | |
+| 6.5 | Lower subdifferential conditions via separate constraints | ✓ | (i): `exists_mem_normalCone_epi_graph`; (ii): `exists_multipliers_zero_mem_sum_separateSubdiff` | (i): `EReal` data, cost and inequality data l.s.c. around `x₀`, equality data continuous around `x₀`; (ii) is derived from Thm 6.10 and the sum rule |
+| 6.6 | Equality constraints via symmetric subgradients | ✓ | `exists_multipliers_zero_mem_sum_symmSeparateSubdiff`, `symmSeparateSubdiff_of_mem` | |
+| 6.7–6.9 | Examples | ☐ | | worked examples |
+| 6.10 | Condensed lower subdifferential conditions | ✓ | `exists_multipliers_zero_mem_subdiff_lagrangian`, `exists_multipliers_zero_mem_subdiff_lagrangian_add_normalCone` | the book's appeal to "Thm 1.32 and its proof" is replaced by `mem_regularSubdiff_of_mem_regularNormalCone` and `mem_subdiff_of_mem_normalCone_constraintGraph` (normals to `ℰ`) |
+| 6.11 | Abstract maximum principle | ✓ | `exists_multipliers_abstract_maximum_principle` | |
+| 6.12 | Upper subdifferential conditions in nondifferentiable programming | ✓ | `exists_multipliers_upperRegularSubdiff`; `C¹` upper supports: `exists_contDiff_upper_support` | inner product spaces (where Thm 1.27(ii) is available) |
+| 6.13–6.20 | Bilevel programs: value function approach, partial calmness, weak sharp minima | ☐ | | |
+| 6.21–6.27 | Optimality conditions for smooth and Lipschitzian bilevel programs | ☐ | | |
 
 ## Clason–Valkonen topics outside [Mordukhovich 2018, Ch. 1–6]
 
@@ -200,8 +216,8 @@ result below has its singular counterpart (`singular…`).
 
 ## Suggested order of work
 
-1. The bilevel optimality conditions of Ch. 6 (value function approach), which build on Thm 4.1
-   and the Ch. 3 criteria.
+1. The bilevel optimality conditions of Ch. 6 (value function approach, Sect. 6.2–6.3), which
+   build on Sect. 6.1, Thm 4.1 and the Ch. 3 criteria.
 2. Ch. 5 (maximal monotone operators): hypomonotonicity and monotonicity notions exist already
    (`WellPosedness/Monotone.lean`).
 3. Remaining gaps: Cor 2.4 (relative interiors), Thm 2.14 with `‖x̄ − x₀‖ ≤ λ`, the

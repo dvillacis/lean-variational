@@ -18,6 +18,8 @@ import VariationalAnalysis.Normal.Product
 import VariationalAnalysis.Normal.Projection
 import VariationalAnalysis.Normal.Regular
 import VariationalAnalysis.Normal.Transport
+import VariationalAnalysis.Optimality.GeometricConstraints
+import VariationalAnalysis.Optimality.Programming
 import VariationalAnalysis.Principle.AlmostStationary
 import VariationalAnalysis.Principle.Variational
 import VariationalAnalysis.SetValued.Basic
