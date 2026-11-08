@@ -8,6 +8,9 @@ Variational analysis and generalized differentiation for Lean 4 / Mathlib (v4.33
 - C. Clason and T. Valkonen, *Introduction to Nonsmooth Analysis and Optimization*,
   [arXiv:2001.00216](https://arxiv.org/abs/2001.00216) (v7), cited as [Clason–Valkonen].
 
+The generalized gradient follows Ch. 7 of B. S. Mordukhovich and N. M. Nam, *Convex Analysis and
+Beyond, Vol. I: Basic Theory*, Springer, 2022, cited as [Mordukhovich–Nam 2022].
+
 It builds on [`ConvexAnalysis`](https://github.com/dvillacis/lean-convex) (convex analysis,
 subgradients and the port of OptLib), pinned in `lakefile.toml`.
 
@@ -42,6 +45,7 @@ subgradients and the port of OptLib), pinned in `lakefile.toml`.
 | Monotone and prox-regular functions | `WellPosedness/Monotone`, `WellPosedness/Gateaux`, `WellPosedness/ProxRegular`, `WellPosedness/MaximalMonotone` | local, global and maximal monotonicity; Lipschitz-like monotone operators (M Prop. 3.24); amenable and prox-regular functions (M Def. 3.23, 3.27, Lemma 3.28); maximal monotonicity of convex subdifferentials |
 | Marginal functions and compositions | `Subdifferential/Marginal`, `Subdifferential/MarginalLipschitz`, `Subdifferential/InfConvolution`, `Subdifferential/ChainRule`, `Subdifferential/ProductRule`, `Subdifferential/MinMax` | M Thm. 4.1–Thm. 4.10 |
 | Mean value theorems | `Subdifferential/MeanValue`, `Subdifferential/MeanValueIneq`, `Subdifferential/SymmetricMeanValue`, `Subdifferential/Characterizations`, `Subdifferential/MonotoneConvex` | approximate and symmetric mean value theorems; characterizations of Lipschitz continuity (completing M Thm. 1.22), constancy, strict differentiability, monotonicity and convexity (M Thm. 4.11–4.19) |
+| Clarke generalized gradient | `Subdifferential/Clarke` | generalized directional derivative and generalized gradient ([Mordukhovich–Nam 2022, Def. 7.1, 7.21]); `∂f ⊆ ∂̄f`, `∂̄f = co ∂f` in finite dimensions (Thm. 7.69, M (1.83), CV Thm. 16.10); full duality, compactness, symmetry, Fermat's rule, smooth and convex cases, sum and scalar rules |
 | Geometric constraints | `Optimality/GeometricConstraints` | upper and lower subdifferential optimality conditions for `min φ` over `Ω` and over `Ω₁ ∩ ⋯ ∩ Ωₛ`; DC problems (M Thm. 6.1–Prop. 6.4) |
 | Nondifferentiable programming | `Optimality/Programming` | Fritz John conditions via normals to epigraphs and graphs, via separate and symmetric subgradients, condensed Lagrangian conditions, abstract maximum principle, upper subdifferential conditions (M Thm. 6.5–Thm. 6.12) |
 | Bilevel programming | `Optimality/Bilevel`, `Optimality/BilevelSmooth`, `Subdifferential/NegConvexHull` | value function reformulation, partial calmness, weak sharp minima (M Prop. 6.13–6.18); difference rule (M Lemma 6.22); value function subgradients; optimality conditions for smooth bilevel programs (M Thm. 6.21, 6.23); `∂(-f) ⊆ -co ∂f` for Lipschitz `f` |

@@ -224,13 +224,35 @@ are `LowerLevelRegular`, `UpperLevelRegular`.
 
 | CV | Topic | Status |
 |---|---|---|
-| Ch 13 | Clarke subdifferential: Fermat principle (Thm 13.4), `C¹` (Thm 13.5), convex (Thm 13.8), calculus (Thm 13.20, 13.23), finite-dimensional characterization (Thm 13.26) | ☐ |
-| Thm 16.10 | `∂_C F = cl co ∂_M F` for locally Lipschitz `F` | ☐ |
+| Ch 13 | Clarke subdifferential: Fermat principle (Thm 13.4), `C¹` (Thm 13.5), convex (Thm 13.8), calculus (Thm 13.20, 13.23), finite-dimensional characterization (Thm 13.26) | ◐ (finite dimensions: Fermat, `C¹`, convex, sum and scalar rules in `Subdifferential/Clarke`, see below; chain rules and the Rademacher characterization not yet) |
+| Thm 16.10 | `∂_C F = cl co ∂_M F` for locally Lipschitz `F` | ✓ (finite dimensions) `clarkeSubdiff_eq_convexHull` |
 | Ch 17 | `ε`-subdifferentials; fuzzy Fermat principle (Lemma 17.9) | ☐ |
 | (18.4) | Clarke tangent cone; `T̂_C(x) = N_C(x)°` (Thm 18.15); normal regularity (Thm 18.24) | ☐ |
 | Ch 20 | Graphical derivatives; `D̂*F = (DF)°+` (Cor 20.9) | ☐ |
 | Ch 26 | Second-order optimality conditions | ☐ |
 | Ch 28 | Stability; metric subregularity of convex subdifferentials (Thm 28.8) | ☐ |
+
+## [Mordukhovich–Nam 2022], Ch. 7: the generalized gradient
+
+| # | Statement | Status | Lean | Notes |
+|---|---|---|---|---|
+| Def 7.1(a) | generalized directional derivative `f°(x̄; v)` | ✓ | `clarkeDeriv` | `EReal`-valued upper limit, defined for every `f` |
+| Def 7.21(a) | generalized gradient `∂̄f(x̄)` | ✓ | `clarkeSubdiff`, `mem_clarkeSubdiff_iff` | |
+| Prop 7.8 | `\|f°(x̄; v)\| ≤ ℓ ‖v‖`, positive homogeneity | ✓ | `clarkeDeriv_le_mul_norm`, `neg_mul_norm_le_clarkeDeriv`, `clarkeDeriv_smul` | finite dimensions |
+| Thm 7.10 | `f°(x̄; ·)` subadditive | ✓ | `clarkeDeriv_add_le` | finite dimensions |
+| Prop 7.11 | `(-f)°(x̄; v) = f°(x̄; -v)` | ✓ | `clarkeDeriv_neg` | normed spaces |
+| Thm 7.24 | `∂̄f(x̄)` nonempty, convex, compact, `‖x*‖ ≤ ℓ` | ✓ | `clarkeSubdiff_nonempty`, `convex_clarkeSubdiff`, `isClosed_clarkeSubdiff`, `isCompact_clarkeSubdiff`, `norm_le_of_mem_clarkeSubdiff` | convexity and closedness in normed spaces, the rest in finite dimensions; the closed-graph part (7.37) not yet |
+| Thm 7.31 | full duality `f°(x̄; v) = max {⟨x*, v⟩ \| x* ∈ ∂̄f(x̄)}` | ✓ | `clarkeDeriv_eq_iSup_clarkeSubdiff`, `exists_mem_clarkeSubdiff_eq` | finite dimensions, via Thm 7.69 instead of Hahn–Banach |
+| Prop 7.5 | `C¹` (strictly differentiable) functions | ✓ | `clarkeSubdiff_eq_singleton_of_hasStrictFDerivAt` | finite dimensions |
+| after Def 7.21, Prop 7.4 | convex functions | ✓ | `clarkeSubdiff_eq_of_convexOn` | finite dimensions |
+| Thm 7.32 | sum rule (7.44) | ◐ | `clarkeSubdiff_add_subset` | the inclusion; equality under directional regularity not yet |
+| (7.54) | `∂̄(αf)(x̄) = α ∂̄f(x̄)` | ✓ | `clarkeSubdiff_neg`, `clarkeSubdiff_const_mul` | |
+| — | Fermat's rule at local minima and maxima | ✓ | `zero_mem_clarkeSubdiff_of_isLocalMin`, `zero_mem_clarkeSubdiff_of_isLocalMax` | |
+| Ex 7.148 | `∂f(x̄) ⊆ ∂̄f(x̄)` | ✓ | `subdiff_subset_clarkeSubdiff`, `regularSubdiff_subset_clarkeSubdiff`, `subdiff_neg_subset_neg_clarkeSubdiff` | normed spaces |
+| Thm 7.69 | `∂̄f(x̄) = co ∂f(x̄)` in `ℝⁿ` (7.89); `f°(x̄; v) = sup {⟨x*, v⟩ \| x* ∈ ∂f(x̄)}` (7.91) | ✓ | `clarkeSubdiff_eq_convexHull`, `clarkeDeriv_eq_iSup`, `exists_mem_subdiff_eq_clarkeDeriv` | proof via the mean value inequality (M Cor. 4.14(ii)) and robustness of `∂f` (`eventually_forall_mem_subdiff_apply_le`); the weak* closure version in Asplund spaces is out of scope |
+| Def 7.1(b), 7.21(b), Prop 7.2–7.3 | contingent derivative and subdifferential, directional regularity | ☐ | | |
+| Thm 7.33–7.36 | chain rules, maxima | ☐ | | |
+| Sect. 7.4–7.6 | Lebourg mean value theorem, strict differentiability, Rademacher representation | ☐ | | |
 
 ## Suggested order of work
 

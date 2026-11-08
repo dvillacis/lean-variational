@@ -30,6 +30,7 @@ import VariationalAnalysis.SetValued.OuterLimit
 import VariationalAnalysis.Subdifferential.Bridge
 import VariationalAnalysis.Subdifferential.ChainRule
 import VariationalAnalysis.Subdifferential.Characterizations
+import VariationalAnalysis.Subdifferential.Clarke
 import VariationalAnalysis.Subdifferential.Coderivative
 import VariationalAnalysis.Subdifferential.Distance
 import VariationalAnalysis.Subdifferential.DistanceEuclidean
