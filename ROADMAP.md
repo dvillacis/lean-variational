@@ -187,6 +187,13 @@ finite type `K`: `φ : K → E → ℝ` (or `EReal` in Thm 6.5(i)), a cost index
 `lagrangian φ λ = ∑ₖ λₖ φₖ`. "Lipschitz data" means all `φₖ` are `L`-Lipschitz on a common
 neighborhood of `x₀`.
 
+Sect. 6.2 is formalized in `Optimality/Bilevel` and the smooth part of Sect. 6.3 in
+`Optimality/BilevelSmooth` (with `Subdifferential/NegConvexHull`). The bilevel data are
+`f φ : E × F → ℝ`, `g : ι → E × F → ℝ` and `Ω : Set E` (`Ω = {x ∣ hⱼ(x) ≤ 0}` in Thm 6.21);
+`lowerFeasible`, `lowerValue`, `lowerSolution` are `G`, `μ`, `S` of (6.29), (6.33), (6.30), and
+`valueFeasible` is the feasible set of (6.34). Lower- and upper-level regularity (6.52)–(6.53)
+are `LowerLevelRegular`, `UpperLevelRegular`.
+
 | # | Statement | Status | Lean | Notes |
 |---|---|---|---|---|
 | 6.1 | Optimality conditions with a single geometric constraint | ✓ | (i): `neg_upperRegularSubdiff_subset_regularNormalCone`, `neg_upperRegularSubdiff_subset_normalCone`; (ii): `zero_mem_subdiff_add_normalCone_of_isLocalMinOn`, `exists_mem_subdiff_neg_mem_normalCone_of_isLocalMinOn` | (ii) assumes `φ ≠ ⊥` near `x₀` (in `EReal`, `⊥ + ⊤ = ⊥`) |
@@ -199,8 +206,19 @@ neighborhood of `x₀`.
 | 6.10 | Condensed lower subdifferential conditions | ✓ | `exists_multipliers_zero_mem_subdiff_lagrangian`, `exists_multipliers_zero_mem_subdiff_lagrangian_add_normalCone` | the book's appeal to "Thm 1.32 and its proof" is replaced by `mem_regularSubdiff_of_mem_regularNormalCone` and `mem_subdiff_of_mem_normalCone_constraintGraph` (normals to `ℰ`) |
 | 6.11 | Abstract maximum principle | ✓ | `exists_multipliers_abstract_maximum_principle` | |
 | 6.12 | Upper subdifferential conditions in nondifferentiable programming | ✓ | `exists_multipliers_upperRegularSubdiff`; `C¹` upper supports: `exists_contDiff_upper_support` | inner product spaces (where Thm 1.27(ii) is available) |
-| 6.13–6.20 | Bilevel programs: value function approach, partial calmness, weak sharp minima | ☐ | | |
-| 6.21–6.27 | Optimality conditions for smooth and Lipschitzian bilevel programs | ☐ | | |
+| 6.13 | Local solutions of optimistic and value function reformulations | ✓ | (i): `isLocalMinOn_valueFeasible_of_isLocalMinOn_optimisticValue`; (ii): `isLocalMinOn_optimisticValue_of_isLocalMinOn_valueFeasible` | `S̃(x) = {y ∈ S(x) ∣ f(x, y) = f_opt(x)}`: the book's `S̃ ⊆ S` can fail for its definition via (6.35); (ii) assumes the infimum in `f_opt` is attained near `x̄` |
+| 6.14 | Partial calmness | ✓ | `PartiallyCalmWith`, `PartiallyCalm` | the perturbed constraint is written `μ(x) = φ(x, y) + ϑ` |
+| 6.15 | Penalization via partial calmness | ✓ | `isLocalMinOn_penalizedObjective`, `partiallyCalmWith_of_isLocalMinOn_penalizedObjective` | the objective `penalizedObjective` of (6.40) is `+∞` where `μ = -∞` |
+| 6.16 | Local weak sharp minima | ✓ | `IsLocalWeakSharpMin` | |
+| 6.17 | Partial calmness from uniform weak sharp minima | ✓ | `partiallyCalm_of_uniform_weakSharp` | `S(x) ≠ ∅` near `x̄` (the book's standing assumption) is explicit; `κ = 2(ℓ + 1)/α` |
+| 6.18 | Weak sharp minima from KKT and the kernel condition (6.46) | ✓ | `exists_weakSharp_of_kkt`, `isLocalWeakSharpMin_of_kkt` | local optimality of `z̄` is not needed |
+| 6.19–6.20 | Examples | ☐ | | worked examples |
+| 6.21 | Optimality conditions for smooth bilevel programs, I | ✓ | `exists_multipliers_smooth_bilevel_upper`; value function: `subdiff_lowerValue_subset`, `singularSubdiff_lowerValue_eq_zero`, `exists_lipschitzOnWith_lowerValue`; normals to `C¹` inequality systems: `normalCone_le_zero_subset`; `∂(-μ) ⊆ -co ∂μ`: `neg_mem_convexHull_subdiff_of_mem_subdiff_neg` | lower semicontinuity of `μ` around `x̄` is assumed (the book's "easy to see" only gives it at `x̄`); `S(x) ≠ ∅` near `x̄` is explicit; local optimality enters only through partial calmness at a feasible point |
+| 6.22 | Difference rule for regular subgradients | ✓ | `add_mem_regularSubdiff_of_mem_regularSubdiff_sub`, `regularSubdiff_sub_subset`, `regularSubdiff_subset_of_isLocalMin_sub`; increment version: `regularSubdiff_subset_of_eventually_le` | |
+| 6.23 | Optimality conditions for smooth bilevel programs, II | ✓ | `exists_multipliers_smooth_bilevel_regular` | uses the increment inequality from (6.40) directly instead of (6.63)–(6.64), so `G(x) ≠ ∅` near `x̄` is not needed |
+| 6.24 | Example | ☐ | | worked example |
+| 6.25–6.26 | Optimality conditions for Lipschitzian bilevel programs | ☐ | | the book leaves the proofs to Exercise 6.43; they need normals to Lipschitzian inequality systems (Thm 6.10-type qualification for `gph G`) and the Lipschitzian version of `subdiff_lowerValue_subset` |
+| 6.27 | Remark: inner semicompactness | ☐ | | discussion |
 
 ## Clason–Valkonen topics outside [Mordukhovich 2018, Ch. 1–6]
 
@@ -216,8 +234,8 @@ neighborhood of `x₀`.
 
 ## Suggested order of work
 
-1. The bilevel optimality conditions of Ch. 6 (value function approach, Sect. 6.2–6.3), which
-   build on Sect. 6.1, Thm 4.1 and the Ch. 3 criteria.
+1. The Lipschitzian bilevel results Thm 6.25–6.26 (normals to Lipschitzian inequality systems,
+   then the Lipschitzian analogue of `subdiff_lowerValue_subset`).
 2. Ch. 5 (maximal monotone operators): hypomonotonicity and monotonicity notions exist already
    (`WellPosedness/Monotone.lean`).
 3. Remaining gaps: Cor 2.4 (relative interiors), Thm 2.14 with `‖x̄ − x₀‖ ≤ λ`, the

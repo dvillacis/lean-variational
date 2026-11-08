@@ -44,16 +44,18 @@ subgradients and the port of OptLib), pinned in `lakefile.toml`.
 | Mean value theorems | `Subdifferential/MeanValue`, `Subdifferential/MeanValueIneq`, `Subdifferential/SymmetricMeanValue`, `Subdifferential/Characterizations`, `Subdifferential/MonotoneConvex` | approximate and symmetric mean value theorems; characterizations of Lipschitz continuity (completing M Thm. 1.22), constancy, strict differentiability, monotonicity and convexity (M Thm. 4.11–4.19) |
 | Geometric constraints | `Optimality/GeometricConstraints` | upper and lower subdifferential optimality conditions for `min φ` over `Ω` and over `Ω₁ ∩ ⋯ ∩ Ωₛ`; DC problems (M Thm. 6.1–Prop. 6.4) |
 | Nondifferentiable programming | `Optimality/Programming` | Fritz John conditions via normals to epigraphs and graphs, via separate and symmetric subgradients, condensed Lagrangian conditions, abstract maximum principle, upper subdifferential conditions (M Thm. 6.5–Thm. 6.12) |
+| Bilevel programming | `Optimality/Bilevel`, `Optimality/BilevelSmooth`, `Subdifferential/NegConvexHull` | value function reformulation, partial calmness, weak sharp minima (M Prop. 6.13–6.18); difference rule (M Lemma 6.22); value function subgradients; optimality conditions for smooth bilevel programs (M Thm. 6.21, 6.23); `∂(-f) ⊆ -co ∂f` for Lipschitz `f` |
 
 M = [Mordukhovich 2018], CV = [Clason–Valkonen]. `ROADMAP.md` lists every statement of
 [Mordukhovich 2018, Ch. 1–6] with its Lean name or status, and the corresponding results of
 [Clason–Valkonen]. All numbered results of Ch. 1, 3 and 4 are formalized, and those of Ch. 2
 except Cor. 2.4, the bound `‖x̄ − x₀‖ ≤ λ` in Thm. 2.14, the epi-regular part of Thm. 2.19 and
 the countable extremal principles of Sect. 2.2. All numbered theorems, propositions and
-corollaries of Sect. 6.1 are formalized. In Ch. 1, the inclusion `⊆` in (1.38) and
+corollaries of Sect. 6.1–6.2 are formalized, and those of Sect. 6.3 except the Lipschitzian
+Thm. 6.25–6.26. In Ch. 1, the inclusion `⊆` in (1.38) and
 Prop. 1.37(ii) remain; the worked examples are not formalized. `ROADMAP.md` also records the
 places where a statement of the book had to be corrected (Thm. 2.12, 2.14, 3.14, 3.25, 4.1,
-Cor. 4.8, Thm. 4.18).
+Cor. 4.8, Thm. 4.18, Prop. 6.13, Thm. 6.21).
 
 ## Conventions
 
