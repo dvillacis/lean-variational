@@ -18,6 +18,11 @@ import VariationalAnalysis.Normal.Product
 import VariationalAnalysis.Normal.Projection
 import VariationalAnalysis.Normal.Regular
 import VariationalAnalysis.Normal.Transport
+import VariationalAnalysis.Subdifferential.NegConvexHull
+import VariationalAnalysis.Optimality.GeometricConstraints
+import VariationalAnalysis.Optimality.Programming
+import VariationalAnalysis.Optimality.Bilevel
+import VariationalAnalysis.Optimality.BilevelSmooth
 import VariationalAnalysis.Principle.AlmostStationary
 import VariationalAnalysis.Principle.Variational
 import VariationalAnalysis.SetValued.Basic
