@@ -1,5 +1,6 @@
 -- Root of the VariationalAnalysis library (see README.md, ROADMAP.md)
 import VariationalAnalysis.Analysis.ConvexMajorant
+import VariationalAnalysis.Analysis.Motzkin
 import VariationalAnalysis.Basic
 import VariationalAnalysis.Coderivative.Basic
 import VariationalAnalysis.Coderivative.BinaryOperation
