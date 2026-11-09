@@ -14,6 +14,17 @@ Motzkin's theorem of the alternative follows Lemma 3.1 of B. S. Mordukhovich, *S
 Variational Analysis in Optimization, Variational Stability, and Control*, Springer, 2024, cited as
 [Mordukhovich 2024].
 
+The theory of SCD (subspace containing derivative) mappings follows H. Gfrerer and J. V. Outrata,
+*On (local) analysis of multifunctions via subspaces contained in graphs of generalized
+derivatives*, J. Math. Anal. Appl., 2022 ([arXiv:2106.00519](https://arxiv.org/abs/2106.00519)),
+cited as [Gfrerer–Outrata 2022], together with the product rule of H. Gfrerer, M. Mandlmayr,
+J. V. Outrata and J. Valdman, *On the SCD semismooth\* Newton method for generalized equations
+with application to a class of static contact problems with Coulomb friction*, Comput. Optim.
+Appl. 86 (2023), 1159–1191 ([doi:10.1007/s10589-022-00429-0](https://doi.org/10.1007/s10589-022-00429-0)),
+cited as [Gfrerer–Mandlmayr–Outrata–Valdman 2023], and Sect. 2.5 of H. Gfrerer and J. V. Outrata,
+*On the role of semismoothness in nonsmooth numerical analysis: Theory*
+([arXiv:2405.14637](https://arxiv.org/abs/2405.14637)), cited as [Gfrerer–Outrata 2024].
+
 It builds on [`ConvexAnalysis`](https://github.com/dvillacis/lean-convex) (convex analysis,
 subgradients and the port of OptLib), pinned in `lakefile.toml`.
 
@@ -49,6 +60,8 @@ subgradients and the port of OptLib), pinned in `lakefile.toml`.
 | Marginal functions and compositions | `Subdifferential/Marginal`, `Subdifferential/MarginalLipschitz`, `Subdifferential/InfConvolution`, `Subdifferential/ChainRule`, `Subdifferential/ProductRule`, `Subdifferential/MinMax` | M Thm. 4.1–Thm. 4.10 |
 | Mean value theorems | `Subdifferential/MeanValue`, `Subdifferential/MeanValueIneq`, `Subdifferential/SymmetricMeanValue`, `Subdifferential/Characterizations`, `Subdifferential/MonotoneConvex` | approximate and symmetric mean value theorems; characterizations of Lipschitz continuity (completing M Thm. 1.22), constancy, strict differentiability, monotonicity and convexity (M Thm. 4.11–4.19) |
 | Clarke generalized gradient | `Subdifferential/Clarke` | generalized directional derivative and generalized gradient ([Mordukhovich–Nam 2022, Def. 7.1, 7.21]); `∂f ⊆ ∂̄f`, `∂̄f = co ∂f` in finite dimensions (Thm. 7.69, M (1.83), CV Thm. 16.10); full duality, compactness, symmetry, Fermat's rule, smooth and convex cases, sum and scalar rules, composition with the projection `E × F → E` |
+| SCD mappings | `SCD/Grassmannian`, `SCD/Adjoint`, `SCD/Basic`, `SCD/SingleValued`, `SCD/Calculus`, `SCD/GraphLipschitz`, `SCD/Derivable`, `SCD/Product`, `SCD/Monotone` | metric and compactness of the space of subspaces, adjoint subspaces; graphical smoothness, SC derivatives `𝒮F`, `𝒮*F`, SCD property ([Gfrerer–Outrata 2022, Sect. 3]); Lipschitz maps via Rademacher, `C¹` changes of variables, `F + h`, graphically Lipschitzian and (hypo)monotone maps, convex subdifferentials; product rule ([Gfrerer–Mandlmayr–Outrata–Valdman 2023, Prop. 3.5]) |
+| SCD regularity and Newton's method | `SCD/Regularity`, `SCD/Semismooth`, `SCD/SemismoothPrimal`, `SCD/Subregularity`, `SCD/SemismoothSubregularity` | SCD regularity and `scdreg`; SCD semismooth\* maps and local superlinear convergence of the SCD semismooth\* Newton method; strong metric subregularity via `T♯` ([Gfrerer–Outrata 2022, Sect. 4–6], [Gfrerer–Outrata 2024, Sect. 2.5]) |
 | Theorems of the alternative | `Analysis/Motzkin` | Motzkin's theorem of the alternative in finite dimensions ([Mordukhovich 2024, Lemma 3.1]) |
 | Geometric constraints | `Optimality/GeometricConstraints` | upper and lower subdifferential optimality conditions for `min φ` over `Ω` and over `Ω₁ ∩ ⋯ ∩ Ωₛ`; DC problems (M Thm. 6.1–Prop. 6.4) |
 | Nondifferentiable programming | `Optimality/Programming` | Fritz John conditions via normals to epigraphs and graphs, via separate and symmetric subgradients, condensed Lagrangian conditions, abstract maximum principle, upper subdifferential conditions (M Thm. 6.5–Thm. 6.12) |
@@ -64,6 +77,13 @@ Thm. 6.25–6.26. In Ch. 1, the inclusion `⊆` in (1.38) and
 Prop. 1.37(ii) remain; the worked examples are not formalized. `ROADMAP.md` also records the
 places where a statement of the book had to be corrected (Thm. 2.12, 2.14, 3.14, 3.25, 4.1,
 Cor. 4.8, Thm. 4.18, Prop. 6.13, Thm. 6.21).
+
+For SCD mappings, `ROADMAP.md` lists the results of [Gfrerer–Outrata 2022, Sect. 3–6] and their
+Lean names. Everything there is formalized except the prox-regular case (Prop. 3.26, Cor. 3.27),
+quadratic bundles (3.30–3.34), the adjoint formulas (21) and (24b) for a general change of
+variables, and the worked examples. Prop. 3.22–Cor. 3.24 assume `rge(I + F) = E` in place of
+Minty's theorem; Cor. 3.28 (convex subdifferentials) needs no such hypothesis. Sect. 7 (strong
+metric regularity, tilt stability) is not started.
 
 ## Conventions
 
@@ -89,6 +109,11 @@ Cor. 4.8, Thm. 4.18, Prop. 6.13, Thm. 6.21).
   `Set.convex_indicator` (both from `ConvexAnalysis`). The `lim inf`/`lim sup` conditions of the
   book are unfolded into "for every `ε > 0`, eventually …" form.
 - Cones are empty at points outside the set, following [Rockafellar–Wets 1998].
+- **SCD mappings.** `F : E → Set E` on a finite-dimensional real inner product space `E`; subspaces
+  of `E × E` are `Submodule ℝ (E × E)`, compared through orthogonal projections in the Euclidean
+  model of `E × E`. `E × E` keeps the sup norm, so estimates are stated with norms on `E`. The
+  adjoint subspace is the orthogonal complement for `ω((u, v), (y*, x*)) = ⟪v, y*⟫ - ⟪u, x*⟫`, and
+  `𝒮*F` is defined as `{L* | L ∈ 𝒮F}` ([Gfrerer–Outrata 2022, Remark 3.5]).
 
 ## Build
 
@@ -98,6 +123,6 @@ lake exe cache get && lake build
 
 ## Status
 
-All 58 files compile against Mathlib v4.33.1 with no `sorry`.
+All 79 files compile against Mathlib v4.33.1 with no `sorry`.
 `lake env lean scripts/AuditAxioms.lean` checks that no declaration depends on an axiom beyond
-`propext`, `Classical.choice`, `Quot.sound` (1107 declarations checked).
+`propext`, `Classical.choice`, `Quot.sound` (1807 declarations checked).

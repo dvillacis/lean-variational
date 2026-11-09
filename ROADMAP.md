@@ -254,6 +254,65 @@ are `LowerLevelRegular`, `UpperLevelRegular`.
 | Thm 7.33–7.36 | chain rules, maxima | ◐ | `clarkeDeriv_comp_fst`, `clarkeSubdiff_comp_fst`, `clarkeSubdiff_sub_comp_fst` | only composition with the projection `E × F → E`; the general chain rules and maxima not yet |
 | Sect. 7.4–7.6 | Lebourg mean value theorem, strict differentiability, Rademacher representation | ☐ | | |
 
+## SCD mappings [Gfrerer–Outrata 2022]
+
+Setting: `E` a finite-dimensional real inner product space, `F : E → Set E`, subspaces of
+`E × E` as `Submodule ℝ (E × E)`. GO = [Gfrerer–Outrata 2022], GMOV = [Gfrerer–Mandlmayr–Outrata–Valdman 2023],
+GO24 = [Gfrerer–Outrata 2024].
+`E × E` carries the sup norm in Lean; estimates are stated with norms on `E`, and the constant of
+GO Prop 5.3 is `max 1 ‖C_L‖` instead of `√(n(1+‖C_L‖²))`.
+
+| # | Statement | Status | Lean | Notes |
+|---|---|---|---|---|
+| GO Sect. 3, (8) | metric `d(L₁, L₂) = ‖P₁ − P₂‖` on subspaces | ✓ | `grassProj`, `grassDist`, `GrassTendsto`, `grassDist_triangle`, `grassTendsto_iff` (`SCD/Grassmannian`) | projections computed in the Euclidean model `toEuclidean` |
+| GO Lemma 3.1 | compactness; inner/outer limits; limits keep the dimension | ✓ | `exists_grassTendsto_subseq`, `GrassTendsto.exists_tendsto`, `GrassTendsto.outerLimit_subset`, `grassTendsto_of_outerLimit_subset`, `GrassTendsto.finrank_eq` | |
+| GO (15), p. 10 | adjoint subspace `L*`; `(L*)* = L`; `dim L* = 2n − dim L`; continuity of `L ↦ L*` | ✓ | `adjointSubspace`, `mem_adjointSubspace_iff`, `adjointSubspace_adjointSubspace`, `finrank_adjointSubspace`, `GrassTendsto.adjointSubspace` (`SCD/Adjoint`) | the isometry property is replaced by continuity |
+| GO Lemma 3.11 proof | `(gph A)* = gph Aᵀ` | ✓ | `adjointSubspace_graph` | |
+| GO Def 3.3 | `O_F`, `𝒮F`, SCD property at/around, SCD mapping | ✓ | `GraphicallySmoothAt`, `tangentSubspace`, `scDeriv`, `HasSCDPropertyAt`, `HasSCDPropertyAround`, `IsSCDMapping` (`SCD/Basic`) | |
+| GO Remark 3.4 | `gph D̂*F = T*` on `O_F` | ✓ | `GraphicallySmoothAt.mem_adjoint_tangentSubspace_iff`, `GraphicallySmoothAt.mem_regularCoderiv_iff` | |
+| GO Remark 3.5 | `𝒮*F = {L* \| L ∈ 𝒮F}` | ✓ | `scCoderiv` (definition), `mem_scCoderiv_iff` | the limit description of the paper is a theorem |
+| GO Lemma 3.6 | SCD property at `p` iff `p ∈ cl O_F` | ✓ | `hasSCDPropertyAt_iff_mem_closure` | |
+| GO Lemma 3.7 | `⋃ 𝒮*F ⊆ gph D*F` | ✓ | `toDual_mem_coderiv_of_mem_scCoderiv` | |
+| GO Def 3.8, Lemma 3.10 | `T♯`, `D♯F`; `⋃ 𝒮F ⊆ gph D♯F` | ✓ | `sharpTangentCone`, `sharpDeriv`, `mem_sharpTangentCone_of_mem_scDeriv` | |
+| GO Lemma 3.2 | tangent cone of a graph at differentiability points; calm + graphically smooth ⇒ differentiable | ✓ | `contingentCone_graph_of_hasFDerivAt`, `graphicallySmoothAt_of_hasFDerivAt`, `differentiableAt_of_graphicallySmoothAt`, `graphicallySmoothAt_iff_differentiableAt` (`SCD/SingleValued`) | calmness as a hypothesis |
+| GO Lemma 3.11 | `𝒮f(x) ⊇ {gph A \| A ∈ ∂_B f(x)}`, equality and SCD for Lipschitz `f` | ✓ | `bSubdiff`, `grassTendsto_graph`, `graph_mem_scDeriv_of_mem_bSubdiff`, `graph_adjoint_mem_scCoderiv_of_mem_bSubdiff`, `mem_scDeriv_iff_of_lipschitzOnWith`, `mem_scCoderiv_iff_of_lipschitzOnWith` | |
+| GO Remark 3.12 | Lipschitz maps are SCD (Rademacher) | ✓ | `mem_closure_differentiableAt`, `hasSCDPropertyAround_of_lipschitzOnWith`, `LipschitzWith.isSCDMapping`, `Differentiable.isSCDMapping` | |
+| GO Lemma 3.13 | robustness `𝒮F(p) = Lim sup 𝒮F(q)` | ✓ | `mem_scDeriv_of_tendsto`, `mem_scDeriv_iff_exists_seq`, `mem_scCoderiv_of_tendsto`, `hasSCDPropertyAt_of_tendsto` | |
+| GO Prop 3.14 | `C¹` change of variables, (20) | ✓ | `scDeriv_preimage`, `scDeriv_eq_image_symm`, `hasSCDPropertyAt_iff_of_preimage`, `scDeriv_image_linear` (`SCD/Calculus`); local form `scDeriv_preimage_of_inter_eq` (`SCD/GraphLipschitz`) | the adjoint formula (21) for general `Φ` is not yet stated |
+| GO Prop 3.15 | `F + h`, (22), (23) | ✓ | `scDeriv_add`, `scDeriv_add_of_contDiffAt`, `hasSCDPropertyAt_add_iff`, `scCoderiv_add` | |
+| GO Def 3.16, Remark 3.18 | graphically Lipschitzian mappings; smooth points | ✓ | `IsGraphLipschitzTransform`, `GraphicallyLipschitzianAt`, `IsGraphLipschitzTransform.graphicallySmoothAt_iff` (`SCD/GraphLipschitz`) | dimension `n`; invertible `∇Φ` on `W` instead of `C¹` inverse |
+| GO Prop 3.17 | graphically Lipschitzian ⇒ SCD around, (24a) | ◐ | `IsGraphLipschitzTransform.scDeriv_eq`, `.mem_scDeriv_iff`, `.mem_scCoderiv_iff`, `GraphicallyLipschitzianAt.hasSCDPropertyAround` | (24b) as adjoints of (24a), not in the explicit `S_n ∇Φᵀ S_nᵀ` form |
+| GO Cor 3.19 | `F⁻¹` with Lipschitz localization plus `C¹` `h`, (25) | ✓ | `HasLipschitzInvLocalization`, `graphicallyLipschitzianAt_of_add`, `mem_scDeriv_iff_of_add`, `hasSCDPropertyAround_of_add` | |
+| GMOV Lemma 3.7 | graphically Lipschitzian maps: `gph F` geometrically derivable on `O_F`, tangent subspaces of dimension `n`, near the point | ✓ | `IsGraphLipschitzTransform.finrank_eq_of_coe_eq_contingentCone`, `IsGraphLipschitzTransform.geometricallyDerivableAt`, `GraphicallyLipschitzianAt.exists_nhds_derivable_finrank` (`SCD/Derivable`) | via `geometricallyDerivableAt_graph_of_hasFDerivAt` (cf. [Rockafellar–Wets, Prop. 8.41]) and transfer along `Φ` |
+| GMOV Lemma 3.4, Prop 3.5 | product rule (3.6)–(3.10), with equality | ✓ | `contingentCone_prod_eq`, `graphicallySmoothAt_prodMap_iff`, `prodSubspace_mem_scDeriv`, `prodSubspace_mem_scCoderiv`, `IsSCDMapping.prodMap`, `scDeriv_prodMap`, `scCoderiv_prodMap` (`SCD/Product`) | two factors, on `WithLp 2 (E₁ × E₂)`; `GeometricallyDerivableAt` follows GMOV Def 2.1 |
+| GO Def 3.21 | firmly nonexpansive maps and matrices; derivatives and `∂_B` elements of firm maps are firm | ✓ | `IsFirmlyNonexpansive`, `IsFirmlyNonexpansiveOp`, `isFirmlyNonexpansiveOp_of_mem_bSubdiff` (`SCD/Monotone`) | |
+| GO p. 15 | Minty parametrization `Φ(x, y) = (x + y, x)`; resolvent of a monotone map is firmly nonexpansive | ✓ | `mintyMap`, `mintySubspace`, `adjointSubspace_mintySubspace`, `resolvent`, `IsMonotoneOp.isFirmlyNonexpansive_resolvent`, `IsMonotoneOp.graph_eq_image_resolvent` | |
+| GO Prop 3.22 | (locally) maximally monotone maps are SCD; `L = rge(B, I − B)`, `L* = rge(Bᵀ, I − Bᵀ)` with `B` firm | ◐ | `IsMonotoneOp.isSCDMapping`, `IsMonotoneOp.mem_scDeriv_iff`, `IsMonotoneOp.mem_scCoderiv_iff`, `IsLocallyMaximalMonotoneAt.scd` | maximal monotonicity is replaced by monotone + `rge(I + F) = E` (Minty's theorem is not formalized); locally, `gph F` agrees near the point with the graph of such a map |
+| GO Cor 3.23, 3.24 | locally maximally hypomonotone maps; density version | ◐ | `IsLocallyMaximalHypomonotoneAt.scd`, `isSCDMapping_of_dense` | same hypothesis as Prop 3.22 |
+| GO Cor 3.28 | `∂φ` of a proper lsc convex `φ` is SCD; `L = rge(B, I − B)`, `B` symmetric psd, `‖B‖ ≤ 1`, `L* = L` | ✓ | `subdiffMap`, `isSCDMapping_subdiffMap`, `exists_symm_of_mem_scDeriv_subdiffMap`, `adjointSubspace_eq_of_mem_scDeriv_subdiffMap`, `scCoderiv_subdiffMap` | `rge(I + ∂φ) = E` via the proximal point; symmetry via the Moreau envelope (`hasFDerivAt_moreauEnv`); also [Gfrerer–Outrata 2022b, Thm 3.6] |
+| GMOV Prop 3.5 + Lemma 3.7 | products with a graphically Lipschitzian factor: SCD, with equality in (3.8)–(3.10) | ✓ | `IsSCDMapping.prodMap_of_graphicallyLipschitzian_left`, `scDeriv_prodMap_of_graphicallyLipschitzian_left`, `scCoderiv_prodMap_of_graphicallyLipschitzian_left` (and `_right`), `LipschitzWith.graphicallyLipschitzianAt` | |
+| GO Def 4.1, Prop 4.2, Remark 4.3, (32)–(34) | regular subspaces, `C_L`, `L* = rge(C_Lᵀ, I)`, SCD regularity, `scdreg` | ✓ | `IsRegularSubspace`, `rgeSubspace`, `regularSubspaceOp`, `IsRegularSubspace.eq_rgeSubspace`, `IsRegularSubspace.adjointSubspace_eq`, `IsRegularSubspace.norm_fst_le`, `IsRegularSubspace.subspaceBound_eq`, `IsSCDRegularAround`, `scdreg` (`SCD/Regularity`) | `scdreg` in `ℝ≥0∞` |
+| GO Lemma 4.5 | SCD regularity and `scdreg` through `𝒮F` | ✓ | `isSCDRegularAround_iff_scDeriv`, `IsSCDRegularAround.scdreg_eq_iSup_scDeriv` | |
+| GO Lemma 4.7 | `scdreg < ∞` | ✓ | `IsSCDRegularAround.scdreg_lt_top` | |
+| GO Prop 4.8 | robustness of SCD regularity and of the modulus | ✓ | `eventually_forall_norm_lt_of_scdreg_lt`, `eventually_isRegularSubspace_and_norm_le`, `IsSCDRegularAround.eventually` | |
+| GO Def 5.1 | SCD semismooth* | ✓ | `IsSCDSemismoothStarAt`, `IsSCDSemismoothStarAround`, `isSCDSemismoothStarAt_iff` (`SCD/Semismooth`) | |
+| GO Prop 5.3 | `‖x − C_Lᵀ(y − ȳ) − x̄‖ ≤ ε c ‖(x, y) − (x̄, ȳ)‖` | ✓ | `norm_sub_adjoint_le_of_forall`, `IsSCDSemismoothStarAt.eventually_norm_le` | `c = max 1 ‖C_L‖` |
+| GO Alg. 1, Thm 5.4 | SCD semismooth* Newton method, local superlinear convergence | ✓ | `newtonApproxSet`, `newtonStep`, `IsSCDNewtonSeq`, `SCDNewtonConverges`, `IsSCDSemismoothStarAt.scdNewton_converges` | |
+| GO Prop 5.5, Cor 5.6 | approximation step; convergence under SCD regularity | ✓ | `IsSCDRegularAround.eventually_newtonApproxSet`, `IsSCDSemismoothStarAt.scdNewton_converges_of_isSCDRegularAround` | |
+| GO Def 2.5, 2.8, Thm 2.7(i) | strong metric subregularity at/around; Levy–Rockafellar criterion and modulus | ✓ | `StronglyMetricallySubregularWith`, `StronglyMetricallySubregularAround`, `subregBound`, `lsubregBound`, `stronglyMetricallySubregularAt_iff`, `subregBound_eq_coneBound` (`SCD/Subregularity`) | distances via `infEDist` |
+| GO Thm 6.1 | strong metric subregularity around iff `(u, 0) ∈ gph D♯F ⇒ u = 0`, (43) | ✓ | `stronglyMetricallySubregularAround_iff`, `stronglyMetricallySubregularAround_iff_sharpDeriv`, `lsubregBound_eq_coneBound` | no closedness of `gph F` needed |
+| GO Thm 6.2 | SCD regular + SCD semismooth* ⇒ strongly metrically subregular, `subreg ≤ scdreg` | ✓ | `IsSCDSemismoothStarAt.stronglyMetricallySubregularWith`, `IsSCDSemismoothStarAt.subregBound_le`, `IsSCDRegularAround.eventually_stronglyMetricallySubregularWith` (`SCD/SemismoothSubregularity`) | |
+| GO remark after Thm 6.1 | `scdreg ≤ l-subreg` | ✓ | `StronglyMetricallySubregularAround.isSCDRegularAround`, `IsSCDRegularAround.scdreg_le_lsubregBound` | needs the SCD property around |
+| GO Cor 6.4 | under SCD semismooth* around: equivalence, `l-subreg = scdreg` | ✓ | `IsSCDSemismoothStarAround.stronglyMetricallySubregularAround_iff`, `IsSCDSemismoothStarAround.lsubregBound_eq` | |
+| GO24 Def 2.9, 2.10, 2.11 | semismooth* (w.r.t. `D*F`, w.r.t. a cone-valued `Γ`); SCD-ss* as an instance | ✓ | `IsSemismoothStarWrtAt`, `coderivGraph`, `IsSemismoothStarAt`, `scCoderivUnion`, `isSCDSemismoothStarAt_iff_wrt` (`SCD/SemismoothPrimal`) | |
+| GO24 p. 11 | semismooth* + SCD property around ⇒ SCD semismooth* | ✓ | `IsSemismoothStarAt.isSCDSemismoothStarAt` | via GO Lemma 3.7 |
+| GO24 Prop 2.12 | primal characterization `dist((x − x̄, y − ȳ), L) = o(‖(x, y) − (x̄, ȳ)‖)` | ✓ | `isSCDSemismoothStarAt_iff_infDist` | distance to the primal `L ∈ 𝒮F(x, y)` (the paper writes `𝒮*F`) |
+| GO Prop 3.26, Cor 3.27 | prox-regular functions | ☐ | | |
+| GO 3.30–3.34 | quadratic bundles | ☐ | | |
+| GO Sect. 7 | strong metric regularity, Clarke-type inverse function theorem, tilt stability | ☐ | | needs [Rockafellar–Wets, Thm 9.62] |
+| GO Examples 3.29, 4.6, 6.5 | worked examples | ☐ | | |
+| Minty's theorem | maximal monotone ⇒ `rge(I + F) = E` | ☐ | | needed to remove the extra hypothesis of Prop 3.22, Cor 3.23, 3.24 |
+
 ## Auxiliary results
 
 | # | Statement | Status | Lean | Notes |
@@ -261,6 +320,12 @@ are `LowerLevelRegular`, `UpperLevelRegular`.
 | [Mordukhovich 2024, Lemma 3.1] | Motzkin's theorem of the alternative | ✓ | `exists_multipliers_of_not_exists_direction` (`Analysis/Motzkin`) | finite dimensions, with equality constraints `⟨ξₖ, d⟩ = 0`; via separation |
 
 ## Suggested order of work
+
+SCD mappings: Minty's theorem (removes the extra hypothesis of [Gfrerer–Outrata 2022,
+Prop. 3.22–Cor. 3.24]); the adjoint formulas (21), (24b) for a general `Φ`; prox-regular functions
+(Prop. 3.26, Cor. 3.27); Sect. 7, after [Rockafellar–Wets, Thm 9.62].
+
+Variational analysis:
 
 1. The Lipschitzian bilevel results Thm 6.25–6.26 (normals to Lipschitzian inequality systems,
    then the Lipschitzian analogue of `subdiff_lowerValue_subset`).
