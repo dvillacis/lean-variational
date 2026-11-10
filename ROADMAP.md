@@ -303,7 +303,17 @@ dimensional, and Sect. 1.3.3 uses real inner product spaces. Worked examples (1.
 | Def 1.85 | proto-differentiability | ✓ | `ProtoDifferentiableAt`, `protoDifferentiableAt_invMap_iff` | via geometric derivability (Def 1.9) of the graph |
 | Thm 1.86 | `∂²_D φ(x̄\|v̄)(u) ⊆ ∂²φ(x̄\|v̄)(u)` for continuously prox-regular `φ` with proto-differentiable `∂φ` (1.116) | ✓ | `ContinuouslyProxRegularFor.subgradGraphDeriv_subset_secondOrderSubdiff`, `coderiv_shear_iff`, `graphDeriv_shear_iff`, `ProtoDifferentiableAt.of_shear`, `dirDifferentiableAt_of_geometricallyDerivableAt`, `ContinuouslyProxRegularFor.exists_local_moreau` (`SecondOrder/ProtoDiff`) | finite-dimensional inner product spaces; (1.118) for a general shear `(x, y) ↦ (x + By, y)`; no prox-boundedness needed (localization as in Cor 1.72) |
 | Cor 1.87 | fully amenable functions | ☐ | | needs Thm 1.61 for fully amenable functions and Ex 1.139 |
-| Sect. 1.5 | second subderivatives (Def 1.88 ff.) | ☐ | | |
+| Def 1.43 | subderivative `dφ(x̄)` (1.56)–(1.57) | ✓ | `diffQuot`, `subderiv`, `subderiv_of_hasFDerivAt` (`SecondOrder/SecondSubderiv`) | Sect. 1.1 preliminary needed for Sect. 1.5; semidifferentiability is used inside `TwiceSemidifferentiableAt` |
+| Def 1.88 | second subderivatives `d²φ(x̄, v)`, `d²φ(x̄)` (1.119)–(1.122) | ✓ | `secondDiffQuot`, `secondDiffQuot'`, `secondSubderiv`, `secondSubderiv'`, `secondDiffQuot'_eq` | |
+| Def 1.89 | twice epi-differentiability, twice semidifferentiability | ✓ | `TwiceEpiDifferentiableAt`, `TwiceSemidifferentiableAt` | (ii) asks for a finite first-order limit |
+| Prop 1.90 | twice differentiable functions | ✓ | `secondSubderiv_of_hasFDerivAt`, `secondSubderiv'_of_hasFDerivAt`, `twiceEpiDifferentiableAt_of_hasFDerivAt`, `tendsto_secondDiffQuot_dir_of_hasFDerivAt`, `abs_taylor_two_le` | twice Fréchet differentiable at `x̄` (gradient near `x̄`, differentiable at `x̄`); any normed space |
+| (1.125), Thm 1.91 | critical cone; piecewise linear-quadratic convex functions | ◐ | `criticalCone` | Thm 1.91 needs Def 1.59 |
+| Prop 1.93 | second subderivatives of convex functions | ✓ | `secondSubderiv_nonneg_of_convex`, `convex_epi_secondSubderiv`, `secondDiffQuot_combo_le` | the convexity part only uses convexity of `φ` and finiteness of `φ(x̄)` |
+| Lemma 1.94 | subdifferentials and Moreau envelopes of second-order quotients (1.130), (1.131) | ✓ | `subdiff_half_secondDiffQuot`, `mem_subdiff_coe_mul_iff`, `moreauEnvelope_scale`, `proximalMap_scale`, `moreauEnvelope_half_secondDiffQuot`, `proximalMap_half_secondDiffQuot` | (1.130) in finite dimensions; (1.131) stated for `w ↦ t⁻²φ(tw)` and then for `Δ²_tφ(0, 0)/2` |
+| Lemma 1.95 | resolvents of monotone operators | ◐ | `resolventMap`, `IsMonotoneOp.isMonotoneOp_resolventMap`, `IsMonotoneOp.norm_sub_le_of_mem_resolventMap`, `IsMonotoneOp.isMaximalMonotoneOp_of_resolventMap`, `IsMonotoneOp.exists_resolventMap_eq_singleton`, `isMaximalMonotoneOp_of_continuous` (`SecondOrder/CyclicMonotone`) | maximal monotone ⇒ full domain (Minty's theorem) not proved |
+| Def 1.96, Lemma 1.97 | cyclical monotonicity; maximal cyclically monotone = convex subdifferential | ◐ | `CyclicallyMonotone`, `MaximalCyclicallyMonotone`, `cyclicallyMonotone_subdiff_of_convex`, `rockafellarFun`, `mem_subdiff_rockafellarFun`, `maximalCyclicallyMonotone_iff` | uniqueness up to a constant not proved; maximality of `∂φ` via `globallyMaximalMonotone_subdiff_of_convex` for all proper l.s.c. convex `φ` |
+| Thm 1.98, Cor 1.99, Cor 1.101 | twice epi-differentiability ⇔ proto-differentiability for prox-regular functions; fully amenable functions; proximal mappings | ☐ | | needs Ex 1.133, 1.135, 1.136, 1.139, Minty's theorem and the uniqueness in Lemma 1.97 |
+| Def 1.100 | semidifferentiability of set-valued mappings (1.138) | ✓ | `IsSemiderivative`, `SemidifferentiableAt'` | |
 
 ## SCD mappings [Gfrerer–Outrata 2022]
 
@@ -379,8 +389,8 @@ prox-regular case (the symmetric representation in Prop. 3.26, Cor. 3.27); Sect.
 [Rockafellar–Wets, Thm 9.62].
 
 Second-order analysis ([Mordukhovich 2024, Ch. 1]): Cor 1.87 (needs Thm 1.61 for fully
-amenable functions and Ex 1.139); Lemma 1.68 (1.91); second subderivatives
-(Sect. 1.5).
+amenable functions and Ex 1.139); Lemma 1.68 (1.91); Thm 1.98 and its corollaries (need Minty's
+theorem, the uniqueness in Lemma 1.97 and Ex 1.133–1.139); Thm 1.91 (needs Def 1.59).
 
 Variational analysis:
 

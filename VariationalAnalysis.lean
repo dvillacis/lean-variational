@@ -42,11 +42,13 @@ import VariationalAnalysis.SCD.SingleValued
 import VariationalAnalysis.SCD.Subregularity
 import VariationalAnalysis.SecondOrder.Basic
 import VariationalAnalysis.SecondOrder.C11
+import VariationalAnalysis.SecondOrder.CyclicMonotone
 import VariationalAnalysis.SecondOrder.EpiConvergence
 import VariationalAnalysis.SecondOrder.GraphicalDerivative
 import VariationalAnalysis.SecondOrder.Moreau
 import VariationalAnalysis.SecondOrder.ProtoDiff
 import VariationalAnalysis.SecondOrder.ProxRegular
+import VariationalAnalysis.SecondOrder.SecondSubderiv
 import VariationalAnalysis.SetValued.Basic
 import VariationalAnalysis.SetValued.OuterLimit
 import VariationalAnalysis.Subdifferential.Bridge
