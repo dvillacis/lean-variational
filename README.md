@@ -61,7 +61,7 @@ subgradients and the port of OptLib), pinned in `lakefile.toml`.
 | Marginal functions and compositions | `Subdifferential/Marginal`, `Subdifferential/MarginalLipschitz`, `Subdifferential/InfConvolution`, `Subdifferential/ChainRule`, `Subdifferential/ProductRule`, `Subdifferential/MinMax` | M Thm. 4.1–Thm. 4.10 |
 | Mean value theorems | `Subdifferential/MeanValue`, `Subdifferential/MeanValueIneq`, `Subdifferential/SymmetricMeanValue`, `Subdifferential/Characterizations`, `Subdifferential/MonotoneConvex` | approximate and symmetric mean value theorems; characterizations of Lipschitz continuity (completing M Thm. 1.22), constancy, strict differentiability, monotonicity and convexity (M Thm. 4.11–4.19) |
 | Clarke generalized gradient | `Subdifferential/Clarke` | generalized directional derivative and generalized gradient ([Mordukhovich–Nam 2022, Def. 7.1, 7.21]); `∂f ⊆ ∂̄f`, `∂̄f = co ∂f` in finite dimensions (Thm. 7.69, M (1.83), CV Thm. 16.10); full duality, compactness, symmetry, Fermat's rule, smooth and convex cases, sum and scalar rules, composition with the projection `E × F → E` |
-| SCD mappings | `SCD/Grassmannian`, `SCD/Adjoint`, `SCD/Basic`, `SCD/SingleValued`, `SCD/Calculus`, `SCD/GraphLipschitz`, `SCD/Derivable`, `SCD/Product`, `SCD/Monotone` | metric and compactness of the space of subspaces, adjoint subspaces; graphical smoothness, SC derivatives `𝒮F`, `𝒮*F`, SCD property ([Gfrerer–Outrata 2022, Sect. 3]); Lipschitz maps via Rademacher, `C¹` changes of variables, `F + h`, graphically Lipschitzian and (hypo)monotone maps, convex subdifferentials; product rule ([Gfrerer–Mandlmayr–Outrata–Valdman 2023, Prop. 3.5]) |
+| SCD mappings | `SCD/Grassmannian`, `SCD/Adjoint`, `SCD/Basic`, `SCD/SingleValued`, `SCD/Calculus`, `SCD/GraphLipschitz`, `SCD/Derivable`, `SCD/Product`, `SCD/Monotone`, `SCD/Minty` | metric and compactness of the space of subspaces, adjoint subspaces; graphical smoothness, SC derivatives `𝒮F`, `𝒮*F`, SCD property ([Gfrerer–Outrata 2022, Sect. 3]); Lipschitz maps via Rademacher, `C¹` changes of variables, `F + h`, graphically Lipschitzian and (hypo)monotone maps, Minty's theorem, convex subdifferentials; product rule ([Gfrerer–Mandlmayr–Outrata–Valdman 2023, Prop. 3.5]) |
 | SCD regularity and Newton's method | `SCD/Regularity`, `SCD/Semismooth`, `SCD/SemismoothPrimal`, `SCD/Subregularity`, `SCD/SemismoothSubregularity` | SCD regularity and `scdreg`; SCD semismooth\* maps and local superlinear convergence of the SCD semismooth\* Newton method; strong metric subregularity via `T♯` ([Gfrerer–Outrata 2022, Sect. 4–6], [Gfrerer–Outrata 2024, Sect. 2.5]) |
 | Second-order subdifferentials | `SecondOrder/Basic` | combined and partial second-order subdifferentials (M24 Def. 1.46, 1.52); `C²` and `C^{1,1}` functions, sum rules (M24 Prop. 1.47–1.54); regular coderivative sum rule |
 | Prox-regularity | `SecondOrder/ProxRegular` | proximal subgradients, `φ`-attentive localizations, hypomonotonicity; prox-regularity via hypomonotone localizations (M24 Thm. 1.65) |
@@ -71,7 +71,7 @@ subgradients and the port of OptLib), pinned in `lakefile.toml`.
 | `C^{1,1}` functions | `SecondOrder/C11` | directional differentiability (M24 Def. 1.77); `∂²_D φ(x̄)(u) ⊆ ∂²φ(x̄)(u)` for `C^{1,1}` functions with directionally differentiable gradient (M24 Thm. 1.84) |
 | Proto-differentiability | `SecondOrder/ProtoDiff` | graphical derivatives and coderivatives under shears (M24 (1.118)); derivable Lipschitz graphs are directionally differentiable; `∂²_D φ ⊆ ∂²φ` for continuously prox-regular functions with proto-differentiable `∂φ` (M24 Thm. 1.86) |
 | Second subderivatives | `SecondOrder/SecondSubderiv` | subderivatives (M24 Def. 1.43); second subderivatives, twice epi- and semidifferentiability (M24 Def. 1.88–1.89); twice differentiable and convex functions (M24 Prop. 1.90, 1.93); quotients under subdifferentiation and Moreau envelopes (M24 Lemma 1.94); semiderivatives of set-valued mappings (M24 Def. 1.100) |
-| Cyclic monotonicity | `SecondOrder/CyclicMonotone` | resolvents of monotone operators (M24 Lemma 1.95, without Minty's theorem); cyclically monotone mappings and Rockafellar's theorem (M24 Def. 1.96, Lemma 1.97) |
+| Cyclic monotonicity | `SecondOrder/CyclicMonotone` | resolvents of monotone operators (M24 Lemma 1.95); cyclically monotone mappings and Rockafellar's theorem (M24 Def. 1.96, Lemma 1.97) |
 | Theorems of the alternative | `Analysis/Motzkin` | Motzkin's theorem of the alternative in finite dimensions ([Mordukhovich 2024, Lemma 3.1]) |
 | Geometric constraints | `Optimality/GeometricConstraints` | upper and lower subdifferential optimality conditions for `min φ` over `Ω` and over `Ω₁ ∩ ⋯ ∩ Ωₛ`; DC problems (M Thm. 6.1–Prop. 6.4) |
 | Nondifferentiable programming | `Optimality/Programming` | Fritz John conditions via normals to epigraphs and graphs, via separate and symmetric subgradients, condensed Lagrangian conditions, abstract maximum principle, upper subdifferential conditions (M Thm. 6.5–Thm. 6.12) |
@@ -101,8 +101,9 @@ Lean names. Everything there is formalized except the symmetric representation o
 `𝒮∂q` for prox-regular `q` (Prop. 3.26, whose SCD part follows from [Mordukhovich 2024, Cor. 1.72])
 and Cor. 3.27,
 quadratic bundles (3.30–3.34), the adjoint formulas (21) and (24b) for a general change of
-variables, and the worked examples. Prop. 3.22–Cor. 3.24 assume `rge(I + F) = E` in place of
-Minty's theorem; Cor. 3.28 (convex subdifferentials) needs no such hypothesis. Sect. 7 (strong
+variables, and the worked examples. Minty's theorem is proved (`SCD/Minty`, via the Fitzpatrick
+function), so maximally monotone mappings are SCD; the local notions in Prop. 3.22–Cor. 3.24
+still assume a monotone extension with `rge(I + F) = E`. Cor. 3.28 (convex subdifferentials) needs no such hypothesis. Sect. 7 (strong
 metric regularity, tilt stability) is not started.
 
 ## Conventions
@@ -143,6 +144,6 @@ lake exe cache get && lake build
 
 ## Status
 
-All 88 files compile against Mathlib v4.33.1 with no `sorry`.
+All 89 files compile against Mathlib v4.33.1 with no `sorry`.
 `lake env lean scripts/AuditAxioms.lean` checks that no declaration depends on an axiom beyond
-`propext`, `Classical.choice`, `Quot.sound` (2071 declarations checked).
+`propext`, `Classical.choice`, `Quot.sound` (2095 declarations checked).

@@ -33,6 +33,7 @@ import VariationalAnalysis.SCD.Derivable
 import VariationalAnalysis.SCD.GraphLipschitz
 import VariationalAnalysis.SCD.Grassmannian
 import VariationalAnalysis.SCD.Monotone
+import VariationalAnalysis.SCD.Minty
 import VariationalAnalysis.SCD.Product
 import VariationalAnalysis.SCD.Regularity
 import VariationalAnalysis.SCD.Semismooth
