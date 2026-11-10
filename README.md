@@ -67,6 +67,9 @@ subgradients and the port of OptLib), pinned in `lakefile.toml`.
 | Prox-regularity | `SecondOrder/ProxRegular` | proximal subgradients, `φ`-attentive localizations, hypomonotonicity; prox-regularity via hypomonotone localizations (M24 Thm. 1.65) |
 | Moreau envelopes | `SecondOrder/Moreau` | Moreau envelopes and proximal mappings (M24 Def. 1.66–1.67, Lemma 1.68–1.69); single-valued Lipschitz proximal mappings and `C^{1,1}` envelopes of prox-regular functions (M24 Thm. 1.70–1.71); `∂φ` graphically Lipschitzian and SCD (M24 Cor. 1.72, [Gfrerer–Outrata 2022, Prop. 3.26]) |
 | Subgradient graphical derivatives | `SecondOrder/GraphicalDerivative` | graphical derivative and its sum rule; subgradient graphical derivatives (M24 Def. 1.73), `C²` case and sum rules (M24 Prop. 1.74, 1.76); local convexification of `C^{1,1}` functions (M24 Lemma 1.82) |
+| Epi-convergence | `SecondOrder/EpiConvergence` | set convergence, epi-convergence and epi-differentiability (M24 Def. 1.78–1.80); proximal normals and their approximation under set convergence (M24 Lemma 1.81); proto-differentiability (M24 Def. 1.85) |
+| `C^{1,1}` functions | `SecondOrder/C11` | directional differentiability (M24 Def. 1.77); `∂²_D φ(x̄)(u) ⊆ ∂²φ(x̄)(u)` for `C^{1,1}` functions with directionally differentiable gradient (M24 Thm. 1.84) |
+| Proto-differentiability | `SecondOrder/ProtoDiff` | graphical derivatives and coderivatives under shears (M24 (1.118)); derivable Lipschitz graphs are directionally differentiable; `∂²_D φ ⊆ ∂²φ` for continuously prox-regular functions with proto-differentiable `∂φ` (M24 Thm. 1.86) |
 | Theorems of the alternative | `Analysis/Motzkin` | Motzkin's theorem of the alternative in finite dimensions ([Mordukhovich 2024, Lemma 3.1]) |
 | Geometric constraints | `Optimality/GeometricConstraints` | upper and lower subdifferential optimality conditions for `min φ` over `Ω` and over `Ω₁ ∩ ⋯ ∩ Ωₛ`; DC problems (M Thm. 6.1–Prop. 6.4) |
 | Nondifferentiable programming | `Optimality/Programming` | Fritz John conditions via normals to epigraphs and graphs, via separate and symmetric subgradients, condensed Lagrangian conditions, abstract maximum principle, upper subdifferential conditions (M Thm. 6.5–Thm. 6.12) |
@@ -85,9 +88,9 @@ Cor. 4.8, Thm. 4.18, Prop. 6.13, Thm. 6.21).
 
 For [Mordukhovich 2024, Ch. 1], `ROADMAP.md` lists the statements of Sect. 1.2–1.4 with their Lean
 names or status. Formalized: the second-order subdifferentials of Sect. 1.2, Thm. 1.65, the
-Moreau envelope results Lemma 1.69–Cor. 1.72, and Def. 1.73–Prop. 1.76. Thm. 1.70–1.71 assume
-prox-boundedness, which the book omits (a correction). Epi-differentiability, Thm. 1.84,
-proto-differentiability (Sect. 1.4.2–1.4.3) and second subderivatives (Sect. 1.5) remain.
+Moreau envelope results Lemma 1.69–Cor. 1.72, Def. 1.73–Lemma 1.81, Thm. 1.84 (with a proof
+that avoids Lemma 1.81) and Def. 1.85–Thm. 1.86. Thm. 1.70–1.71 assume prox-boundedness, which
+the book omits (a correction). Cor. 1.87 and second subderivatives (Sect. 1.5) remain.
 
 For SCD mappings, `ROADMAP.md` lists the results of [Gfrerer–Outrata 2022, Sect. 3–6] and their
 Lean names. Everything there is formalized except the symmetric representation of
@@ -136,6 +139,6 @@ lake exe cache get && lake build
 
 ## Status
 
-All 83 files compile against Mathlib v4.33.1 with no `sorry`.
+All 86 files compile against Mathlib v4.33.1 with no `sorry`.
 `lake env lean scripts/AuditAxioms.lean` checks that no declaration depends on an axiom beyond
-`propext`, `Classical.choice`, `Quot.sound` (1912 declarations checked).
+`propext`, `Classical.choice`, `Quot.sound` (1970 declarations checked).

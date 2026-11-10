@@ -292,12 +292,17 @@ dimensional, and Sect. 1.3.3 uses real inner product spaces. Worked examples (1.
 | Def 1.73 | subgradient graphical derivatives (1.96), (1.97) | ✓ | `graphDeriv`, `subgradGraphDeriv`, `regularSubgradGraphDeriv`, `regularSubgradGraphDeriv_subset` | graphical derivative (1.39) via `contingentCone`; sum rule (1.41) is `graphDeriv_add` |
 | Prop 1.74 | `C²` functions (1.98) | ✓ | `subgradGraphDeriv_of_hasFDerivAt`, `regularSubgradGraphDeriv_of_hasFDerivAt`, `secondOrderSubdiff_eq_subgradGraphDeriv` | |
 | Prop 1.76 | sum rules (1.100) | ✓ | `subgradGraphDeriv_add`, `regularSubgradGraphDeriv_add` | the result is `f'' u`, so no symmetry of `∇²φ₁(x̄)` is needed |
-| Def 1.77–1.80 | directional differentiability, set convergence, epi-convergence, epi-differentiability | ☐ | | |
-| Lemma 1.81 | proximal-normal approximation | ☐ | | |
+| Def 1.77 | directional differentiability (1.101) | ✓ | `HasDirDerivAt`, `DirDifferentiableAt`, `HasFDerivAt.hasDirDerivAt` (`SecondOrder/C11`) | any normed spaces; no Lipschitz hypothesis in the definition |
+| Def 1.78 | set convergence (1.102)–(1.104) | ✓ | `IsSetLimit`, `mem_outerLimit_atTop_iff`, `mem_innerLimit_atTop_iff`, `innerLimit_subset_outerLimit_atTop` (`SecondOrder/EpiConvergence`) | along any filter, via `outerLimit`, `innerLimit`; nonemptiness is not part of the definition |
+| Def 1.79 | epi-convergence | ✓ | `EpiTendsto`, `EpiTendsto.epi_eq` | |
+| Def 1.80 | epi-differentiability | ✓ | `diffQuot`, `EpiDifferentiableAt` | quotients (1.56) in `EReal` |
+| (1.105), Lemma 1.81 | proximal normal cone; proximal-normal approximation under set convergence | ✓ | `proxNormalCone`, `proxNormalCone_subset_regularNormalCone`, `toDual_smul_sub_mem_proxNormalCone`, `exists_tendsto_proj_of_isSetLimit`, `exists_tendsto_proxNormalCone` | closed nonempty sets in finite-dimensional inner product spaces; `γ ≥ 0` in (1.105) |
 | Lemma 1.82 | local convexification of `C^{1,1}` functions (1.108), (1.109) | ◐ | `convexOn_add_sq_of_lipschitzOnWith`, `convexOn_closedBall_add_sq`, `subgradGraphDeriv_add_sq`, `convexOn_of_monotone_fderiv` | (1.108) and the graphical-derivative half of (1.109); the `∂²` half of (1.109) is not stated |
 | Lemma 1.83 | Rademacher's theorem | ✓ | Mathlib: `LipschitzWith.ae_differentiableAt`, `LipschitzOnWith.ae_differentiableWithinAt_of_mem` | |
-| Thm 1.84 | `∂²_D φ(x̄)(u) ⊆ ∂²φ(x̄)(u)` for `C^{1,1}` functions with directionally differentiable gradient | ☐ | | |
-| Def 1.85, Thm 1.86, Cor 1.87 | proto-differentiability; prox-regular and fully amenable functions | ☐ | | need Def 1.77–1.80 |
+| Thm 1.84 | `∂²_D φ(x̄)(u) ⊆ ∂²φ(x̄)(u)` for `C^{1,1}` functions with directionally differentiable gradient (1.111) | ✓ | `subgradGraphDeriv_subset_secondOrderSubdiff`, `graphDeriv_subset_of_hasDirDerivAt`, `dirDeriv_mem_subdiff` | finite-dimensional inner product spaces; different proof: `∂²_D φ(x̄)(u) ⊆ {(∇φ)'(x̄; u)}`, and `(∇φ)'(x̄; ·)` is a gradient (limit of blow-ups), symmetric and Euler-homogeneous at its points of differentiability (Rademacher), whose gradients are approximated by regular subgradients of the blow-ups; no Lemma 1.81 |
+| Def 1.85 | proto-differentiability | ✓ | `ProtoDifferentiableAt`, `protoDifferentiableAt_invMap_iff` | via geometric derivability (Def 1.9) of the graph |
+| Thm 1.86 | `∂²_D φ(x̄\|v̄)(u) ⊆ ∂²φ(x̄\|v̄)(u)` for continuously prox-regular `φ` with proto-differentiable `∂φ` (1.116) | ✓ | `ContinuouslyProxRegularFor.subgradGraphDeriv_subset_secondOrderSubdiff`, `coderiv_shear_iff`, `graphDeriv_shear_iff`, `ProtoDifferentiableAt.of_shear`, `dirDifferentiableAt_of_geometricallyDerivableAt`, `ContinuouslyProxRegularFor.exists_local_moreau` (`SecondOrder/ProtoDiff`) | finite-dimensional inner product spaces; (1.118) for a general shear `(x, y) ↦ (x + By, y)`; no prox-boundedness needed (localization as in Cor 1.72) |
+| Cor 1.87 | fully amenable functions | ☐ | | needs Thm 1.61 for fully amenable functions and Ex 1.139 |
 | Sect. 1.5 | second subderivatives (Def 1.88 ff.) | ☐ | | |
 
 ## SCD mappings [Gfrerer–Outrata 2022]
@@ -373,9 +378,9 @@ Prop. 3.22–Cor. 3.24]); the adjoint formulas (21), (24b) for a general `Φ`; t
 prox-regular case (the symmetric representation in Prop. 3.26, Cor. 3.27); Sect. 7, after
 [Rockafellar–Wets, Thm 9.62].
 
-Second-order analysis ([Mordukhovich 2024, Ch. 1]): set convergence and epi-differentiability
-(Def 1.77–1.80) and Lemma 1.81, then Thm 1.84 and proto-differentiability (Thm 1.86, Cor 1.87);
-Lemma 1.68 (1.91); second subderivatives (Sect. 1.5).
+Second-order analysis ([Mordukhovich 2024, Ch. 1]): Cor 1.87 (needs Thm 1.61 for fully
+amenable functions and Ex 1.139); Lemma 1.68 (1.91); second subderivatives
+(Sect. 1.5).
 
 Variational analysis:
 
