@@ -310,9 +310,9 @@ dimensional, and Sect. 1.3.3 uses real inner product spaces. Worked examples (1.
 | (1.125), Thm 1.91 | critical cone; piecewise linear-quadratic convex functions | ◐ | `criticalCone` | Thm 1.91 needs Def 1.59 |
 | Prop 1.93 | second subderivatives of convex functions | ✓ | `secondSubderiv_nonneg_of_convex`, `convex_epi_secondSubderiv`, `secondDiffQuot_combo_le` | the convexity part only uses convexity of `φ` and finiteness of `φ(x̄)` |
 | Lemma 1.94 | subdifferentials and Moreau envelopes of second-order quotients (1.130), (1.131) | ✓ | `subdiff_half_secondDiffQuot`, `mem_subdiff_coe_mul_iff`, `moreauEnvelope_scale`, `proximalMap_scale`, `moreauEnvelope_half_secondDiffQuot`, `proximalMap_half_secondDiffQuot` | (1.130) in finite dimensions; (1.131) stated for `w ↦ t⁻²φ(tw)` and then for `Δ²_tφ(0, 0)/2` |
-| Lemma 1.95 | resolvents of monotone operators | ◐ | `resolventMap`, `IsMonotoneOp.isMonotoneOp_resolventMap`, `IsMonotoneOp.norm_sub_le_of_mem_resolventMap`, `IsMonotoneOp.isMaximalMonotoneOp_of_resolventMap`, `IsMonotoneOp.exists_resolventMap_eq_singleton`, `isMaximalMonotoneOp_of_continuous` (`SecondOrder/CyclicMonotone`) | maximal monotone ⇒ full domain (Minty's theorem) not proved |
+| Lemma 1.95 | resolvents of monotone operators | ✓ | `resolventMap`, `isMaximalMonotoneOp_iff_resolventMap`, `IsMaximalMonotoneOp.resolventMap_nonempty` (`SCD/Minty`), `IsMonotoneOp.isMonotoneOp_resolventMap`, `IsMonotoneOp.norm_sub_le_of_mem_resolventMap`, `IsMonotoneOp.isMaximalMonotoneOp_of_resolventMap`, `IsMonotoneOp.exists_resolventMap_eq_singleton`, `isMaximalMonotoneOp_of_continuous` (`SecondOrder/CyclicMonotone`) | finite dimensions; full domain via Minty's theorem (`SCD/Minty`) |
 | Def 1.96, Lemma 1.97 | cyclical monotonicity; maximal cyclically monotone = convex subdifferential | ◐ | `CyclicallyMonotone`, `MaximalCyclicallyMonotone`, `cyclicallyMonotone_subdiff_of_convex`, `rockafellarFun`, `mem_subdiff_rockafellarFun`, `maximalCyclicallyMonotone_iff` | uniqueness up to a constant not proved; maximality of `∂φ` via `globallyMaximalMonotone_subdiff_of_convex` for all proper l.s.c. convex `φ` |
-| Thm 1.98, Cor 1.99, Cor 1.101 | twice epi-differentiability ⇔ proto-differentiability for prox-regular functions; fully amenable functions; proximal mappings | ☐ | | needs Ex 1.133, 1.135, 1.136, 1.139, Minty's theorem and the uniqueness in Lemma 1.97 |
+| Thm 1.98, Cor 1.99, Cor 1.101 | twice epi-differentiability ⇔ proto-differentiability for prox-regular functions; fully amenable functions; proximal mappings | ☐ | | needs Ex 1.133, 1.135, 1.136, 1.139 and the uniqueness in Lemma 1.97 |
 | Def 1.100 | semidifferentiability of set-valued mappings (1.138) | ✓ | `IsSemiderivative`, `SemidifferentiableAt'` | |
 
 ## SCD mappings [Gfrerer–Outrata 2022]
@@ -348,7 +348,7 @@ GO Prop 5.3 is `max 1 ‖C_L‖` instead of `√(n(1+‖C_L‖²))`.
 | GMOV Lemma 3.4, Prop 3.5 | product rule (3.6)–(3.10), with equality | ✓ | `contingentCone_prod_eq`, `graphicallySmoothAt_prodMap_iff`, `prodSubspace_mem_scDeriv`, `prodSubspace_mem_scCoderiv`, `IsSCDMapping.prodMap`, `scDeriv_prodMap`, `scCoderiv_prodMap` (`SCD/Product`) | two factors, on `WithLp 2 (E₁ × E₂)`; `GeometricallyDerivableAt` follows GMOV Def 2.1 |
 | GO Def 3.21 | firmly nonexpansive maps and matrices; derivatives and `∂_B` elements of firm maps are firm | ✓ | `IsFirmlyNonexpansive`, `IsFirmlyNonexpansiveOp`, `isFirmlyNonexpansiveOp_of_mem_bSubdiff` (`SCD/Monotone`) | |
 | GO p. 15 | Minty parametrization `Φ(x, y) = (x + y, x)`; resolvent of a monotone map is firmly nonexpansive | ✓ | `mintyMap`, `mintySubspace`, `adjointSubspace_mintySubspace`, `resolvent`, `IsMonotoneOp.isFirmlyNonexpansive_resolvent`, `IsMonotoneOp.graph_eq_image_resolvent` | |
-| GO Prop 3.22 | (locally) maximally monotone maps are SCD; `L = rge(B, I − B)`, `L* = rge(Bᵀ, I − Bᵀ)` with `B` firm | ◐ | `IsMonotoneOp.isSCDMapping`, `IsMonotoneOp.mem_scDeriv_iff`, `IsMonotoneOp.mem_scCoderiv_iff`, `IsLocallyMaximalMonotoneAt.scd` | maximal monotonicity is replaced by monotone + `rge(I + F) = E` (Minty's theorem is not formalized); locally, `gph F` agrees near the point with the graph of such a map |
+| GO Prop 3.22 | (locally) maximally monotone maps are SCD; `L = rge(B, I − B)`, `L* = rge(Bᵀ, I − Bᵀ)` with `B` firm | ◐ | `IsMonotoneOp.isSCDMapping`, `IsMonotoneOp.mem_scDeriv_iff`, `IsMonotoneOp.mem_scCoderiv_iff`, `IsLocallyMaximalMonotoneAt.scd` | `IsMaximalMonotoneOp.isSCDMapping`, `IsMaximalMonotoneOp.isLocallyMaximalMonotoneAt` (`SCD/Minty`) give the global statement for maximally monotone `F`; the local notion still assumes monotone + `rge(I + F) = E` for the extension; locally, `gph F` agrees near the point with the graph of such a map |
 | GO Cor 3.23, 3.24 | locally maximally hypomonotone maps; density version | ◐ | `IsLocallyMaximalHypomonotoneAt.scd`, `isSCDMapping_of_dense` | same hypothesis as Prop 3.22 |
 | GO Cor 3.28 | `∂φ` of a proper lsc convex `φ` is SCD; `L = rge(B, I − B)`, `B` symmetric psd, `‖B‖ ≤ 1`, `L* = L` | ✓ | `subdiffMap`, `isSCDMapping_subdiffMap`, `exists_symm_of_mem_scDeriv_subdiffMap`, `adjointSubspace_eq_of_mem_scDeriv_subdiffMap`, `scCoderiv_subdiffMap` | `rge(I + ∂φ) = E` via the proximal point; symmetry via the Moreau envelope (`hasFDerivAt_moreauEnv`); also [Gfrerer–Outrata 2022b, Thm 3.6] |
 | GMOV Prop 3.5 + Lemma 3.7 | products with a graphically Lipschitzian factor: SCD, with equality in (3.8)–(3.10) | ✓ | `IsSCDMapping.prodMap_of_graphicallyLipschitzian_left`, `scDeriv_prodMap_of_graphicallyLipschitzian_left`, `scCoderiv_prodMap_of_graphicallyLipschitzian_left` (and `_right`), `LipschitzWith.graphicallyLipschitzianAt` | |
@@ -373,7 +373,7 @@ GO Prop 5.3 is `max 1 ‖C_L‖` instead of `√(n(1+‖C_L‖²))`.
 | GO 3.30–3.34 | quadratic bundles | ☐ | | |
 | GO Sect. 7 | strong metric regularity, Clarke-type inverse function theorem, tilt stability | ☐ | | needs [Rockafellar–Wets, Thm 9.62] |
 | GO Examples 3.29, 4.6, 6.5 | worked examples | ☐ | | |
-| Minty's theorem | maximal monotone ⇒ `rge(I + F) = E` | ☐ | | needed to remove the extra hypothesis of Prop 3.22, Cor 3.23, 3.24 |
+| Minty's theorem | maximal monotone ⇔ monotone with `rge(I + F) = E` | ✓ | `IsMaximalMonotoneOp.exists_sub_mem`, `isMaximalMonotoneOp_iff`, `fitzpatrick`, `IsMaximalMonotoneOp.inner_le_fitzpatrick` (`SCD/Minty`) | finite dimensions; proof via the Fitzpatrick function and a coercive minimization |
 
 ## Auxiliary results
 
@@ -383,14 +383,14 @@ GO Prop 5.3 is `max 1 ‖C_L‖` instead of `√(n(1+‖C_L‖²))`.
 
 ## Suggested order of work
 
-SCD mappings: Minty's theorem (removes the extra hypothesis of [Gfrerer–Outrata 2022,
-Prop. 3.22–Cor. 3.24]); the adjoint formulas (21), (24b) for a general `Φ`; the rest of the
+SCD mappings: the local versions of Minty's theorem (would replace the extension hypothesis in
+`IsLocallyMaximalMonotoneAt` for [Gfrerer–Outrata 2022, Prop. 3.22–Cor. 3.24]); the adjoint formulas (21), (24b) for a general `Φ`; the rest of the
 prox-regular case (the symmetric representation in Prop. 3.26, Cor. 3.27); Sect. 7, after
 [Rockafellar–Wets, Thm 9.62].
 
 Second-order analysis ([Mordukhovich 2024, Ch. 1]): Cor 1.87 (needs Thm 1.61 for fully
-amenable functions and Ex 1.139); Lemma 1.68 (1.91); Thm 1.98 and its corollaries (need Minty's
-theorem, the uniqueness in Lemma 1.97 and Ex 1.133–1.139); Thm 1.91 (needs Def 1.59).
+amenable functions and Ex 1.139); Lemma 1.68 (1.91); Thm 1.98 and its corollaries (need the
+uniqueness in Lemma 1.97 and Ex 1.133–1.139); Thm 1.91 (needs Def 1.59).
 
 Variational analysis:
 
