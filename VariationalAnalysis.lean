@@ -40,6 +40,10 @@ import VariationalAnalysis.SCD.SemismoothPrimal
 import VariationalAnalysis.SCD.SemismoothSubregularity
 import VariationalAnalysis.SCD.SingleValued
 import VariationalAnalysis.SCD.Subregularity
+import VariationalAnalysis.SecondOrder.Basic
+import VariationalAnalysis.SecondOrder.GraphicalDerivative
+import VariationalAnalysis.SecondOrder.Moreau
+import VariationalAnalysis.SecondOrder.ProxRegular
 import VariationalAnalysis.SetValued.Basic
 import VariationalAnalysis.SetValued.OuterLimit
 import VariationalAnalysis.Subdifferential.Bridge

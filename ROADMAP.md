@@ -254,6 +254,52 @@ are `LowerLevelRegular`, `UpperLevelRegular`.
 | Thm 7.33–7.36 | chain rules, maxima | ◐ | `clarkeDeriv_comp_fst`, `clarkeSubdiff_comp_fst`, `clarkeSubdiff_sub_comp_fst` | only composition with the projection `E × F → E`; the general chain rules and maxima not yet |
 | Sect. 7.4–7.6 | Lebourg mean value theorem, strict differentiability, Rademacher representation | ☐ | | |
 
+## [Mordukhovich 2024], Ch. 1: basic concepts of second-order analysis
+
+M24 = [Mordukhovich 2024]. Statements are numbered as in the body of the book; from 1.68 on, the
+numbers in its *List of Statements* differ from those in the text (e.g. the list calls Def 1.73
+"1.74"). The book works in Banach, Asplund or Hilbert spaces; here everything is finite
+dimensional, and Sect. 1.3.3 uses real inner product spaces. Worked examples (1.48, 1.49, 1.55,
+1.75, …) are not formalized. Files: `SecondOrder/Basic`, `SecondOrder/ProxRegular`,
+`SecondOrder/Moreau`, `SecondOrder/GraphicalDerivative`.
+
+| # | Statement | Status | Lean | Notes |
+|---|---|---|---|---|
+| Def 1.46(i)–(ii) | basic second-order subdifferential `∂²φ(x̄, v̄)` | ✓ | `secondOrderSubdiff` (`Coderivative/SecondOrder`) | normal and mixed versions agree in finite dimensions |
+| Def 1.46(iii) | combined second-order subdifferential `∂̆²φ` (1.62) | ✓ | `combinedSecondOrderSubdiff`, `combinedSecondOrderSubdiff_subset_secondOrderSubdiff` | |
+| Prop 1.47 | `C²` functions: `∂̆²φ(x̄)(u) = ∂²φ(x̄)(u) = {∇²φ(x̄)u}` | ✓ | `combinedSecondOrderSubdiff_of_hasFDerivAt`, `secondOrderSubdiff_of_hasFDerivAt` | the combined part only needs `∇φ` differentiable at `x̄` |
+| Prop 1.50 | `C^{1,1}` functions: `∂̆²φ(x̄)(u) = ∂̂⟨u, ∇φ⟩(x̄)`, `∂²φ(x̄)(u) = ∂⟨u, ∇φ⟩(x̄)` | ✓ | `combinedSecondOrderSubdiff_of_lipschitz`, `secondOrderSubdiff_of_lipschitz` | via `regularCoderiv_eq_regularSubdiff_comp` (M24 Thm 1.34) |
+| Prop 1.51 | second-order sum rules (1.64), (1.65) | ✓ | `secondOrderSubdiff_add`, `combinedSecondOrderSubdiff_add` | (1.64) assumes `∇φ₁` strictly differentiable around `x̄` with derivative continuous at `x̄` (book: strictly differentiable at `x̄`); (1.65) as in the book |
+| Def 1.52 | partial second-order subdifferentials (1.66)–(1.68) | ✓ | `partialSubdiff`, `partialSecondOrderSubdiff`, `combinedPartialSecondOrderSubdiff` | values in `(E × F)*` |
+| Prop 1.53 | partial second-order subdifferentials of `C²` functions | ✓ | `partialSecondOrderSubdiff_of_hasFDerivAt`, `combinedPartialSecondOrderSubdiff_of_hasFDerivAt` | |
+| Prop 1.54 | partial sum rules (1.69), (1.70) | ✓ | `partialSecondOrderSubdiff_add`, `combinedPartialSecondOrderSubdiff_add` | same change of hypotheses as Prop 1.51 |
+| Def 1.56, 1.57 | prox-regularity, subdifferential continuity | ✓ | `ProxRegularFor`, `SubdiffContinuousFor`, `ContinuouslyProxRegularFor` (`WellPosedness/ProxRegular`) | M Def 3.27; the library asks for `φ(x) ≤ φ(x̄) + ε` where the book asks for `\|φ(x) − φ(x̄)\| ≤ ε` |
+| Prop 1.58 | convex functions are continuously prox-regular | ✓ | `continuouslyProxRegularFor_of_convex` | |
+| Def 1.59 | piecewise linear-quadratic functions | ☐ | | |
+| Def 1.60 | amenable compositions | ◐ | `AmenableAt`, `StronglyAmenableAt`, `AmenableAtOfClass` | M Def 3.23; strictly and fully amenable functions not yet |
+| Thm 1.61 | strictly amenable functions are continuously prox-regular | ◐ | `continuouslyProxRegularFor_of_C11` | only `C^{1,1}` functions |
+| (1.80) | proximal subdifferential `∂_P φ` | ✓ | `proxSubdiff`, `proxSubdiff_subset_regularSubdiff`, `proxSubdiff_subset_subdiff` | |
+| Def 1.62 | `φ`-attentive `ε`-localization (1.76) | ✓ | `attentiveLocalization` | |
+| Def 1.63 | local monotonicity, hypomonotonicity | ✓ | `LocallyMonotoneAt`, `LocallyHypomonotoneAt` (`WellPosedness/Monotone`), `IsHypomonotoneOn`, `globallyMonotone_iff_isHypomonotoneOn` | |
+| Lemma 1.64 | parameter interplay for quadratic perturbations | ◐ | inside `ProxRegularFor.of_isHypomonotoneOn` | used inline, with other constants (`r ≥ ρ + 4α + 8`); not stated separately |
+| Thm 1.65 | prox-regularity via hypomonotonicity of attentive localizations | ✓ | `ProxRegularFor.mem_proxSubdiff`, `ProxRegularFor.isHypomonotoneOn_attentiveLocalization`, `ProxRegularFor.of_isHypomonotoneOn`, `proxRegularFor_iff_isHypomonotoneOn`, `proxRegularFor_iff_isHypomonotoneOn_subdiff`, `proxRegularFor_iff_locallyHypomonotoneAt` | finite-dimensional inner product spaces; (ii) ⇒ (i) needs only the basic localization, by the argument of Ex 1.121 instead of Ekeland's principle and the fuzzy sum rule |
+| Def 1.66, 1.67 | Moreau envelope, proximal mapping and their local versions (1.85)–(1.88) | ✓ | `proxObjective`, `moreauEnvelope`, `localMoreauEnvelope`, `proximalMap`, `localProximalMap` | |
+| Lemma 1.68 | estimates for Moreau envelopes | ◐ | `norm_le_of_proxObjective_le` | (1.90), with `φ(x) ≥ −(r̄/2)‖x‖²` for all `x`; the localization (1.91) is not stated |
+| Lemma 1.69 | `(I + λT)⁻¹` single-valued and Lipschitz for hypomonotone `T` | ✓ | `IsHypomonotoneOn.norm_sub_le` | constant `(1 − λρ)⁻¹` |
+| Thm 1.70 | proximal mappings of prox-regular functions | ✓ | `ProxRegularFor.exists_proximalMap` | **corrected**: the book assumes `φ` l.s.c. and minorized by a quadratic *around* `x̄`, but `P_λφ` is a global argmin and is empty when `φ` is unbounded below far away; we assume prox-boundedness `φ(x) ≥ a − b‖x − x̄‖²` for all `x` (and global l.s.c. for simplicity). `P_λφ` is `2`-Lipschitz on `U_λ` and equals `(I + λT_ε)⁻¹` there |
+| Thm 1.71 | `e_λφ` is `C^{1,1}` with `∇e_λφ = λ⁻¹(I − P_λφ)` (1.94) | ✓ | `ProxRegularFor.exists_moreauEnvelope` | hypotheses as in Thm 1.70; the gradient is `3/λ`-Lipschitz |
+| Cor 1.72 | `∂φ` graphically Lipschitzian of dimension `n` | ✓ | `ContinuouslyProxRegularFor.graphicallyLipschitzianAt` | `GraphicallyLipschitzianAt` (GO Def 3.16) for `subdiffMap φ`, transformation `(x, v) ↦ (x + λv, v)`; proof via Thm 1.70 for `φ` plus the indicator of a small closed ball |
+| Def 1.73 | subgradient graphical derivatives (1.96), (1.97) | ✓ | `graphDeriv`, `subgradGraphDeriv`, `regularSubgradGraphDeriv`, `regularSubgradGraphDeriv_subset` | graphical derivative (1.39) via `contingentCone`; sum rule (1.41) is `graphDeriv_add` |
+| Prop 1.74 | `C²` functions (1.98) | ✓ | `subgradGraphDeriv_of_hasFDerivAt`, `regularSubgradGraphDeriv_of_hasFDerivAt`, `secondOrderSubdiff_eq_subgradGraphDeriv` | |
+| Prop 1.76 | sum rules (1.100) | ✓ | `subgradGraphDeriv_add`, `regularSubgradGraphDeriv_add` | the result is `f'' u`, so no symmetry of `∇²φ₁(x̄)` is needed |
+| Def 1.77–1.80 | directional differentiability, set convergence, epi-convergence, epi-differentiability | ☐ | | |
+| Lemma 1.81 | proximal-normal approximation | ☐ | | |
+| Lemma 1.82 | local convexification of `C^{1,1}` functions (1.108), (1.109) | ◐ | `convexOn_add_sq_of_lipschitzOnWith`, `convexOn_closedBall_add_sq`, `subgradGraphDeriv_add_sq`, `convexOn_of_monotone_fderiv` | (1.108) and the graphical-derivative half of (1.109); the `∂²` half of (1.109) is not stated |
+| Lemma 1.83 | Rademacher's theorem | ✓ | Mathlib: `LipschitzWith.ae_differentiableAt`, `LipschitzOnWith.ae_differentiableWithinAt_of_mem` | |
+| Thm 1.84 | `∂²_D φ(x̄)(u) ⊆ ∂²φ(x̄)(u)` for `C^{1,1}` functions with directionally differentiable gradient | ☐ | | |
+| Def 1.85, Thm 1.86, Cor 1.87 | proto-differentiability; prox-regular and fully amenable functions | ☐ | | need Def 1.77–1.80 |
+| Sect. 1.5 | second subderivatives (Def 1.88 ff.) | ☐ | | |
+
 ## SCD mappings [Gfrerer–Outrata 2022]
 
 Setting: `E` a finite-dimensional real inner product space, `F : E → Set E`, subspaces of
@@ -307,7 +353,8 @@ GO Prop 5.3 is `max 1 ‖C_L‖` instead of `√(n(1+‖C_L‖²))`.
 | GO24 Def 2.9, 2.10, 2.11 | semismooth* (w.r.t. `D*F`, w.r.t. a cone-valued `Γ`); SCD-ss* as an instance | ✓ | `IsSemismoothStarWrtAt`, `coderivGraph`, `IsSemismoothStarAt`, `scCoderivUnion`, `isSCDSemismoothStarAt_iff_wrt` (`SCD/SemismoothPrimal`) | |
 | GO24 p. 11 | semismooth* + SCD property around ⇒ SCD semismooth* | ✓ | `IsSemismoothStarAt.isSCDSemismoothStarAt` | via GO Lemma 3.7 |
 | GO24 Prop 2.12 | primal characterization `dist((x − x̄, y − ȳ), L) = o(‖(x, y) − (x̄, ȳ)‖)` | ✓ | `isSCDSemismoothStarAt_iff_infDist` | distance to the primal `L ∈ 𝒮F(x, y)` (the paper writes `𝒮*F`) |
-| GO Prop 3.26, Cor 3.27 | prox-regular functions | ☐ | | |
+| GO Prop 3.26 | `∂q` of a continuously prox-regular `q` is graphically Lipschitzian, hence SCD | ◐ | `ContinuouslyProxRegularFor.graphicallyLipschitzianAt`, `ContinuouslyProxRegularFor.hasSCDPropertyAround` | from M24 Cor 1.72, with transformation `(x, x*) ↦ (x + λx*, x*)`; local maximal hypomonotonicity and `L = L* = rge(B, λ⁻¹(I − B))` not yet |
+| GO Cor 3.27 | prox-regular functions | ☐ | | |
 | GO 3.30–3.34 | quadratic bundles | ☐ | | |
 | GO Sect. 7 | strong metric regularity, Clarke-type inverse function theorem, tilt stability | ☐ | | needs [Rockafellar–Wets, Thm 9.62] |
 | GO Examples 3.29, 4.6, 6.5 | worked examples | ☐ | | |
@@ -322,8 +369,13 @@ GO Prop 5.3 is `max 1 ‖C_L‖` instead of `√(n(1+‖C_L‖²))`.
 ## Suggested order of work
 
 SCD mappings: Minty's theorem (removes the extra hypothesis of [Gfrerer–Outrata 2022,
-Prop. 3.22–Cor. 3.24]); the adjoint formulas (21), (24b) for a general `Φ`; prox-regular functions
-(Prop. 3.26, Cor. 3.27); Sect. 7, after [Rockafellar–Wets, Thm 9.62].
+Prop. 3.22–Cor. 3.24]); the adjoint formulas (21), (24b) for a general `Φ`; the rest of the
+prox-regular case (the symmetric representation in Prop. 3.26, Cor. 3.27); Sect. 7, after
+[Rockafellar–Wets, Thm 9.62].
+
+Second-order analysis ([Mordukhovich 2024, Ch. 1]): set convergence and epi-differentiability
+(Def 1.77–1.80) and Lemma 1.81, then Thm 1.84 and proto-differentiability (Thm 1.86, Cor 1.87);
+Lemma 1.68 (1.91); second subderivatives (Sect. 1.5).
 
 Variational analysis:
 
