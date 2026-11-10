@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Villacís
 -/
 import VariationalAnalysis.SCD.Monotone
+import VariationalAnalysis.SecondOrder.SecondSubderiv
 
 /-!
 # Resolvents and cyclically monotone mappings
@@ -23,14 +24,18 @@ maximal cyclically monotone mappings as subdifferentials of convex functions (Le
 
 * `IsMonotoneOp.isMonotoneOp_resolventMap`, `IsMonotoneOp.norm_sub_le_of_mem_resolventMap`,
   `IsMonotoneOp.isMaximalMonotoneOp_of_resolventMap`,
-  `IsMonotoneOp.exists_resolventMap_eq_singleton`: [Mordukhovich 2024, Lemma 1.95], except the
-  implication "maximal monotone ⇒ `dom (I + λT)⁻¹ = E`" (Minty's theorem).
+  `IsMonotoneOp.exists_resolventMap_eq_singleton`: [Mordukhovich 2024, Lemma 1.95]; the
+  implication "maximal monotone ⇒ `dom (I + λT)⁻¹ = E`" (Minty's theorem) is in `SCD/Minty`.
 * `isMaximalMonotoneOp_of_continuous`: continuous monotone single-valued operators are maximal
   monotone [Mordukhovich 2024, Ex. 1.146].
 * `cyclicallyMonotone_subdiff_of_convex`, `rockafellarFun_zero`, `convex_epi_rockafellarFun`,
   `lowerSemicontinuous_rockafellarFun`, `mem_subdiff_rockafellarFun`,
-  `maximalCyclicallyMonotone_iff`: [Mordukhovich 2024, Lemma 1.97], without the uniqueness of
-  `φ` up to an additive constant.
+  `maximalCyclicallyMonotone_iff`: [Mordukhovich 2024, Lemma 1.97].
+* `exists_eq_add_const_of_subdiff_eq`: [Mordukhovich 2024, Lemma 1.97], uniqueness of `φ` up to
+  an additive constant. The Moreau envelopes of two such functions have the same gradient
+  `u - prox u`, so they differ by a constant `C`; hence `φ = ψ + C` on `dom ∂ψ`, and on all of
+  `E` because proximal points of `λψ`, `λ ↓ 0`, approach every `x ∈ dom ψ` without increasing
+  `ψ` (`exists_mem_dom_subdiff_near`).
 -/
 
 open Filter Topology Set Finset
@@ -392,5 +397,181 @@ theorem maximalCyclicallyMonotone_iff :
       hS.globallyMonotone hsub
 
 end Rockafellar
+
+/-! ### Uniqueness in Rockafellar's theorem -/
+
+section Uniqueness
+
+open InnerProductSpace
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+
+theorem coe_mul_ne_bot_of_pos {a : EReal} (ha : a ≠ ⊥) {c : ℝ} (hc : 0 < c) :
+    (c : EReal) * a ≠ ⊥ := by
+  induction a using EReal.rec with
+  | bot => exact absurd rfl ha
+  | coe r => rw [← EReal.coe_mul]; exact EReal.coe_ne_bot _
+  | top => rw [EReal.coe_mul_top_of_pos hc]; exact top_ne_bot
+
+theorem coe_mul_ne_top_of_pos {a : EReal} (ha : a ≠ ⊤) {c : ℝ} (hc : 0 < c) :
+    (c : EReal) * a ≠ ⊤ := by
+  induction a using EReal.rec with
+  | bot => rw [EReal.coe_mul_bot_of_pos hc]; exact bot_ne_top
+  | coe r => rw [← EReal.coe_mul]; exact EReal.coe_ne_top _
+  | top => exact absurd rfl ha
+
+omit [InnerProductSpace ℝ E] in
+/-- A positive multiple of an l.s.c. function is l.s.c. -/
+theorem lowerSemicontinuous_coe_mul {ψ : E → EReal} (hlsc : LowerSemicontinuous ψ) {c : ℝ}
+    (hc : 0 < c) : LowerSemicontinuous fun x ↦ (c : EReal) * ψ x := by
+  have hc0 : (c : EReal) ≠ 0 := by exact_mod_cast hc.ne'
+  have hcont : Continuous fun t : EReal ↦ (c : EReal) * t := by
+    rw [continuous_iff_continuousAt]
+    intro t
+    have h1 := EReal.continuousAt_mul (p := ((c : EReal), t)) (Or.inl hc0) (Or.inl hc0)
+      (Or.inl (EReal.coe_ne_bot c)) (Or.inl (EReal.coe_ne_top c))
+    have h2 := h1.comp (continuous_const.prodMk continuous_id).continuousAt
+    simp only [Function.comp_def] at h2
+    exact h2
+  exact hcont.comp_lowerSemicontinuous hlsc fun a b h ↦
+    mul_le_mul_of_nonneg_left h (by exact_mod_cast hc.le)
+
+variable [FiniteDimensional ℝ E] {φ ψ : E → EReal}
+
+omit [FiniteDimensional ℝ E] in
+/-- A positive multiple of a convex function is convex. -/
+theorem convex_epi_coe_mul (hconv : Convex ℝ (ψ.Epi univ)) {c : ℝ} (hc : 0 < c) :
+    Convex ℝ ((fun x ↦ (c : EReal) * ψ x).Epi univ) := by
+  rw [epi_coe_mul hc]
+  exact hconv.linear_image (scaleSnd c hc.ne').toLinearEquiv.toLinearMap
+
+omit [FiniteDimensional ℝ E] in
+/-- A monotone `T` with `y ∈ T x` has resolvent `x` at `x + y`. -/
+theorem IsMonotoneOp.resolvent_add_eq {T : E → Set E} (hT : IsMonotoneOp T) {x y : E}
+    (hy : y ∈ T x) : resolvent T (x + y) = x := by
+  have hex : ∃ x', x + y - x' ∈ T x' := ⟨x, by rwa [add_sub_cancel_left]⟩
+  refine hT.eq_of_mem_resolventMap zero_le_one (u := x + y) ⟨_, resolvent_spec hex, ?_⟩
+    ⟨y, hy, by rw [one_smul]⟩
+  rw [one_smul]; abel
+
+/-- Points of `dom ∂ψ` approximate every `x ∈ dom ψ` with no larger value: they are the
+proximal points of `λψ` at `x` for small `λ > 0`. -/
+theorem exists_mem_dom_subdiff_near (hconv : Convex ℝ (ψ.Epi univ))
+    (hlsc : LowerSemicontinuous ψ) (hbot : ∀ y, ψ y ≠ ⊥) (hdom : ∃ y, ψ y ≠ ⊤) {x : E}
+    (hx : ψ x ≠ ⊤) {ε : ℝ} (hε : 0 < ε) :
+    ∃ p, (subdiff ψ p).Nonempty ∧ ψ p ≤ ψ x ∧ ‖x - p‖ < ε := by
+  obtain ⟨w, b, hwb⟩ := exists_affine_minorant_of_convex hconv hbot hdom
+  obtain ⟨s, hs⟩ : ∃ s : ℝ, ψ x = s := ⟨(ψ x).toReal, (EReal.coe_toReal hx (hbot x)).symm⟩
+  set K := |s + b - w x|
+  set L := ‖w‖
+  set c : ℝ := min 1 (ε ^ 2 / (2 * (2 * K + L ^ 2 + 1)))
+  have hK : 0 ≤ K := abs_nonneg _
+  have hc : 0 < c := lt_min one_pos (by positivity)
+  have hc1 : c ≤ 1 := min_le_left _ _
+  have hcε : c * (2 * (2 * K + L ^ 2 + 1)) ≤ ε ^ 2 :=
+    (le_div_iff₀ (by positivity)).1 (min_le_right _ _)
+  set θ : E → EReal := fun z ↦ (c : EReal) * ψ z
+  have hθconv : Convex ℝ (θ.Epi univ) := convex_epi_coe_mul hconv hc
+  have hθlsc : LowerSemicontinuous θ := lowerSemicontinuous_coe_mul hlsc hc
+  have hθbot : ∀ y, θ y ≠ ⊥ := fun y ↦ coe_mul_ne_bot_of_pos (hbot y) hc
+  have hθdom : ∃ y, θ y ≠ ⊤ := let ⟨y, hy⟩ := hdom; ⟨y, coe_mul_ne_top_of_pos hy hc⟩
+  set p := resolvent (subdiffMap θ) x
+  have hv := toDual_sub_resolvent_mem_subdiff hθconv hθlsc hθbot hθdom x
+  have hr := resolvent_subdiffMap_eq_toReal hθconv hθlsc hθbot hθdom x
+  set r := (θ p).toReal
+  obtain ⟨t, ht⟩ : ∃ t : ℝ, ψ p = t := by
+    refine ⟨(ψ p).toReal, (EReal.coe_toReal (fun htop ↦ ?_) (hbot p)).symm⟩
+    have : θ p = ⊤ := by simp only [θ, htop, EReal.coe_mul_top_of_pos hc]
+    rw [this] at hr
+    exact EReal.coe_ne_top _ hr.symm
+  have hrt : r = c * t := by
+    have : θ p = ((c * t : ℝ) : EReal) := by simp only [θ, ht, EReal.coe_mul]
+    rw [hr] at this
+    exact_mod_cast this
+  have hineq := (mem_subdiff_of_convex hθconv hr).1 hv x
+  rw [toDual_apply_apply, real_inner_self_eq_norm_sq] at hineq
+  have hθx : θ x = ((c * s : ℝ) : EReal) := by simp only [θ, hs, EReal.coe_mul]
+  rw [hθx, EReal.coe_le_coe_iff, hrt] at hineq
+  have hwp := hwb p
+  rw [ht, EReal.coe_le_coe_iff] at hwp
+  set d := ‖x - p‖
+  have hd : 0 ≤ d := norm_nonneg _
+  have hts : t ≤ s := le_of_mul_le_mul_left (by nlinarith [sq_nonneg d]) hc
+  refine ⟨p, ⟨c⁻¹ • toDual ℝ E (x - p), (mem_subdiff_coe_mul_iff hc).1 hv⟩,
+    by rw [ht, hs]; exact_mod_cast hts, ?_⟩
+  have hwx : w (x - p) ≤ L * d :=
+    (le_abs_self _).trans (by rw [← Real.norm_eq_abs]; exact w.le_opNorm _)
+  have hmap : w (x - p) = w x - w p := map_sub w x p
+  have hKle : s + b - w x ≤ K := le_abs_self _
+  have e0 : s - t ≤ K + L * d := by linarith
+  have e1 : d ^ 2 ≤ c * (K + L * d) := by nlinarith [mul_le_mul_of_nonneg_left e0 hc.le]
+  have hcc : c * c ≤ c * 1 := mul_le_mul_of_nonneg_left hc1 hc.le
+  have e2 : d ^ 2 ≤ c * (2 * K + L ^ 2) := by
+    nlinarith [sq_nonneg (c * L - d), mul_le_mul_of_nonneg_right hcc (sq_nonneg L)]
+  have e3 : c * (2 * K + L ^ 2) < ε ^ 2 := by nlinarith
+  by_contra hge
+  push Not at hge
+  nlinarith [mul_le_mul hge hge hε.le hd]
+
+/-- If `φ = ψ + C` on `dom ∂ψ` and `φ` is l.s.c., then `φ ≤ ψ + C` everywhere. -/
+theorem le_add_const_of_eq_on_dom_subdiff (hφlsc : LowerSemicontinuous φ)
+    (hconv : Convex ℝ (ψ.Epi univ)) (hlsc : LowerSemicontinuous ψ) (hbot : ∀ y, ψ y ≠ ⊥)
+    (hdom : ∃ y, ψ y ≠ ⊤) {C : ℝ} (h : ∀ x, (subdiff ψ x).Nonempty → φ x = ψ x + C) (x : E) :
+    φ x ≤ ψ x + C := by
+  by_cases hx : ψ x = ⊤
+  · rw [hx, EReal.top_add_coe]; exact le_top
+  by_contra hlt
+  push Not at hlt
+  obtain ⟨ε, hε, hball⟩ := Metric.eventually_nhds_iff.1 (hφlsc x _ hlt)
+  obtain ⟨p, hp, hpx, hpd⟩ := exists_mem_dom_subdiff_near hconv hlsc hbot hdom hx hε
+  have : ψ x + C < φ p := hball (show dist p x < ε by rwa [dist_eq_norm, norm_sub_rev])
+  rw [h p hp] at this
+  exact absurd this (not_lt.2 (add_le_add hpx le_rfl))
+
+/-- [Mordukhovich 2024, Lemma 1.97], uniqueness: two proper, l.s.c. and convex functions with
+the same subdifferential differ by an additive constant. -/
+theorem exists_eq_add_const_of_subdiff_eq (hφconv : Convex ℝ (φ.Epi univ))
+    (hφlsc : LowerSemicontinuous φ) (hφbot : ∀ y, φ y ≠ ⊥) (hφdom : ∃ y, φ y ≠ ⊤)
+    (hψconv : Convex ℝ (ψ.Epi univ)) (hψlsc : LowerSemicontinuous ψ) (hψbot : ∀ y, ψ y ≠ ⊥)
+    (hψdom : ∃ y, ψ y ≠ ⊤) (h : ∀ x, subdiff φ x = subdiff ψ x) :
+    ∃ C : ℝ, ∀ x, φ x = ψ x + C := by
+  have hmap : subdiffMap φ = subdiffMap ψ := funext fun x ↦ by simp only [subdiffMap, h x]
+  -- the Moreau envelopes have the same gradient, so they differ by a constant
+  set C := moreauEnv φ 0 - moreauEnv ψ 0
+  have hd : ∀ u, HasFDerivAt (fun u ↦ moreauEnv φ u - moreauEnv ψ u) (0 : StrongDual ℝ E) u := by
+    intro u
+    have := (hasFDerivAt_moreauEnv hφconv hφlsc hφbot hφdom u).sub
+      (hasFDerivAt_moreauEnv hψconv hψlsc hψbot hψdom u)
+    rw [hmap, sub_self] at this
+    exact this
+  have hconst : ∀ u, moreauEnv φ u - moreauEnv ψ u = C := fun u ↦
+    is_const_of_fderiv_eq_zero (fun u ↦ (hd u).differentiableAt) (fun u ↦ (hd u).fderiv) u 0
+  -- hence `φ = ψ + C` on `dom ∂ψ`
+  have hD : ∀ x, (subdiff ψ x).Nonempty → φ x = ψ x + C := by
+    rintro x ⟨v, hv⟩
+    set y := (toDual ℝ E).symm v
+    have hy : y ∈ subdiffMap ψ x := ⟨v, hv, rfl⟩
+    have hp := (isMonotoneOp_subdiffMap hψconv).resolvent_add_eq hy
+    have e := hconst (x + y)
+    simp only [moreauEnv, hmap, hp] at e
+    have hφx := resolvent_subdiffMap_eq_toReal hφconv hφlsc hφbot hφdom (x + y)
+    have hψx := resolvent_subdiffMap_eq_toReal hψconv hψlsc hψbot hψdom (x + y)
+    rw [hmap, hp] at hφx
+    rw [hp] at hψx
+    rw [hφx, hψx, ← EReal.coe_add]
+    congr 1
+    linarith
+  -- and on all of `E` by lower semicontinuity
+  refine ⟨C, fun x ↦ le_antisymm
+    (le_add_const_of_eq_on_dom_subdiff hφlsc hψconv hψlsc hψbot hψdom hD x) ?_⟩
+  have hD' : ∀ x, (subdiff φ x).Nonempty → ψ x = φ x + ((-C : ℝ) : EReal) := by
+    intro x hx
+    rw [h x] at hx
+    rw [hD x hx, add_assoc, ← EReal.coe_add, add_neg_cancel, EReal.coe_zero, add_zero]
+  calc ψ x + C ≤ φ x + ((-C : ℝ) : EReal) + C :=
+        add_le_add (le_add_const_of_eq_on_dom_subdiff hψlsc hφconv hφlsc hφbot hφdom hD' x) le_rfl
+    _ = φ x := by rw [add_assoc, ← EReal.coe_add, neg_add_cancel, EReal.coe_zero, add_zero]
+
+end Uniqueness
 
 end VariationalAnalysis
