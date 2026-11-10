@@ -311,8 +311,8 @@ dimensional, and Sect. 1.3.3 uses real inner product spaces. Worked examples (1.
 | Prop 1.93 | second subderivatives of convex functions | ✓ | `secondSubderiv_nonneg_of_convex`, `convex_epi_secondSubderiv`, `secondDiffQuot_combo_le` | the convexity part only uses convexity of `φ` and finiteness of `φ(x̄)` |
 | Lemma 1.94 | subdifferentials and Moreau envelopes of second-order quotients (1.130), (1.131) | ✓ | `subdiff_half_secondDiffQuot`, `mem_subdiff_coe_mul_iff`, `moreauEnvelope_scale`, `proximalMap_scale`, `moreauEnvelope_half_secondDiffQuot`, `proximalMap_half_secondDiffQuot` | (1.130) in finite dimensions; (1.131) stated for `w ↦ t⁻²φ(tw)` and then for `Δ²_tφ(0, 0)/2` |
 | Lemma 1.95 | resolvents of monotone operators | ✓ | `resolventMap`, `isMaximalMonotoneOp_iff_resolventMap`, `IsMaximalMonotoneOp.resolventMap_nonempty` (`SCD/Minty`), `IsMonotoneOp.isMonotoneOp_resolventMap`, `IsMonotoneOp.norm_sub_le_of_mem_resolventMap`, `IsMonotoneOp.isMaximalMonotoneOp_of_resolventMap`, `IsMonotoneOp.exists_resolventMap_eq_singleton`, `isMaximalMonotoneOp_of_continuous` (`SecondOrder/CyclicMonotone`) | finite dimensions; full domain via Minty's theorem (`SCD/Minty`) |
-| Def 1.96, Lemma 1.97 | cyclical monotonicity; maximal cyclically monotone = convex subdifferential | ◐ | `CyclicallyMonotone`, `MaximalCyclicallyMonotone`, `cyclicallyMonotone_subdiff_of_convex`, `rockafellarFun`, `mem_subdiff_rockafellarFun`, `maximalCyclicallyMonotone_iff` | uniqueness up to a constant not proved; maximality of `∂φ` via `globallyMaximalMonotone_subdiff_of_convex` for all proper l.s.c. convex `φ` |
-| Thm 1.98, Cor 1.99, Cor 1.101 | twice epi-differentiability ⇔ proto-differentiability for prox-regular functions; fully amenable functions; proximal mappings | ☐ | | needs Ex 1.133, 1.135, 1.136, 1.139 and the uniqueness in Lemma 1.97 |
+| Def 1.96, Lemma 1.97 | cyclical monotonicity; maximal cyclically monotone = convex subdifferential, unique up to a constant | ✓ | `CyclicallyMonotone`, `MaximalCyclicallyMonotone`, `cyclicallyMonotone_subdiff_of_convex`, `rockafellarFun`, `mem_subdiff_rockafellarFun`, `maximalCyclicallyMonotone_iff`, `exists_eq_add_const_of_subdiff_eq`, `exists_mem_dom_subdiff_near` | finite dimensions; uniqueness via Moreau envelopes; maximality of `∂φ` via `globallyMaximalMonotone_subdiff_of_convex` for all proper l.s.c. convex `φ` |
+| Thm 1.98, Cor 1.99, Cor 1.101 | twice epi-differentiability ⇔ proto-differentiability for prox-regular functions; fully amenable functions; proximal mappings | ☐ | | needs Ex 1.133, 1.135, 1.136, 1.139 |
 | Def 1.100 | semidifferentiability of set-valued mappings (1.138) | ✓ | `IsSemiderivative`, `SemidifferentiableAt'` | |
 
 ## SCD mappings [Gfrerer–Outrata 2022]
@@ -389,8 +389,8 @@ prox-regular case (the symmetric representation in Prop. 3.26, Cor. 3.27); Sect.
 [Rockafellar–Wets, Thm 9.62].
 
 Second-order analysis ([Mordukhovich 2024, Ch. 1]): Cor 1.87 (needs Thm 1.61 for fully
-amenable functions and Ex 1.139); Lemma 1.68 (1.91); Thm 1.98 and its corollaries (need the
-uniqueness in Lemma 1.97 and Ex 1.133–1.139); Thm 1.91 (needs Def 1.59).
+amenable functions and Ex 1.139); Lemma 1.68 (1.91); Thm 1.98 and its corollaries (need
+Ex 1.133–1.139); Thm 1.91 (needs Def 1.59).
 
 Variational analysis:
 
