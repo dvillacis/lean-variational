@@ -302,7 +302,7 @@ dimensional, and Sect. 1.3.3 uses real inner product spaces. Worked examples (1.
 | Thm 1.84 | `∂²_D φ(x̄)(u) ⊆ ∂²φ(x̄)(u)` for `C^{1,1}` functions with directionally differentiable gradient (1.111) | ✓ | `subgradGraphDeriv_subset_secondOrderSubdiff`, `graphDeriv_subset_of_hasDirDerivAt`, `dirDeriv_mem_subdiff` | finite-dimensional inner product spaces; different proof: `∂²_D φ(x̄)(u) ⊆ {(∇φ)'(x̄; u)}`, and `(∇φ)'(x̄; ·)` is a gradient (limit of blow-ups), symmetric and Euler-homogeneous at its points of differentiability (Rademacher), whose gradients are approximated by regular subgradients of the blow-ups; no Lemma 1.81 |
 | Def 1.85 | proto-differentiability | ✓ | `ProtoDifferentiableAt`, `protoDifferentiableAt_invMap_iff` | via geometric derivability (Def 1.9) of the graph |
 | Thm 1.86 | `∂²_D φ(x̄\|v̄)(u) ⊆ ∂²φ(x̄\|v̄)(u)` for continuously prox-regular `φ` with proto-differentiable `∂φ` (1.116) | ✓ | `ContinuouslyProxRegularFor.subgradGraphDeriv_subset_secondOrderSubdiff`, `coderiv_shear_iff`, `graphDeriv_shear_iff`, `ProtoDifferentiableAt.of_shear`, `dirDifferentiableAt_of_geometricallyDerivableAt`, `ContinuouslyProxRegularFor.exists_local_moreau` (`SecondOrder/ProtoDiff`) | finite-dimensional inner product spaces; (1.118) for a general shear `(x, y) ↦ (x + By, y)`; no prox-boundedness needed (localization as in Cor 1.72) |
-| Cor 1.87 | fully amenable functions | ☐ | | needs Thm 1.61 for fully amenable functions and Ex 1.139 |
+| Cor 1.87 | fully amenable functions | ☐ | | needs Thm 1.61 for fully amenable functions and Ex 1.139(ii) |
 | Def 1.43 | subderivative `dφ(x̄)` (1.56)–(1.57) | ✓ | `diffQuot`, `subderiv`, `subderiv_of_hasFDerivAt` (`SecondOrder/SecondSubderiv`) | Sect. 1.1 preliminary needed for Sect. 1.5; semidifferentiability is used inside `TwiceSemidifferentiableAt` |
 | Def 1.88 | second subderivatives `d²φ(x̄, v)`, `d²φ(x̄)` (1.119)–(1.122) | ✓ | `secondDiffQuot`, `secondDiffQuot'`, `secondSubderiv`, `secondSubderiv'`, `secondDiffQuot'_eq` | |
 | Def 1.89 | twice epi-differentiability, twice semidifferentiability | ✓ | `TwiceEpiDifferentiableAt`, `TwiceSemidifferentiableAt` | (ii) asks for a finite first-order limit |
@@ -312,8 +312,13 @@ dimensional, and Sect. 1.3.3 uses real inner product spaces. Worked examples (1.
 | Lemma 1.94 | subdifferentials and Moreau envelopes of second-order quotients (1.130), (1.131) | ✓ | `subdiff_half_secondDiffQuot`, `mem_subdiff_coe_mul_iff`, `moreauEnvelope_scale`, `proximalMap_scale`, `moreauEnvelope_half_secondDiffQuot`, `proximalMap_half_secondDiffQuot` | (1.130) in finite dimensions; (1.131) stated for `w ↦ t⁻²φ(tw)` and then for `Δ²_tφ(0, 0)/2` |
 | Lemma 1.95 | resolvents of monotone operators | ✓ | `resolventMap`, `isMaximalMonotoneOp_iff_resolventMap`, `IsMaximalMonotoneOp.resolventMap_nonempty` (`SCD/Minty`), `IsMonotoneOp.isMonotoneOp_resolventMap`, `IsMonotoneOp.norm_sub_le_of_mem_resolventMap`, `IsMonotoneOp.isMaximalMonotoneOp_of_resolventMap`, `IsMonotoneOp.exists_resolventMap_eq_singleton`, `isMaximalMonotoneOp_of_continuous` (`SecondOrder/CyclicMonotone`) | finite dimensions; full domain via Minty's theorem (`SCD/Minty`) |
 | Def 1.96, Lemma 1.97 | cyclical monotonicity; maximal cyclically monotone = convex subdifferential, unique up to a constant | ✓ | `CyclicallyMonotone`, `MaximalCyclicallyMonotone`, `cyclicallyMonotone_subdiff_of_convex`, `rockafellarFun`, `mem_subdiff_rockafellarFun`, `maximalCyclicallyMonotone_iff`, `exists_eq_add_const_of_subdiff_eq`, `exists_mem_dom_subdiff_near` | finite dimensions; uniqueness via Moreau envelopes; maximality of `∂φ` via `globallyMaximalMonotone_subdiff_of_convex` for all proper l.s.c. convex `φ` |
-| Thm 1.98, Cor 1.99, Cor 1.101 | twice epi-differentiability ⇔ proto-differentiability for prox-regular functions; fully amenable functions; proximal mappings | ☐ | | needs Ex 1.133, 1.135, 1.136, 1.139 |
+| Thm 1.98, Cor 1.99, Cor 1.101 | twice epi-differentiability ⇔ proto-differentiability for prox-regular functions; fully amenable functions; proximal mappings | ☐ | | Ex 1.133, 1.136, 1.139(iii) are done; needs Ex 1.135 (Thm 1.98) and Ex 1.139(ii) (Cor 1.99) |
 | Def 1.100 | semidifferentiability of set-valued mappings (1.138) | ✓ | `IsSemiderivative`, `SemidifferentiableAt'` | |
+| Ex 1.133 | analytic description of epi-convergence | ✓ | `epiTendsto_atTop_iff`, `epiTendsto_iff`, `outerLimit_epi_subset_iff`, `epi_subset_innerLimit_iff`, `isSetLimit_iff_subset` (`SecondOrder/EpiAnalytic`) | also along a countably generated filter, with the lower limit along `l ×ˢ 𝓝 x`; points with `φ₀(x) = -∞` by a diagonal sequence |
+| Ex 1.134 | convexity under set and epi-convergence | ◐ | `convex_innerLimit`, `EpiTendsto.convex_epi` | (i), (iii); the counterexample of (ii) not formalized |
+| Ex 1.135 | epi-convergence via Moreau envelopes | ☐ | | needed for Thm 1.98 |
+| Ex 1.136 | `e_λφ(u) ↑ φ(u)` as `λ ↓ 0` | ✓ | `tendsto_moreauEnvelope_nhdsGT_zero`, `moreauEnvelope_anti` | `φ ≥ 0` l.s.c. at `u`; any normed space |
+| Ex 1.139 | properties of proto-differentiable mappings | ◐ | `protoDifferentiableAt_iff_isSetLimit`, `geometricallyDerivableAt_iff_isSetLimit` | (iii) only; (i) graphical regularity and (ii) fully amenable functions not yet |
 
 ## SCD mappings [Gfrerer–Outrata 2022]
 
@@ -387,9 +392,9 @@ SCD mappings: the adjoint formulas (21), (24b) for a general `Φ`; local maximal
 hypomonotonicity of `∂q` in Prop. 3.26; quadratic bundles (3.30–3.34); Sect. 7, after
 [Rockafellar–Wets, Thm 9.62].
 
-Second-order analysis ([Mordukhovich 2024, Ch. 1]): Cor 1.87 (needs Thm 1.61 for fully
-amenable functions and Ex 1.139); Thm 1.98 and its corollaries (need
-Ex 1.133–1.139).
+Second-order analysis ([Mordukhovich 2024, Ch. 1]): Ex 1.135 (epi-convergence via Moreau
+envelopes), then Thm 1.98 and Cor 1.101; Cor 1.87 and Cor 1.99 (need Thm 1.61 for fully
+amenable functions and Ex 1.139(ii)).
 
 Variational analysis:
 

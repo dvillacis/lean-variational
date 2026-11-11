@@ -46,6 +46,7 @@ import VariationalAnalysis.SCD.Subregularity
 import VariationalAnalysis.SecondOrder.Basic
 import VariationalAnalysis.SecondOrder.C11
 import VariationalAnalysis.SecondOrder.CyclicMonotone
+import VariationalAnalysis.SecondOrder.EpiAnalytic
 import VariationalAnalysis.SecondOrder.EpiConvergence
 import VariationalAnalysis.SecondOrder.GraphicalDerivative
 import VariationalAnalysis.SecondOrder.Moreau
