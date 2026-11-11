@@ -31,9 +31,9 @@ then `a* = -a`, i.e. `-a ∈ T a`. Translating `T` gives `u - x ∈ T x` for eve
 * `isMaximalMonotoneOp_iff`: `T` is maximally monotone iff monotone with `rge(I + T) = E`.
 * `IsMaximalMonotoneOp.resolventMap_nonempty`: [Mordukhovich 2024, Lemma 1.95], the remaining
   implication: `dom(I + λT)⁻¹ = E` for `λ > 0`.
-* `IsMaximalMonotoneOp.isSCDMapping`, `IsMaximalMonotoneOp.isLocallyMaximalMonotoneAt`:
-  [Gfrerer–Outrata 2022, Prop. 3.22] for maximally monotone mappings, without the extra
-  hypothesis `rge(I + F) = E`.
+* `IsMaximalMonotoneOp.isSCDMapping`: [Gfrerer–Outrata 2022, Prop. 3.22] for maximally monotone
+  mappings, without the extra hypothesis `rge(I + F) = E`. The local versions are in
+  `SCD/LocalMonotone`.
 -/
 
 open Filter Topology Set Metric
@@ -319,12 +319,6 @@ theorem isMaximalMonotoneOp_iff_resolventMap (hT : IsMonotoneOp T) {l : ℝ} (hl
     fun h ↦ hT.isMaximalMonotoneOp_of_resolventMap hl fun u ↦ h u⟩
 
 /-! ### Consequences for SCD mappings -/
-
-/-- A maximally monotone mapping is locally maximally monotone (in the sense of
-`IsLocallyMaximalMonotoneAt`) at every point. -/
-theorem IsMaximalMonotoneOp.isLocallyMaximalMonotoneAt (hT : IsMaximalMonotoneOp T)
-    (p : E × E) : IsLocallyMaximalMonotoneAt T p :=
-  ⟨T, hT.1, hT.exists_sub_mem, univ, isOpen_univ, mem_univ _, rfl⟩
 
 /-- [Gfrerer–Outrata 2022, Prop. 3.22]: maximally monotone mappings are SCD. -/
 theorem IsMaximalMonotoneOp.isSCDMapping (hT : IsMaximalMonotoneOp T) : IsSCDMapping T :=
