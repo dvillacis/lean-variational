@@ -36,6 +36,7 @@ import VariationalAnalysis.SCD.LocalMonotone
 import VariationalAnalysis.SCD.Monotone
 import VariationalAnalysis.SCD.Minty
 import VariationalAnalysis.SCD.Product
+import VariationalAnalysis.SCD.ProxRegular
 import VariationalAnalysis.SCD.Regularity
 import VariationalAnalysis.SCD.Semismooth
 import VariationalAnalysis.SCD.SemismoothPrimal

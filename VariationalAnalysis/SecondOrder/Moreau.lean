@@ -281,6 +281,25 @@ theorem toDual_mem_regularSubdiff_of_mem_proximalMap {u x : E} {s : ℝ} (hs : �
     smul_apply, innerSL_apply_apply, smul_eq_mul]
   ring
 
+omit [CompleteSpace E] in
+/-- Proximal mappings are monotone: for `xᵢ ∈ P_λφ(uᵢ)` with `φ(xᵢ)` finite,
+`⟨x₁ - x₂, u₁ - u₂⟩ ≥ 0`. No convexity or prox-regularity is needed
+(cf. [Gfrerer–Outrata 2022, proof of Prop. 3.26]). -/
+theorem inner_nonneg_of_mem_proximalMap (hl : 0 < l) {u₁ u₂ x₁ x₂ : E} {s₁ s₂ : ℝ}
+    (hs₁ : φ x₁ = s₁) (hs₂ : φ x₂ = s₂) (hx₁ : x₁ ∈ proximalMap φ l u₁)
+    (hx₂ : x₂ ∈ proximalMap φ l u₂) : 0 ≤ ⟪x₁ - x₂, u₁ - u₂⟫_ℝ := by
+  have h₁ := hx₁ x₂
+  have h₂ := hx₂ x₁
+  simp only [proxObjective, hs₁, hs₂, ← EReal.coe_add, EReal.coe_le_coe_iff] at h₁ h₂
+  have hc : 0 < (2 * l)⁻¹ := by positivity
+  have key : ‖x₁ - u₁‖ ^ 2 + ‖x₂ - u₂‖ ^ 2 ≤ ‖x₂ - u₁‖ ^ 2 + ‖x₁ - u₂‖ ^ 2 := by
+    refine le_of_mul_le_mul_left ?_ hc
+    rw [mul_add, mul_add]
+    linarith
+  rw [norm_sub_sq_real, norm_sub_sq_real, norm_sub_sq_real, norm_sub_sq_real] at key
+  rw [inner_sub_left, inner_sub_right, inner_sub_right]
+  linarith
+
 end Inner
 
 section Local

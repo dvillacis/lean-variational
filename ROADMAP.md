@@ -368,8 +368,8 @@ GO Prop 5.3 is `max 1 ‖C_L‖` instead of `√(n(1+‖C_L‖²))`.
 | GO24 Def 2.9, 2.10, 2.11 | semismooth* (w.r.t. `D*F`, w.r.t. a cone-valued `Γ`); SCD-ss* as an instance | ✓ | `IsSemismoothStarWrtAt`, `coderivGraph`, `IsSemismoothStarAt`, `scCoderivUnion`, `isSCDSemismoothStarAt_iff_wrt` (`SCD/SemismoothPrimal`) | |
 | GO24 p. 11 | semismooth* + SCD property around ⇒ SCD semismooth* | ✓ | `IsSemismoothStarAt.isSCDSemismoothStarAt` | via GO Lemma 3.7 |
 | GO24 Prop 2.12 | primal characterization `dist((x − x̄, y − ȳ), L) = o(‖(x, y) − (x̄, ȳ)‖)` | ✓ | `isSCDSemismoothStarAt_iff_infDist` | distance to the primal `L ∈ 𝒮F(x, y)` (the paper writes `𝒮*F`) |
-| GO Prop 3.26 | `∂q` of a continuously prox-regular `q` is graphically Lipschitzian, hence SCD | ◐ | `ContinuouslyProxRegularFor.graphicallyLipschitzianAt`, `ContinuouslyProxRegularFor.hasSCDPropertyAround` | from M24 Cor 1.72, with transformation `(x, x*) ↦ (x + λx*, x*)`; local maximal hypomonotonicity and `L = L* = rge(B, λ⁻¹(I − B))` not yet |
-| GO Cor 3.27 | prox-regular functions | ☐ | | |
+| GO Prop 3.26 | `∂q` of a continuously prox-regular `q`: graphically Lipschitzian, SCD; `𝒮*∂q = 𝒮∂q`, `L = L* = rge(B, λ⁻¹(I − B))` with `B` symmetric psd | ◐ | `ContinuouslyProxRegularFor.graphicallyLipschitzianAt`, `ContinuouslyProxRegularFor.hasSCDPropertyAround` (`SecondOrder/Moreau`), `proxSubspace`, `adjointSubspace_proxSubspace`, `ContinuouslyProxRegularFor.scd_symm` (`SCD/ProxRegular`), `inner_nonneg_of_mem_proximalMap`, `ContinuouslyProxRegularFor.exists_local_moreau` | from M24 Cor 1.72, with transformation `(x, x*) ↦ (x + λx*, x*)` and the gradient of a local Moreau envelope; symmetry from Hessians, `B ⪰ 0` from the monotonicity of proximal mappings; local maximal hypomonotonicity (Def. 3.20) of `∂q` not yet |
+| GO Cor 3.27 | `∂q` is SCD if `q` is continuously prox-regular on a dense subset of `gph ∂q` | ✓ | `isSCDMapping_subdiffMap_of_dense` (`SCD/ProxRegular`) | no lower semicontinuity needed |
 | GO 3.30–3.34 | quadratic bundles | ☐ | | |
 | GO Sect. 7 | strong metric regularity, Clarke-type inverse function theorem, tilt stability | ☐ | | needs [Rockafellar–Wets, Thm 9.62] |
 | GO Examples 3.29, 4.6, 6.5 | worked examples | ☐ | | |
@@ -383,8 +383,8 @@ GO Prop 5.3 is `max 1 ‖C_L‖` instead of `√(n(1+‖C_L‖²))`.
 
 ## Suggested order of work
 
-SCD mappings: the adjoint formulas (21), (24b) for a general `Φ`; the rest of the
-prox-regular case (the symmetric representation in Prop. 3.26, Cor. 3.27); Sect. 7, after
+SCD mappings: the adjoint formulas (21), (24b) for a general `Φ`; local maximal
+hypomonotonicity of `∂q` in Prop. 3.26; quadratic bundles (3.30–3.34); Sect. 7, after
 [Rockafellar–Wets, Thm 9.62].
 
 Second-order analysis ([Mordukhovich 2024, Ch. 1]): Cor 1.87 (needs Thm 1.61 for fully
