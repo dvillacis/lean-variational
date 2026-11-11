@@ -49,6 +49,7 @@ import VariationalAnalysis.SecondOrder.CyclicMonotone
 import VariationalAnalysis.SecondOrder.EpiConvergence
 import VariationalAnalysis.SecondOrder.GraphicalDerivative
 import VariationalAnalysis.SecondOrder.Moreau
+import VariationalAnalysis.SecondOrder.PLQ
 import VariationalAnalysis.SecondOrder.ProtoDiff
 import VariationalAnalysis.SecondOrder.ProxRegular
 import VariationalAnalysis.SecondOrder.SecondSubderiv
