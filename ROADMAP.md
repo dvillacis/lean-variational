@@ -284,7 +284,7 @@ dimensional, and Sect. 1.3.3 uses real inner product spaces. Worked examples (1.
 | Lemma 1.64 | parameter interplay for quadratic perturbations | ◐ | inside `ProxRegularFor.of_isHypomonotoneOn` | used inline, with other constants (`r ≥ ρ + 4α + 8`); not stated separately |
 | Thm 1.65 | prox-regularity via hypomonotonicity of attentive localizations | ✓ | `ProxRegularFor.mem_proxSubdiff`, `ProxRegularFor.isHypomonotoneOn_attentiveLocalization`, `ProxRegularFor.of_isHypomonotoneOn`, `proxRegularFor_iff_isHypomonotoneOn`, `proxRegularFor_iff_isHypomonotoneOn_subdiff`, `proxRegularFor_iff_locallyHypomonotoneAt` | finite-dimensional inner product spaces; (ii) ⇒ (i) needs only the basic localization, by the argument of Ex 1.121 instead of Ekeland's principle and the fuzzy sum rule |
 | Def 1.66, 1.67 | Moreau envelope, proximal mapping and their local versions (1.85)–(1.88) | ✓ | `proxObjective`, `moreauEnvelope`, `localMoreauEnvelope`, `proximalMap`, `localProximalMap` | |
-| Lemma 1.68 | estimates for Moreau envelopes | ◐ | `norm_le_of_proxObjective_le` | (1.90), with `φ(x) ≥ −(r̄/2)‖x‖²` for all `x`; the localization (1.91) is not stated |
+| Lemma 1.68 | estimates for Moreau envelopes | ✓ | `norm_le_of_proxObjective_le`, `mem_closedBall_of_proxObjective_le`, `moreauEnvelope_eq_localMoreauEnvelope`, `proximalMap_eq_localProximalMap`, `coe_le_moreauEnvelope_of_quadratic` | `φ(x) ≥ −(r̄/2)‖x‖²` for all `x` in place of the strict (1.89); (1.91) for every radius `ε ≥ 2μγ + √(2λμρ)` |
 | Lemma 1.69 | `(I + λT)⁻¹` single-valued and Lipschitz for hypomonotone `T` | ✓ | `IsHypomonotoneOn.norm_sub_le` | constant `(1 − λρ)⁻¹` |
 | Thm 1.70 | proximal mappings of prox-regular functions | ✓ | `ProxRegularFor.exists_proximalMap` | **corrected**: the book assumes `φ` l.s.c. and minorized by a quadratic *around* `x̄`, but `P_λφ` is a global argmin and is empty when `φ` is unbounded below far away; we assume prox-boundedness `φ(x) ≥ a − b‖x − x̄‖²` for all `x` (and global l.s.c. for simplicity). `P_λφ` is `2`-Lipschitz on `U_λ` and equals `(I + λT_ε)⁻¹` there |
 | Thm 1.71 | `e_λφ` is `C^{1,1}` with `∇e_λφ = λ⁻¹(I − P_λφ)` (1.94) | ✓ | `ProxRegularFor.exists_moreauEnvelope` | hypotheses as in Thm 1.70; the gradient is `3/λ`-Lipschitz |
@@ -389,7 +389,7 @@ prox-regular case (the symmetric representation in Prop. 3.26, Cor. 3.27); Sect.
 [Rockafellar–Wets, Thm 9.62].
 
 Second-order analysis ([Mordukhovich 2024, Ch. 1]): Cor 1.87 (needs Thm 1.61 for fully
-amenable functions and Ex 1.139); Lemma 1.68 (1.91); Thm 1.98 and its corollaries (need
+amenable functions and Ex 1.139); Thm 1.98 and its corollaries (need
 Ex 1.133–1.139); Thm 1.91 (needs Def 1.59).
 
 Variational analysis:

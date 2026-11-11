@@ -90,7 +90,7 @@ Cor. 4.8, Thm. 4.18, Prop. 6.13, Thm. 6.21).
 
 For [Mordukhovich 2024, Ch. 1], `ROADMAP.md` lists the statements of Sect. 1.2–1.4 with their Lean
 names or status. Formalized: the second-order subdifferentials of Sect. 1.2, Thm. 1.65, the
-Moreau envelope results Lemma 1.69–Cor. 1.72, Def. 1.73–Lemma 1.81, Thm. 1.84 (with a proof
+Moreau envelope results Lemma 1.68–Cor. 1.72, Def. 1.73–Lemma 1.81, Thm. 1.84 (with a proof
 that avoids Lemma 1.81), Def. 1.85–Thm. 1.86, and in Sect. 1.5 Def. 1.88–Prop. 1.90,
 Prop. 1.93–Lemma 1.97 and Def. 1.100. Thm. 1.70–1.71
 assume prox-boundedness, which the book omits (a correction). Cor. 1.87, Thm. 1.91 and Thm. 1.98
@@ -146,4 +146,4 @@ lake exe cache get && lake build
 
 All 89 files compile against Mathlib v4.33.1 with no `sorry`.
 `lake env lean scripts/AuditAxioms.lean` checks that no declaration depends on an axiom beyond
-`propext`, `Classical.choice`, `Quot.sound` (2095 declarations checked).
+`propext`, `Classical.choice`, `Quot.sound` (2109 declarations checked).
