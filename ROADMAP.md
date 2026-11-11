@@ -275,7 +275,7 @@ dimensional, and Sect. 1.3.3 uses real inner product spaces. Worked examples (1.
 | Prop 1.54 | partial sum rules (1.69), (1.70) | ✓ | `partialSecondOrderSubdiff_add`, `combinedPartialSecondOrderSubdiff_add` | same change of hypotheses as Prop 1.51 |
 | Def 1.56, 1.57 | prox-regularity, subdifferential continuity | ✓ | `ProxRegularFor`, `SubdiffContinuousFor`, `ContinuouslyProxRegularFor` (`WellPosedness/ProxRegular`) | M Def 3.27; the library asks for `φ(x) ≤ φ(x̄) + ε` where the book asks for `\|φ(x) − φ(x̄)\| ≤ ε` |
 | Prop 1.58 | convex functions are continuously prox-regular | ✓ | `continuouslyProxRegularFor_of_convex` | |
-| Def 1.59 | piecewise linear-quadratic functions | ☐ | | |
+| Def 1.59 | piecewise linear-quadratic and piecewise linear functions | ✓ | `IsPolyhedral`, `IsPLQ`, `IsPiecewiseLinear`, `IsPiecewiseLinear.isPLQ` (`SecondOrder/PLQ`) | any normed space; polyhedral = finite intersection of closed half-spaces; `A` as a symmetric continuous bilinear form |
 | Def 1.60 | amenable compositions | ◐ | `AmenableAt`, `StronglyAmenableAt`, `AmenableAtOfClass` | M Def 3.23; strictly and fully amenable functions not yet |
 | Thm 1.61 | strictly amenable functions are continuously prox-regular | ◐ | `continuouslyProxRegularFor_of_C11` | only `C^{1,1}` functions |
 | (1.80) | proximal subdifferential `∂_P φ` | ✓ | `proxSubdiff`, `proxSubdiff_subset_regularSubdiff`, `proxSubdiff_subset_subdiff` | |
@@ -307,7 +307,7 @@ dimensional, and Sect. 1.3.3 uses real inner product spaces. Worked examples (1.
 | Def 1.88 | second subderivatives `d²φ(x̄, v)`, `d²φ(x̄)` (1.119)–(1.122) | ✓ | `secondDiffQuot`, `secondDiffQuot'`, `secondSubderiv`, `secondSubderiv'`, `secondDiffQuot'_eq` | |
 | Def 1.89 | twice epi-differentiability, twice semidifferentiability | ✓ | `TwiceEpiDifferentiableAt`, `TwiceSemidifferentiableAt` | (ii) asks for a finite first-order limit |
 | Prop 1.90 | twice differentiable functions | ✓ | `secondSubderiv_of_hasFDerivAt`, `secondSubderiv'_of_hasFDerivAt`, `twiceEpiDifferentiableAt_of_hasFDerivAt`, `tendsto_secondDiffQuot_dir_of_hasFDerivAt`, `abs_taylor_two_le` | twice Fréchet differentiable at `x̄` (gradient near `x̄`, differentiable at `x̄`); any normed space |
-| (1.125), Thm 1.91 | critical cone; piecewise linear-quadratic convex functions | ◐ | `criticalCone` | Thm 1.91 needs Def 1.59 |
+| (1.125), Thm 1.91 | critical cone; second subderivatives of piecewise linear-quadratic convex functions (1.126)–(1.128) | ✓ | `criticalCone`; `LocalPLQ`, `IsPolyhedral.exists_cone`, `IsPLQ.exists_localPLQ`, `LocalPLQ.subderiv_of_mem`, `LocalPLQ.secondSubderiv'_of_mem`, `LocalPLQ.mem_criticalCone_iff`; `IsPLQ.twiceEpiDifferentiableAt`, `IsPLQ.exists_eq_add_subderiv_add`, `IsPLQ.tendsto_secondDiffQuot'`, `IsPLQ.secondSubderiv'_nonneg`, `IsPLQ.isPLQ_secondSubderiv'`, `IsPLQ.tendsto_secondDiffQuot`, `IsPLQ.secondSubderiv_eq`, `IsPLQ.convex_epi_secondSubderiv`, `IsPLQ.isPLQ_secondSubderiv`, `IsPLQ.exists_criticalCone_eq` (`SecondOrder/PLQ`) | any normed space; via a local linear-quadratic model on polyhedral cones; (1.126), the limit in (1.127) and the structure of `d²φ(x̄)` need no convexity; `K_φ(x̄, v)` as a finite union of polyhedral cones (its polyhedrality as a convex set not yet); the second directional derivative `φ''(x̄; w)` of (1.127) is not defined |
 | Prop 1.93 | second subderivatives of convex functions | ✓ | `secondSubderiv_nonneg_of_convex`, `convex_epi_secondSubderiv`, `secondDiffQuot_combo_le` | the convexity part only uses convexity of `φ` and finiteness of `φ(x̄)` |
 | Lemma 1.94 | subdifferentials and Moreau envelopes of second-order quotients (1.130), (1.131) | ✓ | `subdiff_half_secondDiffQuot`, `mem_subdiff_coe_mul_iff`, `moreauEnvelope_scale`, `proximalMap_scale`, `moreauEnvelope_half_secondDiffQuot`, `proximalMap_half_secondDiffQuot` | (1.130) in finite dimensions; (1.131) stated for `w ↦ t⁻²φ(tw)` and then for `Δ²_tφ(0, 0)/2` |
 | Lemma 1.95 | resolvents of monotone operators | ✓ | `resolventMap`, `isMaximalMonotoneOp_iff_resolventMap`, `IsMaximalMonotoneOp.resolventMap_nonempty` (`SCD/Minty`), `IsMonotoneOp.isMonotoneOp_resolventMap`, `IsMonotoneOp.norm_sub_le_of_mem_resolventMap`, `IsMonotoneOp.isMaximalMonotoneOp_of_resolventMap`, `IsMonotoneOp.exists_resolventMap_eq_singleton`, `isMaximalMonotoneOp_of_continuous` (`SecondOrder/CyclicMonotone`) | finite dimensions; full domain via Minty's theorem (`SCD/Minty`) |
@@ -389,7 +389,7 @@ hypomonotonicity of `∂q` in Prop. 3.26; quadratic bundles (3.30–3.34); Sect.
 
 Second-order analysis ([Mordukhovich 2024, Ch. 1]): Cor 1.87 (needs Thm 1.61 for fully
 amenable functions and Ex 1.139); Thm 1.98 and its corollaries (need
-Ex 1.133–1.139); Thm 1.91 (needs Def 1.59).
+Ex 1.133–1.139).
 
 Variational analysis:
 
