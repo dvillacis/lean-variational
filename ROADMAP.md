@@ -312,11 +312,11 @@ dimensional, and Sect. 1.3.3 uses real inner product spaces. Worked examples (1.
 | Lemma 1.94 | subdifferentials and Moreau envelopes of second-order quotients (1.130), (1.131) | ✓ | `subdiff_half_secondDiffQuot`, `mem_subdiff_coe_mul_iff`, `moreauEnvelope_scale`, `proximalMap_scale`, `moreauEnvelope_half_secondDiffQuot`, `proximalMap_half_secondDiffQuot` | (1.130) in finite dimensions; (1.131) stated for `w ↦ t⁻²φ(tw)` and then for `Δ²_tφ(0, 0)/2` |
 | Lemma 1.95 | resolvents of monotone operators | ✓ | `resolventMap`, `isMaximalMonotoneOp_iff_resolventMap`, `IsMaximalMonotoneOp.resolventMap_nonempty` (`SCD/Minty`), `IsMonotoneOp.isMonotoneOp_resolventMap`, `IsMonotoneOp.norm_sub_le_of_mem_resolventMap`, `IsMonotoneOp.isMaximalMonotoneOp_of_resolventMap`, `IsMonotoneOp.exists_resolventMap_eq_singleton`, `isMaximalMonotoneOp_of_continuous` (`SecondOrder/CyclicMonotone`) | finite dimensions; full domain via Minty's theorem (`SCD/Minty`) |
 | Def 1.96, Lemma 1.97 | cyclical monotonicity; maximal cyclically monotone = convex subdifferential, unique up to a constant | ✓ | `CyclicallyMonotone`, `MaximalCyclicallyMonotone`, `cyclicallyMonotone_subdiff_of_convex`, `rockafellarFun`, `mem_subdiff_rockafellarFun`, `maximalCyclicallyMonotone_iff`, `exists_eq_add_const_of_subdiff_eq`, `exists_mem_dom_subdiff_near` | finite dimensions; uniqueness via Moreau envelopes; maximality of `∂φ` via `globallyMaximalMonotone_subdiff_of_convex` for all proper l.s.c. convex `φ` |
-| Thm 1.98, Cor 1.99, Cor 1.101 | twice epi-differentiability ⇔ proto-differentiability for prox-regular functions; fully amenable functions; proximal mappings | ☐ | | Ex 1.133, 1.135(i), 1.136, 1.139(iii) are done; needs Ex 1.135(ii), (iii) (Thm 1.98) and Ex 1.139(ii) (Cor 1.99) |
+| Thm 1.98, Cor 1.99, Cor 1.101 | twice epi-differentiability ⇔ proto-differentiability for prox-regular functions; fully amenable functions; proximal mappings | ☐ | | the exercises needed for Thm 1.98 (Ex 1.133, 1.135, 1.136, 1.139(iii)) are done; Cor 1.99 needs Ex 1.139(ii) |
 | Def 1.100 | semidifferentiability of set-valued mappings (1.138) | ✓ | `IsSemiderivative`, `SemidifferentiableAt'` | |
 | Ex 1.133 | analytic description of epi-convergence | ✓ | `epiTendsto_atTop_iff`, `epiTendsto_iff`, `outerLimit_epi_subset_iff`, `epi_subset_innerLimit_iff`, `isSetLimit_iff_subset` (`SecondOrder/EpiAnalytic`) | also along a countably generated filter, with the lower limit along `l ×ˢ 𝓝 x`; points with `φ₀(x) = -∞` by a diagonal sequence |
 | Ex 1.134 | convexity under set and epi-convergence | ◐ | `convex_innerLimit`, `EpiTendsto.convex_epi` | (i), (iii); the counterexample of (ii) not formalized |
-| Ex 1.135 | epi-convergence via Moreau envelopes | ◐ | `EpiTendsto.tendsto_moreauEnvelope`, `EpiTendsto.tendsto_moreauEnvelope_apply`, `epiTendsto_of_tendsto_moreauEnvelope`, `tendsto_moreauEnvelope_of_seq` (`SecondOrder/EpiAnalytic`) | (i) only: the direct part gives continuous convergence (in `EReal`, proper spaces, every `λ > 0`), the converse needs `φ₀` l.s.c. and pointwise convergence for small `λ`; properness not needed; (ii), (iii) on gradients of envelopes not yet, needed for Thm 1.98 |
+| Ex 1.135 | epi-convergence via Moreau envelopes | ✓ | `EpiTendsto.tendsto_moreauEnvelope`, `EpiTendsto.tendsto_moreauEnvelope_apply`, `epiTendsto_of_tendsto_moreauEnvelope`, `tendsto_moreauEnvelope_of_seq`; `EpiTendsto.outerLimit_graph_proximalMap_subset`, `EpiTendsto.tendsto_of_mem_proximalMap` (`SecondOrder/EpiAnalytic`) | (i): the direct part gives continuous convergence (in `EReal`, proper spaces, every `λ > 0`), the converse needs `φ₀` l.s.c. and pointwise convergence for small `λ`; properness not needed. (ii), (iii): for proximal points `p ∈ P_λφ(u)` instead of gradients `λ⁻¹(u - p)` of envelopes (which need not exist without convexity); convergence when `P_λφ₀(u)` has at most one point |
 | Ex 1.136 | `e_λφ(u) ↑ φ(u)` as `λ ↓ 0` | ✓ | `tendsto_moreauEnvelope_nhdsGT_zero`, `moreauEnvelope_anti` | `φ ≥ 0` l.s.c. at `u`; any normed space |
 | Ex 1.139 | properties of proto-differentiable mappings | ◐ | `protoDifferentiableAt_iff_isSetLimit`, `geometricallyDerivableAt_iff_isSetLimit` | (iii) only; (i) graphical regularity and (ii) fully amenable functions not yet |
 
@@ -392,8 +392,9 @@ SCD mappings: the adjoint formulas (21), (24b) for a general `Φ`; local maximal
 hypomonotonicity of `∂q` in Prop. 3.26; quadratic bundles (3.30–3.34); Sect. 7, after
 [Rockafellar–Wets, Thm 9.62].
 
-Second-order analysis ([Mordukhovich 2024, Ch. 1]): Ex 1.135(ii), (iii) (convergence of
-gradients of Moreau envelopes), then Thm 1.98 and Cor 1.101; Cor 1.87 and Cor 1.99 (need Thm 1.61 for fully
+Second-order analysis ([Mordukhovich 2024, Ch. 1]): Thm 1.98 and Cor 1.101 (first the
+implication from twice epi-differentiability to proto-differentiability, via
+`EpiTendsto.tendsto_of_mem_proximalMap` and Lemma 1.94); Cor 1.87 and Cor 1.99 (need Thm 1.61 for fully
 amenable functions and Ex 1.139(ii)).
 
 Variational analysis:

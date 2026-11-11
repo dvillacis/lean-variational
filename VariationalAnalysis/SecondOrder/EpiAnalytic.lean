@@ -23,6 +23,10 @@ epi-convergence analytically. They are used in the proof of [Mordukhovich 2024, 
 * `EpiTendsto.tendsto_moreauEnvelope`, `epiTendsto_of_tendsto_moreauEnvelope`: for nonnegative
   functions, epi-convergence is equivalent to the convergence of the Moreau envelopes for all
   small `λ > 0` [Mordukhovich 2024, Ex. 1.135(i)].
+* `EpiTendsto.outerLimit_graph_proximalMap_subset`, `EpiTendsto.tendsto_of_mem_proximalMap`:
+  under epi-convergence, cluster points of proximal points are proximal points of the limit, and
+  proximal points converge when the limit has at most one
+  [Mordukhovich 2024, Ex. 1.135(ii), (iii)].
 * `geometricallyDerivableAt_iff_isSetLimit`, `protoDifferentiableAt_iff_isSetLimit`:
   proto-differentiability of `F` at `(x̄, ȳ)` is the set convergence of `(gph F - (x̄, ȳ))/t` to
   the tangent cone as `t ↓ 0` [Mordukhovich 2024, Ex. 1.139(iii)].
@@ -35,6 +39,8 @@ epi-convergence analytically. They are used in the proof of [Mordukhovich 2024, 
   `e_λφ_i(u') → e_λφ₀(u)` as `i → l`, `u' → u`, with values in `EReal`; this needs a proper
   (finite-dimensional) space. Neither direction needs the functions to be proper, and only the
   converse needs `φ₀` to be l.s.c.
+* Ex. 1.135(ii), (iii) are stated for proximal points `p ∈ P_λφ(u)` instead of the gradients
+  `∇(e_λφ)(u) = λ⁻¹(u - p)`, which need not exist for the nonconvex functions of the exercise.
 * Along a general filter `l` the lower estimate of Ex. 1.133 is a lower limit along `l ×ˢ 𝓝 x`,
   and the recovery sequence is asked along every sequence in `l`, as in `innerLimit`.
 -/
@@ -595,6 +601,81 @@ theorem epiTendsto_of_tendsto_moreauEnvelope [l.IsCountablyGenerated] [l.NeBot]
       have h2 : 1 / ((n k : ℝ) + 1) ≤ 1 / ((N : ℝ) + 1) :=
         one_div_le_one_div_of_le (by positivity) (by linarith)
       linarith
+
+/-- Under epi-convergence of nonnegative functions, cluster points of proximal points are
+proximal points of the limit: the outer limit of the graphs of `P_λφ_i` lies in the graph of
+`P_λφ₀` [Mordukhovich 2024, Ex. 1.135(ii), (iii)]. -/
+theorem EpiTendsto.outerLimit_graph_proximalMap_subset [ProperSpace E]
+    [l.IsCountablyGenerated] [l.NeBot] (h : EpiTendsto l φ φ₀) (hφ : ∀ i x, 0 ≤ φ i x) {m : ℝ}
+    (hm : 0 < m) :
+    outerLimit l (fun i ↦ graph (proximalMap (φ i) m)) ⊆ graph (proximalMap φ₀ m) := by
+  rintro ⟨u₀, q⟩ ⟨a, v, ha, hv, hS⟩
+  have hu : Tendsto (fun k ↦ (v k).1) atTop (𝓝 u₀) := (continuous_fst.tendsto (u₀, q)).comp hv
+  have hp : Tendsto (fun k ↦ (v k).2) atTop (𝓝 q) := (continuous_snd.tendsto (u₀, q)).comp hv
+  have hE : Tendsto (fun k ↦ moreauEnvelope (φ (a k)) m (v k).1) atTop
+      (𝓝 (moreauEnvelope φ₀ m u₀)) := (h.tendsto_moreauEnvelope hφ hm u₀).comp (ha.prodMk hu)
+  have hlim : φ₀ q ≤ liminf (fun k ↦ φ (a k) (v k).2) atTop :=
+    ((epiTendsto_iff.1 h q).1).trans (liminf_le_liminf_comp (ha.prodMk hp) _)
+  have hr : Tendsto (fun k ↦ (2 * m)⁻¹ * ‖(v k).2 - (v k).1‖ ^ 2) atTop
+      (𝓝 ((2 * m)⁻¹ * ‖q - u₀‖ ^ 2)) := ((hp.sub hu).norm.pow 2).const_mul _
+  have hle : proxObjective φ₀ m u₀ q ≤ moreauEnvelope φ₀ m u₀ := by
+    refine ereal_le_of_forall_real_gt fun d hd ↦ ?_
+    have hφq : φ₀ q ≤ ((d - (2 * m)⁻¹ * ‖q - u₀‖ ^ 2 : ℝ) : EReal) := by
+      refine ereal_le_of_forall_real_gt fun d' hd' ↦ ?_
+      have hd' : d - (2 * m)⁻¹ * ‖q - u₀‖ ^ 2 < d' := EReal.coe_lt_coe_iff.1 hd'
+      refine hlim.trans (liminf_le_of_frequently_le' (Eventually.frequently ?_))
+      filter_upwards [hE.eventually_lt_const hd, hr.eventually_const_lt
+        (show d - d' < (2 * m)⁻¹ * ‖q - u₀‖ ^ 2 by linarith)] with k hk1 hk2
+      by_contra hgt
+      have h1 := EReal.add_lt_add (not_le.1 hgt) (EReal.coe_lt_coe_iff.2 hk2)
+      rw [← EReal.coe_add, add_sub_cancel] at h1
+      have h2 : moreauEnvelope (φ (a k)) m (v k).1 = φ (a k) (v k).2
+          + (((2 * m)⁻¹ * ‖(v k).2 - (v k).1‖ ^ 2 : ℝ) : EReal) :=
+        moreauEnvelope_eq_of_mem_proximalMap (hS k)
+      rw [h2] at hk1
+      exact lt_asymm h1 hk1
+    have := add_le_add hφq (le_refl (((2 * m)⁻¹ * ‖q - u₀‖ ^ 2 : ℝ) : EReal))
+    rwa [← EReal.coe_add, sub_add_cancel] at this
+  show q ∈ proximalMap φ₀ m u₀
+  exact fun y ↦ hle.trans (moreauEnvelope_le u₀ y)
+
+/-- **Convergence of proximal points** [Mordukhovich 2024, Ex. 1.135(ii)]: if the nonnegative
+functions `φ_i` epi-converge to `φ₀`, the envelope `e_λφ₀(u)` is finite and `P_λφ₀(u) ⊆ {p}`,
+then proximal points `p_k ∈ P_λφ_{i_k}(u_k)` with `u_k → u` converge to `p`. Equivalently, the
+gradients `λ⁻¹(u_k - p_k)` of the envelopes converge to `λ⁻¹(u - p)`. -/
+theorem EpiTendsto.tendsto_of_mem_proximalMap [ProperSpace E] [l.IsCountablyGenerated]
+    [l.NeBot] (h : EpiTendsto l φ φ₀) (hφ : ∀ i x, 0 ≤ φ i x) {m : ℝ} (hm : 0 < m)
+    {u₀ p₀ : E} (htop : moreauEnvelope φ₀ m u₀ ≠ ⊤) (huniq : ∀ q ∈ proximalMap φ₀ m u₀, q = p₀)
+    {a : ℕ → ι} (ha : Tendsto a atTop l) {u p : ℕ → E} (hu : Tendsto u atTop (𝓝 u₀))
+    (hp : ∀ k, p k ∈ proximalMap (φ (a k)) m (u k)) : Tendsto p atTop (𝓝 p₀) := by
+  have hE : Tendsto (fun k ↦ moreauEnvelope (φ (a k)) m (u k)) atTop
+      (𝓝 (moreauEnvelope φ₀ m u₀)) := (h.tendsto_moreauEnvelope hφ hm u₀).comp (ha.prodMk hu)
+  obtain ⟨C, hC, -⟩ := EReal.lt_iff_exists_real_btwn.1 (lt_top_iff_ne_top.2 htop)
+  obtain ⟨R, hR⟩ := isBounded_iff_forall_norm_le.1 (isBounded_range_of_tendsto u hu)
+  have hb : ∀ᶠ k in atTop, p k ∈ closedBall (0 : E) (R + (2 * m * C + 1)) := by
+    filter_upwards [hE.eventually_lt_const hC] with k hk
+    rw [moreauEnvelope_eq_of_mem_proximalMap (hp k)] at hk
+    have hk' : φ (a k) (p k) + (((2 * m)⁻¹ * ‖p k - u k‖ ^ 2 : ℝ) : EReal) < C := hk
+    have h3 : (2 * m)⁻¹ * ‖p k - u k‖ ^ 2 < C :=
+      EReal.coe_lt_coe_iff.1 ((le_add_of_nonneg_left (hφ (a k) (p k))).trans_lt hk')
+    have h2 : ‖p k - u k‖ ^ 2 < 2 * m * C := by
+      rwa [inv_mul_eq_div, div_lt_iff₀ (by positivity), mul_comm] at h3
+    have h4 : ‖p k - u k‖ ≤ 2 * m * C + 1 := by
+      nlinarith [sq_nonneg (‖p k - u k‖ - 1), norm_nonneg (p k - u k)]
+    have h5 : ‖p k‖ ≤ ‖u k‖ + ‖p k - u k‖ := by
+      simpa using norm_add_le (u k) (p k - u k)
+    rw [mem_closedBall_zero_iff]
+    linarith [hR (u k) (mem_range_self _)]
+  refine tendsto_of_subseq_tendsto fun ns hns ↦ ?_
+  obtain ⟨q, -, θ, hθ, hq⟩ := tendsto_subseq_of_frequently_bounded isBounded_closedBall
+    (x := fun j ↦ p (ns j)) (hns.eventually hb).frequently
+  have hnθ : Tendsto (fun j ↦ ns (θ j)) atTop atTop := hns.comp hθ.tendsto_atTop
+  have hmem : (u₀, q) ∈ outerLimit l (fun i ↦ graph (proximalMap (φ i) m)) :=
+    ⟨fun j ↦ a (ns (θ j)), fun j ↦ (u (ns (θ j)), p (ns (θ j))), ha.comp hnθ,
+      (hu.comp hnθ).prodMk_nhds hq, fun j ↦ hp _⟩
+  have hqp : q = p₀ := huniq q (h.outerLimit_graph_proximalMap_subset hφ hm hmem)
+  rw [hqp] at hq
+  exact ⟨θ, hq⟩
 
 end MoreauEpi
 
