@@ -24,7 +24,8 @@ prox-regular at `x̄` for `v̄`, the proximal mapping is single-valued and Lipsc
 
 ## Main results
 
-* `norm_le_of_proxObjective_le`: Lemma 1.68, estimate (1.90).
+* `norm_le_of_proxObjective_le`, `moreauEnvelope_eq_localMoreauEnvelope`,
+  `proximalMap_eq_localProximalMap`: Lemma 1.68, (1.90) and (1.91).
 * `IsHypomonotoneOn.norm_sub_le`: Lemma 1.69, the resolvent `(I + λT)⁻¹` of a
   `ρ`-hypomonotone mapping is single-valued and Lipschitz with constant `(1 - λρ)⁻¹`.
 * `ProxRegularFor.exists_proximalMap`: Thm. 1.70.
@@ -158,6 +159,84 @@ theorem norm_le_of_proxObjective_le {r : ℝ} (hl : 0 < l) (hlr : l * r < 1) (h�
   rw [← mul_assoc, hμ1, one_mul] at key'
   refine le_add_sqrt_of_sq_le (by positivity) (by positivity) ?_
   linarith
+
+omit [CompleteSpace E] in
+/-- Under the quadratic minorization of [Mordukhovich 2024, Lemma 1.68] the Moreau envelope is
+bounded below: `e_λφ(u) ≥ (2λ)⁻¹(‖u‖² - (1 - λr)⁻¹‖u‖²)`. -/
+theorem coe_le_moreauEnvelope_of_quadratic {r : ℝ} (hl : 0 < l) (hlr : l * r < 1)
+    (hφ : ∀ x, ((-(r / 2) * ‖x‖ ^ 2 : ℝ) : EReal) ≤ φ x) (u : E) :
+    (((2 * l)⁻¹ * (‖u‖ ^ 2 - (1 - l * r)⁻¹ * ‖u‖ ^ 2) : ℝ) : EReal) ≤ moreauEnvelope φ l u := by
+  refine le_iInf fun x ↦ le_trans ?_ (add_le_add (hφ x) le_rfl)
+  rw [← EReal.coe_add, EReal.coe_le_coe_iff, norm_sub_sq_real]
+  set a := 1 - l * r with ha_def
+  have ha : 0 < a := by linarith
+  have hin := real_inner_le_norm x u
+  have e1 : a⁻¹ * (a * ‖x‖ - ‖u‖) ^ 2 = a * ‖x‖ ^ 2 - 2 * ‖x‖ * ‖u‖ + a⁻¹ * ‖u‖ ^ 2 := by
+    field_simp
+    ring
+  have e2 := mul_nonneg (inv_nonneg.2 ha.le) (sq_nonneg (a * ‖x‖ - ‖u‖))
+  have key : ‖u‖ ^ 2 - a⁻¹ * ‖u‖ ^ 2 ≤ a * ‖x‖ ^ 2 - 2 * ⟪x, u⟫ + ‖u‖ ^ 2 := by linarith
+  have e3 : -(r / 2) * ‖x‖ ^ 2 + (2 * l)⁻¹ * (‖x‖ ^ 2 - 2 * ⟪x, u⟫ + ‖u‖ ^ 2) =
+      (2 * l)⁻¹ * (a * ‖x‖ ^ 2 - 2 * ⟪x, u⟫ + ‖u‖ ^ 2) := by
+    rw [ha_def]
+    field_simp
+    ring
+  rw [e3]
+  exact mul_le_mul_of_nonneg_left key (by positivity)
+
+omit [CompleteSpace E] in
+/-- [Mordukhovich 2024, Lemma 1.68], (1.90) for `‖u‖ ≤ γ`: `ρ`-minimizers of the proximal
+objective lie in the ball of radius `ε ≥ 2μγ + √(2λμρ)`. -/
+theorem mem_closedBall_of_proxObjective_le {r : ℝ} (hl : 0 < l) (hlr : l * r < 1) (hφ0 : φ 0 = 0)
+    (hφ : ∀ x, ((-(r / 2) * ‖x‖ ^ 2 : ℝ) : EReal) ≤ φ x) {ρ γ ε : ℝ} (hρ : 0 < ρ)
+    (hε : 2 * (1 - l * r)⁻¹ * γ + √(2 * l * (1 - l * r)⁻¹ * ρ) ≤ ε) {x u : E} (hu : ‖u‖ ≤ γ)
+    (hx : proxObjective φ l u x ≤ moreauEnvelope φ l u + ρ) : x ∈ closedBall (0 : E) ε := by
+  rw [mem_closedBall, dist_zero_right]
+  have hμ : 0 ≤ 2 * (1 - l * r)⁻¹ := mul_nonneg zero_le_two (inv_nonneg.2 (by linarith))
+  have := mul_le_mul_of_nonneg_left hu hμ
+  linarith [norm_le_of_proxObjective_le hl hlr hφ0 hφ hρ hx]
+
+omit [CompleteSpace E] in
+/-- [Mordukhovich 2024, Lemma 1.68, (1.91)]: for `‖u‖ ≤ γ` the global Moreau envelope agrees
+with the local one on the ball of radius `ε ≥ 2μγ + √(2λμρ)`, `μ = (1 - λr)⁻¹`. -/
+theorem moreauEnvelope_eq_localMoreauEnvelope {r : ℝ} (hl : 0 < l) (hlr : l * r < 1)
+    (hφ0 : φ 0 = 0) (hφ : ∀ x, ((-(r / 2) * ‖x‖ ^ 2 : ℝ) : EReal) ≤ φ x) {ρ γ ε : ℝ}
+    (hρ : 0 < ρ) (hε : 2 * (1 - l * r)⁻¹ * γ + √(2 * l * (1 - l * r)⁻¹ * ρ) ≤ ε) {u : E}
+    (hu : ‖u‖ ≤ γ) : moreauEnvelope φ l u = localMoreauEnvelope φ l 0 ε u := by
+  refine le_antisymm (moreauEnvelope_le_localMoreauEnvelope _ _ _) ?_
+  obtain ⟨m, hm⟩ : ∃ m : ℝ, moreauEnvelope φ l u = m := by
+    have hlo := coe_le_moreauEnvelope_of_quadratic hl hlr hφ u
+    have hhi : moreauEnvelope φ l u ≤ (((2 * l)⁻¹ * ‖u‖ ^ 2 : ℝ) : EReal) := by
+      simpa [proxObjective, hφ0, norm_neg] using moreauEnvelope_le (φ := φ) (l := l) u 0
+    exact ⟨_, (EReal.coe_toReal (ne_top_of_le_ne_top (EReal.coe_ne_top _) hhi)
+      (ne_bot_of_le_ne_bot (EReal.coe_ne_bot _) hlo)).symm⟩
+  refine le_of_forall_gt_imp_ge_of_dense fun β hβ ↦ ?_
+  have hlt : moreauEnvelope φ l u < min β ((m + ρ : ℝ) : EReal) := by
+    rw [hm] at hβ ⊢
+    exact lt_min hβ (EReal.coe_lt_coe_iff.2 (by linarith))
+  obtain ⟨x, hx⟩ := iInf_lt_iff.1 hlt
+  have hxb : x ∈ closedBall (0 : E) ε := mem_closedBall_of_proxObjective_le hl hlr hφ0 hφ hρ hε hu
+    (by rw [hm, ← EReal.coe_add]; exact (hx.trans_le (min_le_right _ _)).le)
+  have := iInf₂_le (f := fun x (_ : x ∈ closedBall (0 : E) ε) ↦ proxObjective φ l u x) x hxb
+  exact this.trans (hx.trans_le (min_le_left _ _)).le
+
+omit [CompleteSpace E] in
+/-- [Mordukhovich 2024, Lemma 1.68, (1.91)]: for `‖u‖ ≤ γ` the global proximal mapping agrees
+with the local one on the ball of radius `ε ≥ 2μγ + √(2λμρ)`. -/
+theorem proximalMap_eq_localProximalMap {r : ℝ} (hl : 0 < l) (hlr : l * r < 1)
+    (hφ0 : φ 0 = 0) (hφ : ∀ x, ((-(r / 2) * ‖x‖ ^ 2 : ℝ) : EReal) ≤ φ x) {ρ γ ε : ℝ}
+    (hρ : 0 < ρ) (hε : 2 * (1 - l * r)⁻¹ * γ + √(2 * l * (1 - l * r)⁻¹ * ρ) ≤ ε) {u : E}
+    (hu : ‖u‖ ≤ γ) : proximalMap φ l u = localProximalMap φ l 0 ε u := by
+  ext x
+  constructor
+  · intro hx
+    refine ⟨mem_closedBall_of_proxObjective_le hl hlr hφ0 hφ hρ hε hu ?_, fun y _ ↦ hx y⟩
+    rw [moreauEnvelope_eq_of_mem_proximalMap hx]
+    exact le_add_of_nonneg_right (EReal.coe_nonneg.2 hρ.le)
+  · rintro ⟨-, hmin⟩ y
+    have h1 : proxObjective φ l u x ≤ localMoreauEnvelope φ l 0 ε u := le_iInf₂ hmin
+    rw [← moreauEnvelope_eq_localMoreauEnvelope hl hlr hφ0 hφ hρ hε hu] at h1
+    exact h1.trans (moreauEnvelope_le u y)
 
 /-- [Mordukhovich 2024, Lemma 1.69] (finite-dimensional form): if `T` is `ρ`-hypomonotone on
 `U` and `λρ < 1`, then `(I + λT)⁻¹` is single-valued and Lipschitz with constant `(1 - λρ)⁻¹`
