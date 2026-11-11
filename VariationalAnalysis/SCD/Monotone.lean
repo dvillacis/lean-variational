@@ -11,8 +11,8 @@ import VariationalAnalysis.WellPosedness.MaximalMonotone
 /-!
 # Monotone mappings and convex subdifferentials are SCD mappings
 
-Following [Gfrerer–Outrata 2022, Prop. 3.22–Cor. 3.28], we show that (locally) maximally
-(hypo)monotone mappings `F : E ⇉ E` and subdifferentials of proper l.s.c. convex functions are
+Following [Gfrerer–Outrata 2022, Prop. 3.22–Cor. 3.28], we show that monotone mappings
+`F : E ⇉ E` with `rge(I + F) = E` and subdifferentials of proper l.s.c. convex functions are
 SCD mappings, and describe their SC derivatives. The tool is the Minty parametrization: the linear
 isomorphism `Φ(x, y) = (x + y, x)` maps `gph F` onto the graph of the resolvent `(I + F)⁻¹`, which
 for monotone `F` with `rge(I + F) = E` is single-valued and firmly nonexpansive, hence Lipschitz.
@@ -25,11 +25,9 @@ mapping is the gradient of `½‖·‖² - e φ`, with `e φ` the Moreau envelop
 Hessians (`second_derivative_symmetric_of_eventually_of_real`).
 
 Maximal monotonicity enters only through `rge(I + F) = E`: for monotone `F` this implies maximal
-monotonicity (`IsMonotoneOp.isMaximalMonotoneOp`), and the converse is Minty's theorem, which is
-not formalized. Accordingly, the local notions `IsLocallyMaximalMonotoneAt` and
-`IsLocallyMaximalHypomonotoneAt` ask that `gph F` (resp. `gph (γI + F)`) coincide near the point
-with the graph of a monotone `F̃` with `rge(I + F̃) = E`, which is how the proof of Prop. 3.22
-uses Def. 3.20.
+monotonicity (`IsMonotoneOp.isMaximalMonotoneOp`), and the converse is Minty's theorem
+(`SCD/Minty`). The local notions of [Gfrerer–Outrata 2022, Def. 3.20] and Prop. 3.22, Cor. 3.23,
+Cor. 3.24 for them are in `SCD/LocalMonotone`.
 
 ## Main declarations
 
@@ -37,8 +35,6 @@ uses Def. 3.20.
   `hypoMintySubspace c B = rge(B, I - c B)`.
 * `IsFirmlyNonexpansive`, `IsFirmlyNonexpansiveOp` [Gfrerer–Outrata 2022, Def. 3.21].
 * `IsMonotoneOp`, `IsMaximalMonotoneOp` [Gfrerer–Outrata 2022, p. 15]; `resolvent F = (I + F)⁻¹`.
-* `IsLocallyMaximalMonotoneAt`, `IsLocallyMaximalHypomonotoneAt` (see above;
-  [Gfrerer–Outrata 2022, Def. 3.20]).
 * `subdiffMap φ`: `∂φ : E ⇉ E` through the Riesz map; `moreauEnv φ`: the Moreau envelope.
 
 ## Main results
@@ -47,9 +43,6 @@ uses Def. 3.20.
   `IsMonotoneOp.exists_firm_of_mem_scDeriv`: [Gfrerer–Outrata 2022, Prop. 3.22] for monotone `F`
   with `rge(I + F) = E`: `F` is an SCD mapping, `𝒮F(x, y) = {rge(B, I - B)}` and
   `𝒮*F(x, y) = {rge(Bᵀ, I - Bᵀ)}` over `B ∈ ∇̄(I + F)⁻¹(x + y)`, all firmly nonexpansive.
-* `IsLocallyMaximalMonotoneAt.scd`: [Gfrerer–Outrata 2022, Prop. 3.22], local form.
-* `IsLocallyMaximalHypomonotoneAt.scd`: [Gfrerer–Outrata 2022, Cor. 3.23].
-* `isSCDMapping_of_dense`: [Gfrerer–Outrata 2022, Cor. 3.24].
 * `exists_sub_mem_subdiffMap`: `rge(I + ∂φ) = E` for proper l.s.c. convex `φ`.
 * `isSCDMapping_subdiffMap`, `exists_symm_of_mem_scDeriv_subdiffMap`,
   `adjointSubspace_eq_of_mem_scDeriv_subdiffMap`, `scCoderiv_subdiffMap`:
@@ -653,7 +646,7 @@ theorem scCoderiv_subdiffMap {p : E × E} (hp : p ∈ graph (subdiffMap φ)) :
 
 end Convex
 
-/-! ### Locality and local maximal (hypo)monotonicity: Prop. 3.22, Cor. 3.23, Cor. 3.24 -/
+/-! ### Locality of `𝒮F` and the subspaces `rge(B, I - c B)` -/
 
 section Local
 
@@ -693,31 +686,6 @@ theorem scDeriv_subset_of_inter_eq_of_isOpen (hW : IsOpen W) (h : graph F ∩ W 
 theorem scDeriv_eq_of_inter_eq (hW : IsOpen W) (h : graph F ∩ W = graph G ∩ W) {p : E × E}
     (hp : p ∈ W) : scDeriv F p = scDeriv G p :=
   subset_antisymm (scDeriv_subset_of_inter_eq_of_isOpen hW h hp) (scDeriv_subset_of_inter_eq_of_isOpen hW h.symm hp)
-
-/-- `F` is locally maximally monotone at `p`, in the form used in the proof of
-[Gfrerer–Outrata 2022, Prop. 3.22]: near `p`, `gph F` coincides with the graph of a monotone
-`F̃` with `rge(I + F̃) = E`. (By Minty's theorem these `F̃` are exactly the maximally monotone
-mappings, and every locally maximally monotone mapping in the sense of
-[Gfrerer–Outrata 2022, Def. 3.20] has this form; neither fact is formalized here.) -/
-def IsLocallyMaximalMonotoneAt (F : E → Set E) (p : E × E) : Prop :=
-  ∃ F' : E → Set E, IsMonotoneOp F' ∧ (∀ u, ∃ x, u - x ∈ F' x) ∧
-    ∃ W : Set (E × E), IsOpen W ∧ p ∈ W ∧ graph F ∩ W = graph F' ∩ W
-
-/-- [Gfrerer–Outrata 2022, Prop. 3.22]: a locally maximally monotone mapping has the SCD
-property around `p`, and every `L ∈ 𝒮F(q)` at nearby `q ∈ gph F` is `rge(B, I - B)` with `B`
-firmly nonexpansive and `L* = rge(Bᵀ, I - Bᵀ)`. -/
-theorem IsLocallyMaximalMonotoneAt.scd {p : E × E} (hF : IsLocallyMaximalMonotoneAt F p) :
-    HasSCDPropertyAround F p ∧ ∃ U ∈ 𝓝 p, ∀ q ∈ graph F ∩ U, ∀ L ∈ scDeriv F q,
-      ∃ B : E →L[ℝ] E, IsFirmlyNonexpansiveOp B ∧ L = mintySubspace B ∧
-        adjointSubspace L = mintySubspace (ContinuousLinearMap.adjoint B) := by
-  obtain ⟨F', hF', hs, W, hW, hpW, h⟩ := hF
-  have hq' : ∀ q ∈ graph F ∩ W, q ∈ graph F' := fun q hq ↦
-    (show q ∈ graph F' ∩ W by rw [← h]; exact hq).1
-  refine ⟨⟨W, hW.mem_nhds hpW, fun q hq ↦ ?_⟩, W, hW.mem_nhds hpW, fun q hq L hL ↦ ?_⟩
-  · obtain ⟨L, hL⟩ := hF'.isSCDMapping hs q (hq' q hq)
-    exact ⟨L, scDeriv_subset_of_inter_eq_of_isOpen hW h.symm hq.2 hL⟩
-  · exact hF'.exists_firm_of_mem_scDeriv hs (hq' q hq)
-      (scDeriv_subset_of_inter_eq_of_isOpen hW h hq.2 hL)
 
 /-- The subspace `rge(B, I - c B) = {(B v, v - c B v) | v ∈ E}`. -/
 noncomputable def hypoMintySubspace (c : ℝ) (B : E →L[ℝ] E) : Submodule ℝ (E × E) :=
@@ -779,13 +747,6 @@ theorem map_shearCLM_mintySubspace (γ : ℝ) (B : E →L[ℝ] E) :
     rw [← h2, add_smul, one_smul]
     abel_nf
 
-/-- `F` is locally maximally hypomonotone at `p` [Gfrerer–Outrata 2022, Def. 3.20(2)]: for
-some `γ ≥ 0`, `γI + F` is locally maximally monotone at `(p.1, p.2 + γ p.1)` (in the sense of
-`IsLocallyMaximalMonotoneAt`). -/
-def IsLocallyMaximalHypomonotoneAt (F : E → Set E) (p : E × E) : Prop :=
-  ∃ γ : ℝ, 0 ≤ γ ∧
-    IsLocallyMaximalMonotoneAt (fun x ↦ (fun y ↦ y + γ • x) '' F x) (p.1, p.2 + γ • p.1)
-
 omit [FiniteDimensional ℝ E] in
 theorem mem_graph_add_smul_iff (γ : ℝ) {q : E × E} :
     (q.1, q.2 + γ • q.1) ∈ graph (fun x ↦ (fun y ↦ y + γ • x) '' F x) ↔ q ∈ graph F := by
@@ -797,64 +758,6 @@ theorem mem_graph_add_smul_iff (γ : ℝ) {q : E × E} :
     exact hy
   · intro hq
     exact ⟨q.2, hq, rfl⟩
-
-/-- [Gfrerer–Outrata 2022, Cor. 3.23]: a locally maximally hypomonotone mapping has the SCD
-property around `p`, and for some `γ ≥ 0` every `L ∈ 𝒮F(q)` at nearby `q ∈ gph F` is
-`rge(B, I - (1 + γ)B)` with `B` firmly nonexpansive, and `L* = rge(Bᵀ, I - (1 + γ)Bᵀ)`. -/
-theorem IsLocallyMaximalHypomonotoneAt.scd {p : E × E}
-    (hF : IsLocallyMaximalHypomonotoneAt F p) :
-    HasSCDPropertyAround F p ∧ ∃ γ : ℝ, 0 ≤ γ ∧ ∃ U ∈ 𝓝 p, ∀ q ∈ graph F ∩ U,
-      ∀ L ∈ scDeriv F q, ∃ B : E →L[ℝ] E, IsFirmlyNonexpansiveOp B ∧
-        L = hypoMintySubspace (1 + γ) B ∧
-        adjointSubspace L = hypoMintySubspace (1 + γ) (ContinuousLinearMap.adjoint B) := by
-  obtain ⟨γ, hγ, hG⟩ := hF
-  obtain ⟨⟨U, hU, hUG⟩, V, hV, hVG⟩ := hG.scd
-  have hψ : Continuous fun q : E × E ↦ (q.1, q.2 + γ • q.1) :=
-    continuous_fst.prodMk (continuous_snd.add (continuous_fst.const_smul γ))
-  have hU' : (fun q : E × E ↦ (q.1, q.2 + γ • q.1)) ⁻¹' U ∈ 𝓝 p :=
-    hψ.continuousAt.preimage_mem_nhds hU
-  have hV' : (fun q : E × E ↦ (q.1, q.2 + γ • q.1)) ⁻¹' V ∈ 𝓝 p :=
-    hψ.continuousAt.preimage_mem_nhds hV
-  have hh : ∀ u : E, HasStrictFDerivAt (fun x : E ↦ γ • x) (γ • ContinuousLinearMap.id ℝ E) u :=
-    fun u ↦ (hasStrictFDerivAt_id u).const_smul γ
-  have hadd0 : ∀ q : E × E,
-      scDeriv (fun u ↦ (fun v ↦ v + (fun x : E ↦ γ • x) u) '' F u)
-        (q.1, q.2 + (fun x : E ↦ γ • x) q.1) =
-      (fun L ↦ L.map (shearCLM ((fun _ : E ↦ γ • ContinuousLinearMap.id ℝ E) q.1) :
-        (E × E) →ₗ[ℝ] (E × E))) '' scDeriv F (q.1, q.2) := fun q ↦
-    scDeriv_add (Dh := fun _ ↦ γ • ContinuousLinearMap.id ℝ E) (Eventually.of_forall hh)
-      continuousAt_const
-  have hadd : ∀ q : E × E, scDeriv (fun x ↦ (fun y ↦ y + γ • x) '' F x) (q.1, q.2 + γ • q.1) =
-      (fun L ↦ L.map (shearCLM (γ • ContinuousLinearMap.id ℝ E) : (E × E) →ₗ[ℝ] (E × E))) ''
-        scDeriv F q := fun q ↦ by
-    have := hadd0 q
-    simp only [Prod.mk.eta] at this
-    exact this
-  refine ⟨⟨_, hU', fun q hq ↦ ?_⟩, γ, hγ, _, hV', fun q hq L hL ↦ ?_⟩
-  · obtain ⟨L, hL⟩ := hUG (q.1, q.2 + γ • q.1) ⟨(mem_graph_add_smul_iff γ).2 hq.1, hq.2⟩
-    rw [hadd q] at hL
-    obtain ⟨L', hL', -⟩ := hL
-    exact ⟨L', hL'⟩
-  · have hmem : L.map (shearCLM (γ • ContinuousLinearMap.id ℝ E) : (E × E) →ₗ[ℝ] (E × E)) ∈
-        scDeriv (fun x ↦ (fun y ↦ y + γ • x) '' F x) (q.1, q.2 + γ • q.1) := by
-      rw [hadd q]; exact ⟨L, hL, rfl⟩
-    obtain ⟨B, hB, hLB, -⟩ :=
-      hVG (q.1, q.2 + γ • q.1) ⟨(mem_graph_add_smul_iff γ).2 hq.1, hq.2⟩ _ hmem
-    have hL' : L = hypoMintySubspace (1 + γ) B := by
-      rw [← map_shearCLM_mintySubspace, ← hLB]
-      exact (map_symm_map_eq (shear (γ • ContinuousLinearMap.id ℝ E)) L).symm
-    exact ⟨B, hB, hL', by rw [hL', adjointSubspace_hypoMintySubspace]⟩
-
-/-- [Gfrerer–Outrata 2022, Cor. 3.24]: a mapping which is locally maximally hypomonotone on a
-dense subset of its graph is an SCD mapping. -/
-theorem isSCDMapping_of_dense {D : Set (E × E)} (hD : graph F ⊆ closure D)
-    (hDF : ∀ p ∈ D, IsLocallyMaximalHypomonotoneAt F p) (hDg : D ⊆ graph F) :
-    IsSCDMapping F := by
-  intro p hp
-  obtain ⟨d, hd, hdlim⟩ := mem_closure_iff_seq_limit.1 (hD hp)
-  refine hasSCDPropertyAt_of_tendsto hdlim fun k ↦ ?_
-  obtain ⟨U, hU, hUF⟩ := (hDF _ (hd k)).scd.1
-  exact hUF _ ⟨hDg (hd k), mem_of_mem_nhds hU⟩
 
 end Local
 
