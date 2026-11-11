@@ -20,6 +20,9 @@ epi-convergence analytically. They are used in the proof of [Mordukhovich 2024, 
   convex functions are convex [Mordukhovich 2024, Ex. 1.134(i), (iii)].
 * `moreauEnvelope_anti`, `tendsto_moreauEnvelope_nhdsGT_zero`: `e_λφ(u) ↑ φ(u)` as `λ ↓ 0` for a
   nonnegative function `φ` that is l.s.c. at `u` [Mordukhovich 2024, Ex. 1.136].
+* `EpiTendsto.tendsto_moreauEnvelope`, `epiTendsto_of_tendsto_moreauEnvelope`: for nonnegative
+  functions, epi-convergence is equivalent to the convergence of the Moreau envelopes for all
+  small `λ > 0` [Mordukhovich 2024, Ex. 1.135(i)].
 * `geometricallyDerivableAt_iff_isSetLimit`, `protoDifferentiableAt_iff_isSetLimit`:
   proto-differentiability of `F` at `(x̄, ȳ)` is the set convergence of `(gph F - (x̄, ȳ))/t` to
   the tangent cone as `t ↓ 0` [Mordukhovich 2024, Ex. 1.139(iii)].
@@ -28,6 +31,10 @@ epi-convergence analytically. They are used in the proof of [Mordukhovich 2024, 
 
 * Epigraphs are subsets of `E × ℝ`, so a point `x` with `φ₀(x) = -∞` needs a diagonal argument
   in the recovery part of Ex. 1.133 (`exists_diag_seq`).
+* In Ex. 1.135(i) the uniform convergence on bounded sets is stated as continuous convergence,
+  `e_λφ_i(u') → e_λφ₀(u)` as `i → l`, `u' → u`, with values in `EReal`; this needs a proper
+  (finite-dimensional) space. Neither direction needs the functions to be proper, and only the
+  converse needs `φ₀` to be l.s.c.
 * Along a general filter `l` the lower estimate of Ex. 1.133 is a lower limit along `l ×ˢ 𝓝 x`,
   and the recovery sequence is asked along every sequence in `l`, as in `innerLimit`.
 -/
@@ -342,6 +349,254 @@ theorem tendsto_moreauEnvelope_nhdsGT_zero (hφ : ∀ x, 0 ≤ φ x)
     linarith
 
 end Moreau
+
+/-! ### Exercise 1.135(i): epi-convergence via Moreau envelopes -/
+
+section MoreauEpi
+
+/-- A diagonal choice of indices: if `P n k` holds for large `k` for each `n`, then some
+`n(k) → ∞` has `P (n k) k` for large `k`. -/
+theorem exists_diag_nat {P : ℕ → ℕ → Prop} (hP : ∀ n, ∀ᶠ k in atTop, P n k) :
+    ∃ n : ℕ → ℕ, Tendsto n atTop atTop ∧ ∀ᶠ k in atTop, P (n k) k := by
+  obtain ⟨n, hn, -, h⟩ := exists_diag_seq (x := (0 : ℝ)) (v := fun _ _ ↦ 0)
+    (fun _ ↦ tendsto_const_nhds) hP
+  exact ⟨n, hn, h⟩
+
+/-- `a ≤ b` in `EReal` if `a ≤ c` for every real `c > b`. -/
+theorem ereal_le_of_forall_real_gt {a b : EReal} (h : ∀ c : ℝ, b < c → a ≤ c) : a ≤ b := by
+  by_contra hlt
+  obtain ⟨c, hc1, hc2⟩ := EReal.lt_iff_exists_real_btwn.1 (not_le.1 hlt)
+  exact not_le.2 hc2 (h c hc1)
+
+variable {ι E : Type*} [NormedAddCommGroup E] {l : Filter ι} {φ : ι → E → EReal}
+  {φ₀ : E → EReal}
+
+/-- The sequential core of Ex. 1.135(i): the two conditions of Ex. 1.133 give the continuous
+convergence of the Moreau envelopes of nonnegative functions. -/
+theorem tendsto_moreauEnvelope_of_seq [ProperSpace E] {φ : ℕ → E → EReal} {m : ℝ}
+    (hm : 0 < m) (hφ : ∀ k x, 0 ≤ φ k x)
+    (hinf : ∀ x, ∀ ψ : ℕ → ℕ, StrictMono ψ → ∀ z : ℕ → E, Tendsto z atTop (𝓝 x) →
+      φ₀ x ≤ liminf (fun j ↦ φ (ψ j) (z j)) atTop)
+    (hsup : ∀ x, ∃ z : ℕ → E, Tendsto z atTop (𝓝 x) ∧
+      limsup (fun k ↦ φ k (z k)) atTop ≤ φ₀ x)
+    {u : ℕ → E} {u₀ : E} (hu : Tendsto u atTop (𝓝 u₀)) :
+    Tendsto (fun k ↦ moreauEnvelope (φ k) m (u k)) atTop (𝓝 (moreauEnvelope φ₀ m u₀)) := by
+  refine tendsto_of_le_liminf_of_limsup_le ?_ ?_
+  · -- lower estimate, by compactness of near-minimizers
+    by_contra hlt
+    obtain ⟨c, hc1, hc2⟩ := EReal.lt_iff_exists_real_btwn.1 (not_le.1 hlt)
+    obtain ⟨ψ, hψ, hlt'⟩ := extraction_of_frequently_atTop
+      (frequently_lt_of_liminf_lt (by isBoundedDefault) hc1)
+    have hx : ∀ j, ∃ x, proxObjective (φ (ψ j)) m (u (ψ j)) x < c := fun j ↦ by
+      have h : (⨅ x, proxObjective (φ (ψ j)) m (u (ψ j)) x) < c := hlt' j
+      exact iInf_lt_iff.1 h
+    choose x hx using hx
+    have hs : ∀ j, ∃ s : ℝ, φ (ψ j) (x j) = s ∧ 0 ≤ s ∧
+        s + (2 * m)⁻¹ * ‖x j - u (ψ j)‖ ^ 2 < c := by
+      intro j
+      have h' : φ (ψ j) (x j) + (((2 * m)⁻¹ * ‖x j - u (ψ j)‖ ^ 2 : ℝ) : EReal) < c := hx j
+      have h0 := hφ (ψ j) (x j)
+      have hlt : φ (ψ j) (x j) < c :=
+        (le_add_of_nonneg_right (EReal.coe_nonneg.2 (by positivity))).trans_lt h'
+      obtain ⟨s, hs⟩ : ∃ s : ℝ, φ (ψ j) (x j) = s :=
+        ⟨_, (EReal.coe_toReal (ne_top_of_lt hlt)
+          (lt_of_lt_of_le EReal.bot_lt_zero h0).ne').symm⟩
+      rw [hs] at h' h0
+      exact ⟨s, hs, by exact_mod_cast h0, by exact_mod_cast h'⟩
+    choose s hs hs0 hsc using hs
+    -- the near-minimizers are bounded
+    obtain ⟨R, hR⟩ := isBounded_iff_forall_norm_le.1 (isBounded_range_of_tendsto u hu)
+    have hb : ∀ j, x j ∈ closedBall (0 : E) (R + (2 * m * c + 1)) := by
+      intro j
+      rw [mem_closedBall_zero_iff]
+      have h1 := hsc j
+      have h2 : ‖x j - u (ψ j)‖ ^ 2 < 2 * m * c := by
+        have h3 : (2 * m)⁻¹ * ‖x j - u (ψ j)‖ ^ 2 < c := by linarith [hs0 j]
+        rwa [inv_mul_eq_div, div_lt_iff₀ (by positivity), mul_comm] at h3
+      have h4 : ‖x j - u (ψ j)‖ ≤ 2 * m * c + 1 := by
+        nlinarith [sq_nonneg (‖x j - u (ψ j)‖ - 1), norm_nonneg (x j - u (ψ j))]
+      have h5 : ‖x j‖ ≤ ‖u (ψ j)‖ + ‖x j - u (ψ j)‖ := by
+        simpa using norm_add_le (u (ψ j)) (x j - u (ψ j))
+      linarith [hR (u (ψ j)) (mem_range_self _)]
+    obtain ⟨x₀, -, θ, hθ, hxθ⟩ := tendsto_subseq_of_bounded isBounded_closedBall hb
+    have hlim := hinf x₀ (fun j ↦ ψ (θ j)) (hψ.comp hθ) (fun j ↦ x (θ j)) hxθ
+    have hr : Tendsto (fun j ↦ (2 * m)⁻¹ * ‖x (θ j) - u (ψ (θ j))‖ ^ 2) atTop
+        (𝓝 ((2 * m)⁻¹ * ‖x₀ - u₀‖ ^ 2)) :=
+      ((hxθ.sub (hu.comp (hψ.comp hθ).tendsto_atTop)).norm.pow 2).const_mul _
+    have hle : φ₀ x₀ ≤ ((c - (2 * m)⁻¹ * ‖x₀ - u₀‖ ^ 2 : ℝ) : EReal) := by
+      refine ereal_le_of_forall_real_gt fun d hd ↦ ?_
+      have hd : c - (2 * m)⁻¹ * ‖x₀ - u₀‖ ^ 2 < d := EReal.coe_lt_coe_iff.1 hd
+      refine hlim.trans (liminf_le_of_frequently_le' (Eventually.frequently ?_))
+      filter_upwards [hr.eventually_const_lt (show c - d < (2 * m)⁻¹ * ‖x₀ - u₀‖ ^ 2 by
+        linarith)] with j hj
+      show φ (ψ (θ j)) (x (θ j)) ≤ (d : EReal)
+      rw [hs (θ j)]
+      exact EReal.coe_le_coe_iff.2 (by linarith [hsc (θ j)])
+    have hfin : moreauEnvelope φ₀ m u₀ ≤ c := by
+      refine (moreauEnvelope_le u₀ x₀).trans ?_
+      have := add_le_add hle (le_refl (((2 * m)⁻¹ * ‖x₀ - u₀‖ ^ 2 : ℝ) : EReal))
+      rwa [← EReal.coe_add, sub_add_cancel] at this
+    exact not_le.2 hc2 hfin
+  · -- upper estimate, by recovery sequences
+    refine le_iInf fun x ↦ ereal_le_of_forall_real_gt fun c hc ↦ ?_
+    obtain ⟨z, hz, hl⟩ := hsup x
+    have hc' : φ₀ x + (((2 * m)⁻¹ * ‖x - u₀‖ ^ 2 : ℝ) : EReal) < c := hc
+    have h1 : φ₀ x < ((c - (2 * m)⁻¹ * ‖x - u₀‖ ^ 2 : ℝ) : EReal) := by
+      by_contra h
+      have := add_le_add (not_lt.1 h) (le_refl (((2 * m)⁻¹ * ‖x - u₀‖ ^ 2 : ℝ) : EReal))
+      rw [← EReal.coe_add, sub_add_cancel] at this
+      exact not_le.2 hc' this
+    obtain ⟨d, hd1, hd2⟩ := EReal.lt_iff_exists_real_btwn.1 h1
+    have hd2 : d < c - (2 * m)⁻¹ * ‖x - u₀‖ ^ 2 := EReal.coe_lt_coe_iff.1 hd2
+    have he1 : ∀ᶠ k in atTop, φ k (z k) < d := eventually_lt_of_limsup_lt (hl.trans_lt hd1)
+    have hr : Tendsto (fun k ↦ (2 * m)⁻¹ * ‖z k - u k‖ ^ 2) atTop
+        (𝓝 ((2 * m)⁻¹ * ‖x - u₀‖ ^ 2)) := ((hz.sub hu).norm.pow 2).const_mul _
+    refine limsup_le_of_le (by isBoundedDefault) ?_
+    filter_upwards [he1, hr.eventually_lt_const (show (2 * m)⁻¹ * ‖x - u₀‖ ^ 2 < c - d by
+      linarith)] with k hk1 hk2
+    refine (moreauEnvelope_le (u k) (z k)).trans ?_
+    have := EReal.add_lt_add hk1 (EReal.coe_lt_coe_iff.2 hk2)
+    rw [← EReal.coe_add, add_sub_cancel] at this
+    exact this.le
+
+/-- **Epi-convergence via Moreau envelopes** [Mordukhovich 2024, Ex. 1.135(i)], the direct
+part: if the nonnegative functions `φ_i` epi-converge to `φ₀`, then for every `λ > 0` the Moreau
+envelopes converge continuously, `e_λφ_i(u') → e_λφ₀(u)` as `i → l`, `u' → u`. In particular
+they converge pointwise, and locally uniformly where `e_λφ₀` is finite. -/
+theorem EpiTendsto.tendsto_moreauEnvelope [ProperSpace E] [l.IsCountablyGenerated] [l.NeBot]
+    (h : EpiTendsto l φ φ₀) (hφ : ∀ i x, 0 ≤ φ i x) {m : ℝ} (hm : 0 < m) (u₀ : E) :
+    Tendsto (fun p : ι × E ↦ moreauEnvelope (φ p.1) m p.2) (l ×ˢ 𝓝 u₀)
+      (𝓝 (moreauEnvelope φ₀ m u₀)) := by
+  rw [epiTendsto_iff] at h
+  refine tendsto_of_seq_tendsto fun p hp ↦ ?_
+  have ha : Tendsto (fun k ↦ (p k).1) atTop l := tendsto_fst.comp hp
+  have hu : Tendsto (fun k ↦ (p k).2) atTop (𝓝 u₀) := tendsto_snd.comp hp
+  exact tendsto_moreauEnvelope_of_seq (φ := fun k ↦ φ (p k).1) hm (fun k x ↦ hφ _ x)
+    (fun x ψ hψ z hz ↦ (h x).1.trans
+      (liminf_le_liminf_comp ((ha.comp hψ.tendsto_atTop).prodMk hz) _))
+    (fun x ↦ (h x).2 _ ha) hu
+
+/-- Pointwise convergence of the Moreau envelopes under epi-convergence
+[Mordukhovich 2024, Ex. 1.135(i)]. -/
+theorem EpiTendsto.tendsto_moreauEnvelope_apply [ProperSpace E] [l.IsCountablyGenerated]
+    [l.NeBot] (h : EpiTendsto l φ φ₀) (hφ : ∀ i x, 0 ≤ φ i x) {m : ℝ} (hm : 0 < m) (u : E) :
+    Tendsto (fun i ↦ moreauEnvelope (φ i) m u) l (𝓝 (moreauEnvelope φ₀ m u)) :=
+  (h.tendsto_moreauEnvelope hφ hm u).comp (tendsto_id.prodMk tendsto_const_nhds)
+
+/-- **Epi-convergence via Moreau envelopes** [Mordukhovich 2024, Ex. 1.135(i)], the converse
+part: if `φ_i ≥ 0`, `φ₀ ≥ 0` is l.s.c., and `e_λφ_i → e_λφ₀` pointwise for all small `λ > 0`,
+then `φ_i` epi-converges to `φ₀`. -/
+theorem epiTendsto_of_tendsto_moreauEnvelope [l.IsCountablyGenerated] [l.NeBot]
+    (hφ : ∀ i x, 0 ≤ φ i x) (hφ₀ : ∀ x, 0 ≤ φ₀ x) (hlsc : LowerSemicontinuous φ₀) {m₀ : ℝ}
+    (hm₀ : 0 < m₀)
+    (h : ∀ m ∈ Ioo 0 m₀, ∀ u,
+      Tendsto (fun i ↦ moreauEnvelope (φ i) m u) l (𝓝 (moreauEnvelope φ₀ m u))) :
+    EpiTendsto l φ φ₀ := by
+  classical
+  rw [epiTendsto_iff]
+  refine fun x ↦ ⟨?_, fun a ha ↦ ?_⟩
+  · by_contra hlt
+    obtain ⟨c, hc1, hc2⟩ := EReal.lt_iff_exists_real_btwn.1 (not_le.1 hlt)
+    obtain ⟨c', hc3, hc4⟩ := EReal.lt_iff_exists_real_btwn.1 hc2
+    have hcc : c < c' := EReal.coe_lt_coe_iff.1 hc3
+    obtain ⟨p, hp, hlt'⟩ := exists_seq_forall_of_frequently
+      (frequently_lt_of_liminf_lt (by isBoundedDefault) hc1)
+    have hev : ∀ᶠ m in 𝓝[>] (0 : ℝ), (c' : EReal) < moreauEnvelope φ₀ m x ∧ m ∈ Ioo 0 m₀ :=
+      ((tendsto_moreauEnvelope_nhdsGT_zero hφ₀ (hlsc x)).eventually_const_lt hc4).and
+        (Ioo_mem_nhdsGT hm₀)
+    obtain ⟨m, hm1, hm2⟩ := hev.exists
+    have ht : Tendsto (fun k ↦ moreauEnvelope (φ (p k).1) m x) atTop
+        (𝓝 (moreauEnvelope φ₀ m x)) := (h m hm2 x).comp (tendsto_fst.comp hp)
+    have hr : Tendsto (fun k ↦ (2 * m)⁻¹ * ‖(p k).2 - x‖ ^ 2) atTop
+        (𝓝 ((2 * m)⁻¹ * ‖x - x‖ ^ 2)) :=
+      (((tendsto_snd.comp hp).sub_const x).norm.pow 2).const_mul _
+    have hr0 : (2 * m)⁻¹ * ‖x - x‖ ^ 2 = 0 := by simp
+    rw [hr0] at hr
+    have he : ∀ᶠ k in atTop, moreauEnvelope (φ (p k).1) m x < c' := by
+      filter_upwards [hr.eventually_lt_const (sub_pos.2 hcc)] with k hk
+      refine (moreauEnvelope_le x (p k).2).trans_lt ?_
+      have := EReal.add_lt_add (hlt' k) (EReal.coe_lt_coe_iff.2 hk)
+      rwa [← EReal.coe_add, add_sub_cancel] at this
+    obtain ⟨k, hk1, hk2⟩ := ((ht.eventually_const_lt hm1).and he).exists
+    exact lt_asymm hk1 hk2
+  · have hx0 := hφ₀ x
+    rcases eq_or_ne (φ₀ x) ⊤ with hx | hxt
+    · exact ⟨fun _ ↦ x, tendsto_const_nhds, hx ▸ le_top⟩
+    obtain ⟨s, hs⟩ : ∃ s : ℝ, φ₀ x = s :=
+      ⟨_, (EReal.coe_toReal hxt (lt_of_lt_of_le EReal.bot_lt_zero hx0).ne').symm⟩
+    have hs0 : 0 ≤ s := by rw [hs] at hx0; exact_mod_cast hx0
+    -- near-minimizers of the envelopes with parameters `m₀/(n + 2) ↓ 0`
+    have hmpos : ∀ n : ℕ, 0 < m₀ / ((n : ℝ) + 2) := fun n ↦ by positivity
+    have hmm : ∀ n : ℕ, m₀ / ((n : ℝ) + 2) ∈ Ioo 0 m₀ := fun n ↦ ⟨hmpos n, by
+      rw [div_lt_iff₀ (by positivity)]
+      nlinarith [Nat.cast_nonneg (α := ℝ) n]⟩
+    let P : ℕ → ℕ → Prop := fun n k ↦ ∃ y,
+      proxObjective (φ (a k)) (m₀ / ((n : ℝ) + 2)) x y < ((s + 1 / ((n : ℝ) + 1) : ℝ) : EReal)
+    have hP : ∀ n, ∀ᶠ k in atTop, P n k := by
+      intro n
+      have ht : Tendsto (fun k ↦ moreauEnvelope (φ (a k)) (m₀ / ((n : ℝ) + 2)) x) atTop
+          (𝓝 (moreauEnvelope φ₀ (m₀ / ((n : ℝ) + 2)) x)) := (h _ (hmm n) x).comp ha
+      have hlt : moreauEnvelope φ₀ (m₀ / ((n : ℝ) + 2)) x
+          < ((s + 1 / ((n : ℝ) + 1) : ℝ) : EReal) := by
+        refine (moreauEnvelope_le_self x).trans_lt ?_
+        rw [hs]
+        have : (0 : ℝ) < 1 / ((n : ℝ) + 1) := by positivity
+        exact EReal.coe_lt_coe_iff.2 (by linarith)
+      filter_upwards [ht.eventually_lt_const hlt] with k hk
+      have hk' : (⨅ y, proxObjective (φ (a k)) (m₀ / ((n : ℝ) + 2)) x y)
+          < ((s + 1 / ((n : ℝ) + 1) : ℝ) : EReal) := hk
+      exact iInf_lt_iff.1 hk'
+    obtain ⟨n, hn, hPn⟩ := exists_diag_nat hP
+    let z : ℕ → E := fun k ↦ if hk : P (n k) k then hk.choose else x
+    have hz : ∀ᶠ k in atTop, φ (a k) (z k) < ((s + 1 / ((n k : ℝ) + 1) : ℝ) : EReal) ∧
+        ‖z k - x‖ ^ 2 < 2 * (m₀ / ((n k : ℝ) + 2)) * (s + 1) := by
+      filter_upwards [hPn] with k hk
+      have hzk : z k = hk.choose := dif_pos hk
+      have hspec : φ (a k) (z k)
+          + (((2 * (m₀ / ((n k : ℝ) + 2)))⁻¹ * ‖z k - x‖ ^ 2 : ℝ) : EReal)
+          < ((s + 1 / ((n k : ℝ) + 1) : ℝ) : EReal) := by
+        rw [hzk]
+        exact hk.choose_spec
+      have hmk := hmpos (n k)
+      have hnn : (0 : EReal)
+          ≤ (((2 * (m₀ / ((n k : ℝ) + 2)))⁻¹ * ‖z k - x‖ ^ 2 : ℝ) : EReal) :=
+        EReal.coe_nonneg.2 (by positivity)
+      refine ⟨(le_add_of_nonneg_right hnn).trans_lt hspec, ?_⟩
+      have h2 : (2 * (m₀ / ((n k : ℝ) + 2)))⁻¹ * ‖z k - x‖ ^ 2 < s + 1 / ((n k : ℝ) + 1) :=
+        EReal.coe_lt_coe_iff.1 ((le_add_of_nonneg_left (hφ (a k) (z k))).trans_lt hspec)
+      have h3 : 1 / ((n k : ℝ) + 1) ≤ 1 := by
+        rw [div_le_one (by positivity)]
+        linarith [Nat.cast_nonneg (α := ℝ) (n k)]
+      rw [inv_mul_eq_div, div_lt_iff₀ (by positivity)] at h2
+      calc ‖z k - x‖ ^ 2 < (s + 1 / ((n k : ℝ) + 1)) * (2 * (m₀ / ((n k : ℝ) + 2))) := h2
+        _ ≤ (s + 1) * (2 * (m₀ / ((n k : ℝ) + 2))) :=
+          mul_le_mul_of_nonneg_right (by linarith) (by linarith)
+        _ = 2 * (m₀ / ((n k : ℝ) + 2)) * (s + 1) := by ring
+    refine ⟨z, Metric.tendsto_nhds.2 fun ε hε ↦ ?_, ?_⟩
+    · filter_upwards [hz, hn.eventually_ge_atTop ⌈2 * m₀ * (s + 1) / ε ^ 2⌉₊] with k hk hkn
+      have h1 : 2 * m₀ * (s + 1) / ε ^ 2 ≤ (n k : ℝ) :=
+        (Nat.le_ceil _).trans (by exact_mod_cast hkn)
+      rw [div_le_iff₀ (by positivity)] at h1
+      have h2 : 2 * (m₀ / ((n k : ℝ) + 2)) * (s + 1) < ε ^ 2 := by
+        have h3 : 2 * (m₀ / ((n k : ℝ) + 2)) * (s + 1)
+            = 2 * m₀ * (s + 1) / ((n k : ℝ) + 2) := by ring
+        rw [h3, div_lt_iff₀ (by positivity)]
+        nlinarith [sq_pos_of_pos hε]
+      rw [dist_eq_norm]
+      exact lt_of_pow_lt_pow_left₀ 2 hε.le (hk.2.trans h2)
+    · rw [hs]
+      refine ereal_le_of_forall_real_gt fun c hc ↦ ?_
+      have hc : s < c := EReal.coe_lt_coe_iff.1 hc
+      obtain ⟨N, hN⟩ := exists_nat_one_div_lt (sub_pos.2 hc)
+      refine limsup_le_of_le (by isBoundedDefault) ?_
+      filter_upwards [hz, hn.eventually_ge_atTop N] with k hk hkn
+      refine hk.1.le.trans (EReal.coe_le_coe_iff.2 ?_)
+      have h1 : (N : ℝ) ≤ n k := by exact_mod_cast hkn
+      have h2 : 1 / ((n k : ℝ) + 1) ≤ 1 / ((N : ℝ) + 1) :=
+        one_div_le_one_div_of_le (by positivity) (by linarith)
+      linarith
+
+end MoreauEpi
 
 /-! ### Exercise 1.139(iii): proto-differentiability as set convergence -/
 
