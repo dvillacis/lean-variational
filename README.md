@@ -61,7 +61,7 @@ subgradients and the port of OptLib), pinned in `lakefile.toml`.
 | Marginal functions and compositions | `Subdifferential/Marginal`, `Subdifferential/MarginalLipschitz`, `Subdifferential/InfConvolution`, `Subdifferential/ChainRule`, `Subdifferential/ProductRule`, `Subdifferential/MinMax` | M Thm. 4.1–Thm. 4.10 |
 | Mean value theorems | `Subdifferential/MeanValue`, `Subdifferential/MeanValueIneq`, `Subdifferential/SymmetricMeanValue`, `Subdifferential/Characterizations`, `Subdifferential/MonotoneConvex` | approximate and symmetric mean value theorems; characterizations of Lipschitz continuity (completing M Thm. 1.22), constancy, strict differentiability, monotonicity and convexity (M Thm. 4.11–4.19) |
 | Clarke generalized gradient | `Subdifferential/Clarke` | generalized directional derivative and generalized gradient ([Mordukhovich–Nam 2022, Def. 7.1, 7.21]); `∂f ⊆ ∂̄f`, `∂̄f = co ∂f` in finite dimensions (Thm. 7.69, M (1.83), CV Thm. 16.10); full duality, compactness, symmetry, Fermat's rule, smooth and convex cases, sum and scalar rules, composition with the projection `E × F → E` |
-| SCD mappings | `SCD/Grassmannian`, `SCD/Adjoint`, `SCD/Basic`, `SCD/SingleValued`, `SCD/Calculus`, `SCD/GraphLipschitz`, `SCD/Derivable`, `SCD/Product`, `SCD/Monotone`, `SCD/Minty`, `SCD/LocalMonotone` | metric and compactness of the space of subspaces, adjoint subspaces; graphical smoothness, SC derivatives `𝒮F`, `𝒮*F`, SCD property ([Gfrerer–Outrata 2022, Sect. 3]); Lipschitz maps via Rademacher, `C¹` changes of variables, `F + h`, graphically Lipschitzian and (hypo)monotone maps, Minty's theorem, convex subdifferentials; product rule ([Gfrerer–Mandlmayr–Outrata–Valdman 2023, Prop. 3.5]) |
+| SCD mappings | `SCD/Grassmannian`, `SCD/Adjoint`, `SCD/Basic`, `SCD/SingleValued`, `SCD/Calculus`, `SCD/GraphLipschitz`, `SCD/Derivable`, `SCD/Product`, `SCD/Monotone`, `SCD/Minty`, `SCD/LocalMonotone`, `SCD/ProxRegular` | metric and compactness of the space of subspaces, adjoint subspaces; graphical smoothness, SC derivatives `𝒮F`, `𝒮*F`, SCD property ([Gfrerer–Outrata 2022, Sect. 3]); Lipschitz maps via Rademacher, `C¹` changes of variables, `F + h`, graphically Lipschitzian and (hypo)monotone maps, Minty's theorem, convex subdifferentials; product rule ([Gfrerer–Mandlmayr–Outrata–Valdman 2023, Prop. 3.5]) |
 | SCD regularity and Newton's method | `SCD/Regularity`, `SCD/Semismooth`, `SCD/SemismoothPrimal`, `SCD/Subregularity`, `SCD/SemismoothSubregularity` | SCD regularity and `scdreg`; SCD semismooth\* maps and local superlinear convergence of the SCD semismooth\* Newton method; strong metric subregularity via `T♯` ([Gfrerer–Outrata 2022, Sect. 4–6], [Gfrerer–Outrata 2024, Sect. 2.5]) |
 | Second-order subdifferentials | `SecondOrder/Basic` | combined and partial second-order subdifferentials (M24 Def. 1.46, 1.52); `C²` and `C^{1,1}` functions, sum rules (M24 Prop. 1.47–1.54); regular coderivative sum rule |
 | Prox-regularity | `SecondOrder/ProxRegular` | proximal subgradients, `φ`-attentive localizations, hypomonotonicity; prox-regularity via hypomonotone localizations (M24 Thm. 1.65) |
@@ -97,9 +97,9 @@ assume prox-boundedness, which the book omits (a correction). Cor. 1.87, Thm. 1.
 with its corollaries remain.
 
 For SCD mappings, `ROADMAP.md` lists the results of [Gfrerer–Outrata 2022, Sect. 3–6] and their
-Lean names. Everything there is formalized except the symmetric representation of
-`𝒮∂q` for prox-regular `q` (Prop. 3.26, whose SCD part follows from [Mordukhovich 2024, Cor. 1.72])
-and Cor. 3.27,
+Lean names. Everything there is formalized except the local maximal hypomonotonicity of `∂q`
+for prox-regular `q` (the first claim of Prop. 3.26; the rest of Prop. 3.26 and Cor. 3.27 are in
+`SCD/ProxRegular`),
 quadratic bundles (3.30–3.34), the adjoint formulas (21) and (24b) for a general change of
 variables, and the worked examples. Minty's theorem is proved (`SCD/Minty`, via the Fitzpatrick
 function), so maximally monotone mappings are SCD; Prop. 3.22–Cor. 3.24 are proved for the

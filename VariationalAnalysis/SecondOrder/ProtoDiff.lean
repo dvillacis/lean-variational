@@ -247,12 +247,15 @@ variable {φ : E → EReal} {x₀ : E}
 
 /-- For `φ` continuously prox-regular at `x₀` for `v₀ = ⟨g, ·⟩`, there are `λ > 0` and a function
 `e` (the Moreau envelope of a localization of `φ`) with gradient `⟨f(·), ·⟩` Lipschitz around
-`ū = x₀ + λg`, such that near `(x₀, g)`, `⟨y, ·⟩ ∈ ∂φ(x)` iff `y = f(x + λy)`. -/
+`ū = x₀ + λg`, such that near `(x₀, g)`, `⟨y, ·⟩ ∈ ∂φ(x)` iff `y = f(x + λy)`. Moreover
+`u ↦ u - λ f(u)` (the proximal mapping of the localization) is monotone around `ū`. -/
 theorem ContinuouslyProxRegularFor.exists_local_moreau {g : E}
     (hφ : ContinuouslyProxRegularFor φ x₀ (toDual ℝ E g)) :
     ∃ l > (0 : ℝ), ∃ δ > (0 : ℝ), ∃ e : E → ℝ, ∃ f : E → E, ∃ K : ℝ≥0,
       (∀ u ∈ ball (x₀ + l • g) δ, HasFDerivAt e (toDual ℝ E (f u)) u) ∧
       LipschitzOnWith K f (ball (x₀ + l • g) δ) ∧
+      (∀ u₁ ∈ ball (x₀ + l • g) δ, ∀ u₂ ∈ ball (x₀ + l • g) δ,
+        0 ≤ ⟪(u₁ - l • f u₁) - (u₂ - l • f u₂), u₁ - u₂⟫_ℝ) ∧
       ∀ᶠ q : E × E in 𝓝 (x₀, g), (toDual ℝ E q.2 ∈ subdiff φ q.1 ↔ q.2 = f (q.1 + l • q.2)) := by
   classical
   obtain ⟨hpr, hsc⟩ := hφ
@@ -341,7 +344,7 @@ theorem ContinuouslyProxRegularFor.exists_local_moreau {g : E}
   have hdual : ∀ y : E, ‖toDual ℝ E y - v₀‖ = dist y g := fun y ↦ by
     rw [hv₀, ← map_sub, LinearIsometryEquiv.norm_map, dist_eq_norm]
   refine ⟨l, hl, δ', hδ', fun u ↦ (moreauEnvelope ψ l u).toReal, f, Real.toNNReal (3 / l),
-    fun u hu ↦ ?_, ?_, ?_⟩
+    fun u hu ↦ ?_, ?_, ?_, ?_⟩
   · -- the gradient of the envelope
     have hu₁ : u ∈ ball (x₀ + l • g) δ := ball_subset_ball hδ'δ hu
     have hu₂ : u ∈ ball (x₀ + l • g) δ₂ := ball_subset_ball hδ'δ₂ hu
@@ -359,6 +362,18 @@ theorem ContinuouslyProxRegularFor.exists_local_moreau {g : E}
       mul_comm 3, mul_assoc]
     refine mul_le_mul_of_nonneg_left ?_ (inv_nonneg.2 hl.le)
     linarith [norm_sub_le (u₁ - u₂) (p u₁ - p u₂)]
+  · -- monotonicity of the proximal mapping
+    intro u₁ hu₁ u₂ hu₂
+    have hu₁' : u₁ ∈ ball (x₀ + l • g) δ := ball_subset_ball hδ'δ hu₁
+    have hu₂' : u₂ ∈ ball (x₀ + l • g) δ := ball_subset_ball hδ'δ hu₂
+    have hfp : ∀ u : E, u - l • f u = p u := fun u ↦ by
+      rw [hf]; dsimp only
+      rw [smul_smul, mul_inv_cancel₀ hl.ne', one_smul, sub_sub_cancel]
+    obtain ⟨-, -, -, s₁, hs₁, -⟩ := hloc u₁ hu₁'
+    obtain ⟨-, -, -, s₂, hs₂, -⟩ := hloc u₂ hu₂'
+    rw [hfp, hfp]
+    exact inner_nonneg_of_mem_proximalMap hl hs₁ hs₂ (by rw [hpU u₁ hu₁']; rfl)
+      (by rw [hpU u₂ hu₂']; rfl)
   · -- the local description of the graph
     set W : Set (E × E) := {q | dist q.1 x₀ < τ ∧ dist q.2 g < τ ∧
       dist (q.1 + l • q.2) (x₀ + l • g) < δ'} with hW
@@ -426,7 +441,7 @@ theorem ContinuouslyProxRegularFor.subgradGraphDeriv_subset_secondOrderSubdiff {
     (hφ : ContinuouslyProxRegularFor φ x₀ (toDual ℝ E g))
     (hproto : ProtoDifferentiableAt (subdiff φ) x₀ (toDual ℝ E g)) (u : E) :
     subgradGraphDeriv φ x₀ (toDual ℝ E g) u ⊆ secondOrderSubdiff φ x₀ (toDual ℝ E g) u := by
-  obtain ⟨l, hl, δ, hδ, e, f, K, he, hfL, hloc⟩ := hφ.exists_local_moreau
+  obtain ⟨l, hl, δ, hδ, e, f, K, he, hfL, -, hloc⟩ := hφ.exists_local_moreau
   have hv₀mem : toDual ℝ E g ∈ subdiff φ x₀ := hφ.1.1
   set v₀ := toDual ℝ E g with hv₀
   set ū := x₀ + l • g with hū
