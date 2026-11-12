@@ -180,35 +180,10 @@ theorem ContinuouslyProxRegularFor.exists_dirDifferentiableAt_proximalMap {g : E
   refine ⟨l₀, hl₀, fun l hl hll ↦ ?_⟩
   obtain ⟨δ, hδ, p, hp0, hpU, hLip, hgraph⟩ := H l hl hll
   refine ⟨δ, hδ, p, hp0, hpU, hLip, ?_⟩
-  let e : (E × StrongDual ℝ E) ≃L[ℝ] (E × E) := proxGraphEquiv l hl.ne'
-  have hes : ∀ q : E × E, e.symm q = (q.2, toDual ℝ E (l⁻¹ • (q.1 - q.2))) := fun q ↦ rfl
-  have hes0 : e.symm (x₀ + l • g, x₀) = (x₀, toDual ℝ E g) := by
-    rw [hes]
-    simp only [add_sub_cancel_left, smul_smul, inv_mul_cancel₀ hl.ne', one_smul]
-  have hc : Tendsto (fun q : E × E ↦ (q.2, l⁻¹ • (q.1 - q.2))) (𝓝 (x₀ + l • g, x₀))
-      (𝓝 (x₀, g)) := by
-    have : Continuous (fun q : E × E ↦ (q.2, l⁻¹ • (q.1 - q.2))) := by fun_prop
-    have h := this.tendsto (x₀ + l • g, x₀)
-    simp only [add_sub_cancel_left, smul_smul, inv_mul_cancel₀ hl.ne', one_smul] at h
-    exact h
-  obtain ⟨W, hW, hWloc⟩ := (hc.eventually hgraph).exists_mem
   have hd : GeometricallyDerivableAt (graph fun u ↦ ({p u} : Set E))
       (x₀ + l • g, p (x₀ + l • g)) := by
     rw [hp0]
-    refine GeometricallyDerivableAt.of_inter_eq_preimage (Φ := e.symm) (e := e.symm)
-      (by rw [hes0]; exact hproto) hW ?_ e.symm.hasStrictFDerivAt
-      (show x₀ ∈ ({p (x₀ + l • g)} : Set E) by rw [hp0]; exact mem_singleton _)
-    ext q
-    have h1 := hWloc q
-    have h3 : q.2 + l • l⁻¹ • (q.1 - q.2) = q.1 := by
-      rw [smul_smul, mul_inv_cancel₀ hl.ne', one_smul, add_sub_cancel]
-    rw [h3] at h1
-    have h2 : q ∈ e.symm ⁻¹' graph (subdiff φ) ↔
-        toDual ℝ E (l⁻¹ • (q.1 - q.2)) ∈ subdiff φ q.2 := Iff.rfl
-    have h4 : q ∈ (graph fun u ↦ ({p u} : Set E)) ↔ q.2 = p q.1 := Iff.rfl
-    simp only [mem_inter_iff]
-    rw [h2, h4]
-    exact ⟨fun ⟨hq, hqW⟩ ↦ ⟨(h1 hqW).2 hq, hqW⟩, fun ⟨hq, hqW⟩ ↦ ⟨(h1 hqW).1 hq, hqW⟩⟩
+    exact (protoDifferentiableAt_iff_geometricallyDerivableAt_graph hl.ne' hp0 hgraph).1 hproto
   exact dirDifferentiableAt_of_geometricallyDerivableAt (ball_mem_nhds _ hδ) hLip hd
 
 /-- **Second-order expansion of the Moreau envelope.** If `φ` is l.s.c., prox-bounded and
