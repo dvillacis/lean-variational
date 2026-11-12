@@ -71,7 +71,7 @@ subgradients and the port of OptLib), pinned in `lakefile.toml`.
 | `C^{1,1}` functions | `SecondOrder/C11` | directional differentiability (M24 Def. 1.77); `∂²_D φ(x̄)(u) ⊆ ∂²φ(x̄)(u)` for `C^{1,1}` functions with directionally differentiable gradient (M24 Thm. 1.84) |
 | Proto-differentiability | `SecondOrder/ProtoDiff` | graphical derivatives and coderivatives under shears (M24 (1.118)); derivable Lipschitz graphs are directionally differentiable; `∂²_D φ ⊆ ∂²φ` for continuously prox-regular functions with proto-differentiable `∂φ` (M24 Thm. 1.86) |
 | Second subderivatives | `SecondOrder/SecondSubderiv` | subderivatives (M24 Def. 1.43); second subderivatives, twice epi- and semidifferentiability (M24 Def. 1.88–1.89); twice differentiable and convex functions (M24 Prop. 1.90, 1.93); quotients under subdifferentiation and Moreau envelopes (M24 Lemma 1.94); semiderivatives of set-valued mappings (M24 Def. 1.100) |
-| Analytic epi-convergence | `SecondOrder/EpiAnalytic` | analytic description of epi-convergence (M24 Ex. 1.133); convexity of inner limits and epi-limits (M24 Ex. 1.134); epi-convergence of nonnegative functions via Moreau envelopes (M24 Ex. 1.135(i)); `e_λφ(u) ↑ φ(u)` as `λ ↓ 0` (M24 Ex. 1.136); proto-differentiability as set convergence of `(gph F - (x̄, ȳ))/t` (M24 Ex. 1.139(iii)) |
+| Analytic epi-convergence | `SecondOrder/EpiAnalytic` | analytic description of epi-convergence (M24 Ex. 1.133); convexity of inner limits and epi-limits (M24 Ex. 1.134); epi-convergence of nonnegative functions via Moreau envelopes and convergence of proximal points (M24 Ex. 1.135); `e_λφ(u) ↑ φ(u)` as `λ ↓ 0` (M24 Ex. 1.136); proto-differentiability as set convergence of `(gph F - (x̄, ȳ))/t` (M24 Ex. 1.139(iii)) |
 | Piecewise linear-quadratic functions | `SecondOrder/PLQ` | polyhedral sets, piecewise linear-quadratic and piecewise linear functions (M24 Def. 1.59); local linear-quadratic model on polyhedral cones; second subderivatives, twice epi-differentiability and critical cones of convex piecewise linear-quadratic functions (M24 Thm. 1.91) |
 | Cyclic monotonicity | `SecondOrder/CyclicMonotone` | resolvents of monotone operators (M24 Lemma 1.95); cyclically monotone mappings and Rockafellar's theorem, with uniqueness up to a constant (M24 Def. 1.96, Lemma 1.97) |
 | Theorems of the alternative | `Analysis/Motzkin` | Motzkin's theorem of the alternative in finite dimensions ([Mordukhovich 2024, Lemma 3.1]) |
@@ -96,9 +96,8 @@ Moreau envelope results Lemma 1.68–Cor. 1.72, Def. 1.73–Lemma 1.81, Thm. 1.8
 that avoids Lemma 1.81), Def. 1.85–Thm. 1.86, and in Sect. 1.5 Def. 1.88–Lemma 1.97
 (with Def. 1.59 for Thm. 1.91) and Def. 1.100. Thm. 1.70–1.71
 assume prox-boundedness, which the book omits (a correction). Of the exercises used in
-Sect. 1.5, Ex. 1.133, 1.134(i), (iii), 1.135(i), 1.136 and 1.139(iii) are formalized.
-Cor. 1.87 and Thm. 1.98 with its corollaries remain; they need Ex. 1.135(ii), (iii) and
-1.139(ii).
+Sect. 1.5, Ex. 1.133, 1.134(i), (iii), 1.135, 1.136 and 1.139(iii) are formalized.
+Thm. 1.98 with Cor. 1.101 remains, and Cor. 1.87 and Cor. 1.99, which need Ex. 1.139(ii).
 
 For SCD mappings, `ROADMAP.md` lists the results of [Gfrerer–Outrata 2022, Sect. 3–6] and their
 Lean names. Everything there is formalized except the local maximal hypomonotonicity of `∂q`
