@@ -74,6 +74,7 @@ subgradients and the port of OptLib), pinned in `lakefile.toml`.
 | Analytic epi-convergence | `SecondOrder/EpiAnalytic` | analytic description of epi-convergence (M24 Ex. 1.133); convexity of inner limits and epi-limits (M24 Ex. 1.134); epi-convergence of nonnegative functions via Moreau envelopes and convergence of proximal points (M24 Ex. 1.135); `e_λφ(u) ↑ φ(u)` as `λ ↓ 0` (M24 Ex. 1.136); proto-differentiability as set convergence of `(gph F - (x̄, ȳ))/t` (M24 Ex. 1.139(iii)) |
 | Twice epi-differentiability and proximal mappings | `SecondOrder/TwiceEpiProx` | twice epi-differentiability as epi-convergence of second-order difference quotients; convergence of the difference quotients `t⁻¹P_λφ(tw)` of the proximal mapping to `P_λ(d²φ/2)(w)` (first part of the proof of M24 Thm. 1.98, Cor. 1.101) |
 | Twice epi-differentiability implies proto-differentiability | `SecondOrder/TwiceEpiProto` | for `φ` continuously prox-regular at `x̄` for `v̄`: twice epi-differentiability of `φ` at `x̄` for `v̄` implies proto-differentiability of `∂φ` at `(x̄, v̄)` (one implication of M24 Thm. 1.98); locality of twice epi-differentiability and subdifferential continuity |
+| Second-order expansion of Moreau envelopes | `SecondOrder/EnvelopeExpansion` | second-order expansion of a `C^{1,1}` function with directionally differentiable gradient; for `φ` l.s.c., prox-bounded, continuously prox-regular with `∂φ` proto-differentiable: directional differentiability of `P_λφ` and second-order expansion of `e_λφ` at `x̄ + λv̄` (first part of the converse implication of M24 Thm. 1.98) |
 | Piecewise linear-quadratic functions | `SecondOrder/PLQ` | polyhedral sets, piecewise linear-quadratic and piecewise linear functions (M24 Def. 1.59); local linear-quadratic model on polyhedral cones; second subderivatives, twice epi-differentiability and critical cones of convex piecewise linear-quadratic functions (M24 Thm. 1.91) |
 | Cyclic monotonicity | `SecondOrder/CyclicMonotone` | resolvents of monotone operators (M24 Lemma 1.95); cyclically monotone mappings and Rockafellar's theorem, with uniqueness up to a constant (M24 Def. 1.96, Lemma 1.97) |
 | Theorems of the alternative | `Analysis/Motzkin` | Motzkin's theorem of the alternative in finite dimensions ([Mordukhovich 2024, Lemma 3.1]) |
@@ -99,7 +100,7 @@ that avoids Lemma 1.81), Def. 1.85–Thm. 1.86, and in Sect. 1.5 Def. 1.88–Lem
 (with Def. 1.59 for Thm. 1.91) and Def. 1.100. Thm. 1.70–1.71
 assume prox-boundedness, which the book omits (a correction). Of the exercises used in
 Sect. 1.5, Ex. 1.133, 1.134(i), (iii), 1.135, 1.136 and 1.139(iii) are formalized.
-Thm. 1.98 with Cor. 1.101 is in progress (`SecondOrder/TwiceEpiProx`, `SecondOrder/TwiceEpiProto`; the converse implication is open); Cor. 1.87 and
+Thm. 1.98 with Cor. 1.101 is in progress (`SecondOrder/TwiceEpiProx`, `SecondOrder/TwiceEpiProto`, `SecondOrder/EnvelopeExpansion`; the converse implication is not finished); Cor. 1.87 and
 Cor. 1.99 remain, which need Ex. 1.139(ii).
 
 For SCD mappings, `ROADMAP.md` lists the results of [Gfrerer–Outrata 2022, Sect. 3–6] and their
