@@ -40,6 +40,14 @@ quotients `t⁻¹P_λφ(tw)` of the proximal mapping to the proximal mapping of 
   `0` for an l.s.c. function with `φ(0) = 0`, `φ ≥ -(r/2)‖·‖²` that is prox-regular and twice
   epi-differentiable at `0` for `0`.
 
+* `shiftTilt`, `mem_proximalMap_shiftTilt_iff`, `secondDiffQuot_shiftTilt`,
+  `exists_shiftTilt_ge`: the reduction of `φ` at `x̄` for `v̄ = ⟨g, ·⟩` to the function
+  `φ(x̄ + ·) - φ(x̄) - ⟨g, ·⟩` at `0` for `0`.
+* `ProxRegularFor.exists_tendsto_inv_smul_sub_proximalMap`: for an l.s.c., prox-bounded `φ`
+  that is prox-regular and twice epi-differentiable at `x̄` for `v̄ = ⟨g, ·⟩` and all small `λ`,
+  `P_λ(d²φ(x̄, v̄)/2)` is single-valued and `t⁻¹(P_λφ(x̄ + λg + tw') - x̄) → P_λ(d²φ(x̄, v̄)/2)(w)`
+  as `t ↓ 0`, `w' → w` [Mordukhovich 2024, Cor. 1.101, one implication].
+
 ## Implementation notes
 
 The proof combines [Mordukhovich 2024, Lemma 1.94] (`proximalMap_half_secondDiffQuot`) with
@@ -509,6 +517,179 @@ theorem ProxRegularFor.exists_tendsto_inv_smul_proximalMap {r : ℝ}
   exact H.exists_tendsto_inv_smul_proximalMap h0 hm hr hmr hmin
     (Metric.eventually_nhds_iff.2 ⟨δ, hδ, fun u hu ↦ (Hu u (mem_ball.2 hu)).1⟩) hc hε
     (Metric.eventually_nhds_iff.2 ⟨δ, hδ, fun u hu ↦ (Hu u (mem_ball.2 hu)).2⟩)
+
+/-! #### Reduction to the normalized form -/
+
+/-- The shifted and tilted function `x ↦ φ(x̄ + x) - φ(x̄) - ⟨g, x⟩`, which reduces the study of
+`φ` at `x̄` for `v̄ = ⟨g, ·⟩` to that of a function at `0` for `0`. -/
+noncomputable def shiftTilt (φ : E → EReal) (x₀ g : E) (x : E) : EReal :=
+  φ (x₀ + x) + ((-((φ x₀).toReal + ⟪g, x⟫_ℝ) : ℝ) : EReal)
+
+theorem add_coe_le_add_coe_iff {a b : EReal} {c : ℝ} : a + (c : EReal) ≤ b + c ↔ a ≤ b := by
+  refine ⟨fun h ↦ ?_, fun h ↦ add_le_add h le_rfl⟩
+  have := add_le_add h (le_refl ((-c : ℝ) : EReal))
+  rwa [add_assoc, add_assoc, ← EReal.coe_add, add_neg_cancel, EReal.coe_zero, add_zero,
+    add_zero] at this
+
+omit [FiniteDimensional ℝ E] in
+theorem shiftTilt_zero {r₀ : ℝ} {g : E} (hr₀ : φ x₀ = r₀) : shiftTilt φ x₀ g 0 = 0 := by
+  rw [shiftTilt, add_zero, hr₀, EReal.toReal_coe, inner_zero_right, add_zero, ← EReal.coe_add,
+    add_neg_cancel, EReal.coe_zero]
+
+omit [FiniteDimensional ℝ E] in
+/-- The proximal objective of the shifted and tilted function. -/
+theorem proxObjective_shiftTilt (φ : E → EReal) (x₀ g : E) {m : ℝ} (hm : m ≠ 0) (u x : E) :
+    proxObjective (shiftTilt φ x₀ g) m u x = proxObjective φ m (x₀ + u + m • g) (x₀ + x) +
+      ((-((φ x₀).toReal + ⟪g, u⟫_ℝ + m / 2 * ‖g‖ ^ 2) : ℝ) : EReal) := by
+  simp only [proxObjective, shiftTilt]
+  rw [add_assoc, add_assoc, ← EReal.coe_add, ← EReal.coe_add]
+  congr 2
+  have e : x₀ + x - (x₀ + u + m • g) = (x - u) - m • g := by abel
+  have h1 : ⟪x - u, m • g⟫_ℝ = m * (⟪g, x⟫_ℝ - ⟪g, u⟫_ℝ) := by
+    rw [inner_smul_right, inner_sub_left, real_inner_comm g x, real_inner_comm g u]
+  have h2 : ‖m • g‖ ^ 2 = m ^ 2 * ‖g‖ ^ 2 := by
+    rw [norm_smul, mul_pow, Real.norm_eq_abs, sq_abs]
+  rw [e, norm_sub_sq_real (x - u) (m • g), h1, h2]
+  field_simp
+  ring
+
+omit [FiniteDimensional ℝ E] in
+/-- `P_λ(φ(x̄ + ·) - φ(x̄) - ⟨g, ·⟩)(u) = P_λφ(x̄ + u + λg) - x̄`. -/
+theorem mem_proximalMap_shiftTilt_iff {g : E} {m : ℝ} (hm : m ≠ 0) {u x : E} :
+    x ∈ proximalMap (shiftTilt φ x₀ g) m u ↔ x₀ + x ∈ proximalMap φ m (x₀ + u + m • g) := by
+  constructor
+  · intro h y
+    have := h (y - x₀)
+    rwa [proxObjective_shiftTilt φ x₀ g hm, proxObjective_shiftTilt φ x₀ g hm,
+      add_coe_le_add_coe_iff, add_sub_cancel] at this
+  · intro h y
+    show proxObjective (shiftTilt φ x₀ g) m u x ≤ proxObjective (shiftTilt φ x₀ g) m u y
+    rw [proxObjective_shiftTilt φ x₀ g hm, proxObjective_shiftTilt φ x₀ g hm,
+      add_coe_le_add_coe_iff]
+    exact h (x₀ + y)
+
+/-- The second-order difference quotients of `φ` at `x̄` for `⟨g, ·⟩` are those of the shifted and
+tilted function at `0` for `0`. -/
+theorem secondDiffQuot_shiftTilt {r₀ : ℝ} {g : E} (hr₀ : φ x₀ = r₀) (t : ℝ) (w : E) :
+    secondDiffQuot (shiftTilt φ x₀ g) 0 0 t w = secondDiffQuot φ x₀ (toDual ℝ E g) t w := by
+  rw [secondDiffQuot, secondDiffQuot, shiftTilt_zero hr₀, zero_add, sub_zero]
+  have h1 : ((t * (0 : StrongDual ℝ E) w : ℝ) : EReal) = 0 := by simp
+  have h2 : shiftTilt φ x₀ g (t • w) - 0 =
+      φ (x₀ + t • w) - φ x₀ - ((t * toDual ℝ E g w : ℝ) : EReal) := by
+    rw [sub_zero, shiftTilt, hr₀, EReal.toReal_coe, toDual_apply_apply, inner_smul_right,
+      sub_eq_add_neg, sub_eq_add_neg, ← EReal.coe_neg, ← EReal.coe_neg, add_assoc,
+      ← EReal.coe_add, neg_add]
+  rw [h1, h2]
+
+/-- A prox-bounded function with a proximal subgradient `⟨g, ·⟩` at `x̄` has a global quadratic
+minorant after the shift and tilt. -/
+theorem exists_shiftTilt_ge {g : E} (hv : toDual ℝ E g ∈ proxSubdiff φ x₀)
+    (hbd : ∃ a b : ℝ, ∀ x, ((a - b * ‖x - x₀‖ ^ 2 : ℝ) : EReal) ≤ φ x) :
+    ∃ R ≥ (0 : ℝ), ∀ x, ((-(R / 2) * ‖x‖ ^ 2 : ℝ) : EReal) ≤ shiftTilt φ x₀ g x := by
+  obtain ⟨r₀, hr₀, ε, hε, ρ, hρ, Hp⟩ := hv
+  obtain ⟨a, b, hab⟩ := hbd
+  obtain ⟨Q, hQ⟩ : ∃ Q : ℝ, Q = |b| + |a - r₀| / ε ^ 2 + ‖g‖ / ε := ⟨_, rfl⟩
+  have hQ0 : 0 ≤ Q := by rw [hQ]; positivity
+  refine ⟨max ρ (2 * Q), hρ.trans (le_max_left _ _), fun x ↦ ?_⟩
+  have hRρ : ρ ≤ max ρ (2 * Q) := le_max_left _ _
+  have hRQ : 2 * Q ≤ max ρ (2 * Q) := le_max_right _ _
+  have key : ((r₀ + ⟪g, x⟫_ℝ - max ρ (2 * Q) / 2 * ‖x‖ ^ 2 : ℝ) : EReal) ≤ φ (x₀ + x) := by
+    by_cases hx : ‖x‖ ≤ ε
+    · have h1 := Hp (x₀ + x) (by rwa [add_sub_cancel_left])
+      rw [add_sub_cancel_left, toDual_apply_apply] at h1
+      refine le_trans (EReal.coe_le_coe_iff.2 ?_) h1
+      nlinarith [sq_nonneg ‖x‖]
+    · have hlt : ε < ‖x‖ := not_le.1 hx
+      have h1 := hab (x₀ + x)
+      rw [add_sub_cancel_left] at h1
+      refine le_trans (EReal.coe_le_coe_iff.2 ?_) h1
+      have hn0 : 0 ≤ ‖x‖ := norm_nonneg x
+      have g1 : ⟪g, x⟫_ℝ ≤ ‖g‖ * ‖x‖ := real_inner_le_norm g x
+      have g2 : ‖g‖ * ‖x‖ ≤ ‖g‖ / ε * ‖x‖ ^ 2 := by
+        rw [div_mul_eq_mul_div, le_div_iff₀ hε]
+        nlinarith [mul_nonneg (mul_nonneg (norm_nonneg g) hn0) (sub_nonneg.2 hlt.le)]
+      have g3 : |a - r₀| ≤ |a - r₀| / ε ^ 2 * ‖x‖ ^ 2 := by
+        rw [div_mul_eq_mul_div, le_div_iff₀ (by positivity)]
+        exact mul_le_mul_of_nonneg_left (pow_le_pow_left₀ hε.le hlt.le 2) (abs_nonneg _)
+      have g4 : r₀ - a ≤ |a - r₀| := by linarith [neg_abs_le (a - r₀)]
+      have g5 : b * ‖x‖ ^ 2 ≤ |b| * ‖x‖ ^ 2 :=
+        mul_le_mul_of_nonneg_right (le_abs_self b) (sq_nonneg _)
+      have g6 : Q * ‖x‖ ^ 2 ≤ max ρ (2 * Q) / 2 * ‖x‖ ^ 2 :=
+        mul_le_mul_of_nonneg_right (by linarith) (sq_nonneg _)
+      have g7 : Q * ‖x‖ ^ 2 =
+          |b| * ‖x‖ ^ 2 + |a - r₀| / ε ^ 2 * ‖x‖ ^ 2 + ‖g‖ / ε * ‖x‖ ^ 2 := by
+        rw [hQ]; ring
+      linarith
+  have := add_le_add key (le_refl ((-(r₀ + ⟪g, x⟫_ℝ) : ℝ) : EReal))
+  rw [← EReal.coe_add] at this
+  rw [shiftTilt, hr₀, EReal.toReal_coe]
+  refine le_trans (EReal.coe_le_coe_iff.2 (le_of_eq ?_)) this
+  ring
+
+/-- **Semidifferentiability of the proximal mapping of a prox-regular function**
+[Mordukhovich 2024, Thm. 1.98, Cor. 1.101]. Let `φ` be l.s.c. and prox-bounded, prox-regular
+and twice epi-differentiable at `x̄` for `v̄ = ⟨g, ·⟩`. Then for all small `λ > 0` the proximal
+mapping `P_λ(d²φ(x̄, v̄)/2)` is single-valued, with value `D(w)` say, and
+`t_k⁻¹(p_k - x̄) → D(w)` whenever `p_k ∈ P_λφ(x̄ + λg + t_k w_k)`, `t_k ↓ 0` and `w_k → w`. -/
+theorem ProxRegularFor.exists_tendsto_inv_smul_sub_proximalMap {g : E}
+    (hφ : ProxRegularFor φ x₀ (toDual ℝ E g))
+    (H : TwiceEpiDifferentiableAt φ x₀ (toDual ℝ E g)) (hlsc : ∀ x, LowerSemicontinuousAt φ x)
+    (hbd : ∃ a b : ℝ, ∀ x, ((a - b * ‖x - x₀‖ ^ 2 : ℝ) : EReal) ≤ φ x) :
+    ∃ l₀ > (0 : ℝ), ∀ m, 0 < m → m < l₀ → ∃ D : E → E,
+      (∀ w, proximalMap
+        (fun w ↦ ((1 / 2 : ℝ) : EReal) * secondSubderiv φ x₀ (toDual ℝ E g) w) m w = {D w}) ∧
+      ∀ t : ℕ → ℝ, Tendsto t atTop (𝓝[>] 0) → ∀ (w p : ℕ → E) (w₀ : E),
+        Tendsto w atTop (𝓝 w₀) →
+        (∀ᶠ k in atTop, p k ∈ proximalMap φ m (x₀ + m • g + t k • w k)) →
+        Tendsto (fun k ↦ (t k)⁻¹ • (p k - x₀)) atTop (𝓝 (D w₀)) := by
+  obtain ⟨⟨r₀, hr₀⟩, H2⟩ := H
+  obtain ⟨R, hR, hmin⟩ := exists_shiftTilt_ge hφ.mem_proxSubdiff hbd
+  obtain ⟨l₁, hl₁, Hg⟩ := hφ.exists_proxObjective_growth hlsc hbd
+  refine ⟨min l₁ (1 / (R + 1)), lt_min hl₁ (by positivity), fun m hm hml ↦ ?_⟩
+  have hmr : m * R < 1 := by
+    have h1 : m < 1 / (R + 1) := hml.trans_le (min_le_right _ _)
+    rw [lt_div_iff₀ (by positivity)] at h1
+    nlinarith
+  obtain ⟨δ, hδ, c, hc, ε, hε, Hu⟩ := Hg m hm (hml.trans_le (min_le_left _ _))
+  obtain ⟨ψ, hψ⟩ : ∃ ψ : E → EReal, ψ = shiftTilt φ x₀ g := ⟨_, rfl⟩
+  have hψ0 : ψ 0 = 0 := by rw [hψ]; exact shiftTilt_zero hr₀
+  have hq : ∀ t w, secondDiffQuot ψ 0 0 t w = secondDiffQuot φ x₀ (toDual ℝ E g) t w := by
+    rw [hψ]; exact secondDiffQuot_shiftTilt hr₀
+  have hsub : ∀ w, secondSubderiv ψ 0 0 w = secondSubderiv φ x₀ (toDual ℝ E g) w := fun w ↦ by
+    simp only [secondSubderiv, hq]
+  have Hψ : TwiceEpiDifferentiableAt ψ 0 0 := by
+    refine ⟨⟨0, by rw [hψ0, EReal.coe_zero]⟩, ?_⟩
+    simp only [hq, hsub]
+    exact H2
+  have hmem : ∀ {u x : E}, x ∈ proximalMap ψ m u ↔ x₀ + x ∈ proximalMap φ m (x₀ + u + m • g) := by
+    rw [hψ]; exact mem_proximalMap_shiftTilt_iff hm.ne'
+  have hobj : ∀ u x : E, proxObjective ψ m u x = proxObjective φ m (x₀ + u + m • g) (x₀ + x) +
+      ((-((φ x₀).toReal + ⟪g, u⟫_ℝ + m / 2 * ‖g‖ ^ 2) : ℝ) : EReal) := by
+    rw [hψ]; exact proxObjective_shiftTilt φ x₀ g hm.ne'
+  have hu' : ∀ u : E, dist u 0 < δ → x₀ + u + m • g ∈ ball (x₀ + m • g) δ := fun u hu ↦ by
+    rw [mem_ball_iff_norm, show x₀ + u + m • g - (x₀ + m • g) = u by abel]
+    rwa [dist_zero_right] at hu
+  have hex : ∀ᶠ u in 𝓝 (0 : E), (proximalMap ψ m u).Nonempty := by
+    refine Metric.eventually_nhds_iff.2 ⟨δ, hδ, fun u hu ↦ ?_⟩
+    obtain ⟨p', hp'⟩ := (Hu _ (hu' u hu)).1
+    exact ⟨p' - x₀, hmem.2 (by rwa [add_sub_cancel])⟩
+  have hqg : ∀ᶠ u in 𝓝 (0 : E), ∀ p ∈ proximalMap ψ m u, ∀ x ∈ ball (0 : E) ε,
+      proxObjective ψ m u p + ((c * ‖x - p‖ ^ 2 : ℝ) : EReal) ≤ proxObjective ψ m u x := by
+    refine Metric.eventually_nhds_iff.2 ⟨δ, hδ, fun u hu p hp x hx ↦ ?_⟩
+    have h1 := (Hu _ (hu' u hu)).2 (x₀ + p) (hmem.1 hp) (x₀ + x)
+      (by rw [mem_ball_iff_norm] at hx ⊢; simpa using hx)
+    rw [add_sub_add_left_eq_sub] at h1
+    rw [hobj, hobj, add_right_comm, add_coe_le_add_coe_iff]
+    exact h1
+  obtain ⟨D, hD, hconv⟩ :=
+    Hψ.exists_tendsto_inv_smul_proximalMap hψ0 hm hR hmr (by rw [hψ]; exact hmin) hex hc hε hqg
+  refine ⟨D, fun w ↦ ?_, fun t ht w p w₀ hw hp ↦ ?_⟩
+  · have := hD w
+    simp only [hsub] at this
+    exact this
+  · refine hconv t ht w (fun k ↦ p k - x₀) w₀ hw (hp.mono fun k hk ↦ hmem.2 ?_)
+    rw [add_sub_cancel, add_right_comm]
+    exact hk
 
 end ProxRegular
 
