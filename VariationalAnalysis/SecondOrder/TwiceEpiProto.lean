@@ -20,6 +20,7 @@ proto-differentiable at `(x̄, v̄)`.
 * `ContinuouslyProxRegularFor.eventually_mem_subdiff_iff`: for an l.s.c., prox-bounded,
   continuously prox-regular function and small `λ`, near `(x̄, g)` one has `⟨y, ·⟩ ∈ ∂φ(x)` iff
   `x = P_λφ(x + λy)`.
+* `proxGraphEquiv`: the linear isomorphism `(x, v) ↦ (x + λv, x)` of `E × E*` onto `E × E`.
 * `TwiceEpiDifferentiableAt.congr`, `SubdiffContinuousFor.congr`,
   `ProxRegularFor.exists_localization`: twice epi-differentiability and subdifferential
   continuity are local properties, and a prox-regular function agrees near `x̄` with an l.s.c.,
@@ -308,6 +309,37 @@ theorem ContinuouslyProxRegularFor.eventually_mem_subdiff_iff {g : E}
     have := (hloc _ hu).1
     rwa [← hxp, hxy] at this
 
+/-- The linear isomorphism `(x, v) ↦ (x + λv, x)` of `E × E*` onto `E × E`, which maps the
+graph of `∂φ` to the graph of `P_λφ` near the reference point. -/
+noncomputable def proxGraphEquiv (l : ℝ) (hl : l ≠ 0) : (E × StrongDual ℝ E) ≃L[ℝ] (E × E) :=
+  ContinuousLinearEquiv.equivOfInverse
+    { toFun := fun q ↦ (q.1 + l • (toDual ℝ E).symm q.2, q.1)
+      map_add' := fun a b ↦ Prod.ext (by simp [smul_add]; abel) (by simp)
+      map_smul' := fun c a ↦ Prod.ext (by simp [smul_add, smul_comm l c]) (by simp)
+      cont := (continuous_fst.add
+        (((toDual ℝ E).symm.continuous.comp continuous_snd).const_smul l)).prodMk
+          continuous_fst }
+    { toFun := fun q ↦ (q.2, toDual ℝ E (l⁻¹ • (q.1 - q.2)))
+      map_add' := fun a b ↦ Prod.ext (by simp) (by simp [smul_sub, smul_add]; abel)
+      map_smul' := fun c a ↦ Prod.ext (by simp)
+        (by simp [smul_sub, smul_comm l⁻¹ c])
+      cont := continuous_snd.prodMk ((toDual ℝ E).continuous.comp
+        ((continuous_fst.sub continuous_snd).const_smul l⁻¹)) }
+    (fun q ↦ Prod.ext rfl (by
+      show toDual ℝ E (l⁻¹ • (q.1 + l • (toDual ℝ E).symm q.2 - q.1)) = q.2
+      rw [add_sub_cancel_left, smul_smul, inv_mul_cancel₀ hl, one_smul,
+        LinearIsometryEquiv.apply_symm_apply]))
+    (fun q ↦ Prod.ext (by
+      show q.2 + l • (toDual ℝ E).symm (toDual ℝ E (l⁻¹ • (q.1 - q.2))) = q.1
+      rw [LinearIsometryEquiv.symm_apply_apply, smul_smul, mul_inv_cancel₀ hl, one_smul,
+        add_sub_cancel]) rfl)
+
+theorem proxGraphEquiv_apply {l : ℝ} (hl : l ≠ 0) (q : E × StrongDual ℝ E) :
+    proxGraphEquiv l hl q = (q.1 + l • (toDual ℝ E).symm q.2, q.1) := rfl
+
+theorem proxGraphEquiv_symm_apply {l : ℝ} (hl : l ≠ 0) (q : E × E) :
+    (proxGraphEquiv l hl).symm q = (q.2, toDual ℝ E (l⁻¹ • (q.1 - q.2))) := rfl
+
 /-- [Mordukhovich 2024, Thm. 1.98], one implication for l.s.c. and prox-bounded functions. -/
 theorem ContinuouslyProxRegularFor.protoDifferentiableAt_subdiff_of_lsc {g : E}
     (hφ : ContinuouslyProxRegularFor φ x₀ (toDual ℝ E g))
@@ -340,29 +372,7 @@ theorem ContinuouslyProxRegularFor.protoDifferentiableAt_subdiff_of_lsc {g : E}
         exact mem_singleton _)
     rwa [hp0] at this
   -- the linear isomorphism `(x, v) ↦ (x + λv, x)`
-  let A : (E × StrongDual ℝ E) →L[ℝ] (E × E) :=
-    { toFun := fun q ↦ (q.1 + l • (toDual ℝ E).symm q.2, q.1)
-      map_add' := fun a b ↦ Prod.ext (by simp [smul_add]; abel) (by simp)
-      map_smul' := fun c a ↦ Prod.ext (by simp [smul_add, smul_comm l c]) (by simp)
-      cont := (continuous_fst.add
-        (((toDual ℝ E).symm.continuous.comp continuous_snd).const_smul l)).prodMk
-          continuous_fst }
-  let A' : (E × E) →L[ℝ] (E × StrongDual ℝ E) :=
-    { toFun := fun q ↦ (q.2, toDual ℝ E (l⁻¹ • (q.1 - q.2)))
-      map_add' := fun a b ↦ Prod.ext (by simp) (by simp [smul_sub, smul_add]; abel)
-      map_smul' := fun c a ↦ Prod.ext (by simp)
-        (by simp [smul_sub, smul_comm l⁻¹ c])
-      cont := continuous_snd.prodMk ((toDual ℝ E).continuous.comp
-        ((continuous_fst.sub continuous_snd).const_smul l⁻¹)) }
-  let e : (E × StrongDual ℝ E) ≃L[ℝ] (E × E) := ContinuousLinearEquiv.equivOfInverse A A'
-    (fun q ↦ Prod.ext rfl (by
-      show toDual ℝ E (l⁻¹ • (q.1 + l • (toDual ℝ E).symm q.2 - q.1)) = q.2
-      rw [add_sub_cancel_left, smul_smul, inv_mul_cancel₀ hl.ne', one_smul,
-        LinearIsometryEquiv.apply_symm_apply]))
-    (fun q ↦ Prod.ext (by
-      show q.2 + l • (toDual ℝ E).symm (toDual ℝ E (l⁻¹ • (q.1 - q.2))) = q.1
-      rw [LinearIsometryEquiv.symm_apply_apply, smul_smul, mul_inv_cancel₀ hl.ne', one_smul,
-        add_sub_cancel]) rfl)
+  let e : (E × StrongDual ℝ E) ≃L[ℝ] (E × E) := proxGraphEquiv l hl.ne'
   have he : ∀ q : E × StrongDual ℝ E, e q = (q.1 + l • (toDual ℝ E).symm q.2, q.1) :=
     fun q ↦ rfl
   have he0 : e (x₀, toDual ℝ E g) = (x₀ + l • g, x₀) := by
