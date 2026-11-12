@@ -54,6 +54,7 @@ import VariationalAnalysis.SecondOrder.Moreau
 import VariationalAnalysis.SecondOrder.PLQ
 import VariationalAnalysis.SecondOrder.ProtoDiff
 import VariationalAnalysis.SecondOrder.ProxRegular
+import VariationalAnalysis.SecondOrder.ProtoTwiceEpi
 import VariationalAnalysis.SecondOrder.SecondSubderiv
 import VariationalAnalysis.SecondOrder.TwiceEpiProto
 import VariationalAnalysis.SecondOrder.TwiceEpiProx

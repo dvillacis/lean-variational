@@ -355,6 +355,47 @@ theorem tendsto_moreauEnvelope_nhdsGT_zero (hφ : ∀ x, 0 ≤ φ x)
     rw [inv_mul_eq_div, le_div_iff₀ (by positivity)]
     linarith
 
+/-- `λ`-convergence of Moreau envelopes for functions with a quadratic minorant: if
+`φ ≥ -(r/2)‖·‖²` is l.s.c. at `u`, then `e_λφ(u) → φ(u)` as `λ ↓ 0`. -/
+theorem tendsto_moreauEnvelope_nhdsGT_zero_of_ge {r : ℝ} (hr : 0 ≤ r)
+    (hφ : ∀ x, ((-(r / 2) * ‖x‖ ^ 2 : ℝ) : EReal) ≤ φ x) (hlsc : LowerSemicontinuousAt φ u) :
+    Tendsto (fun l ↦ moreauEnvelope φ l u) (𝓝[>] 0) (𝓝 (φ u)) := by
+  refine tendsto_order.2 ⟨fun c hc ↦ ?_, fun c hc ↦ Eventually.of_forall fun l ↦
+    (moreauEnvelope_le_self (φ := φ) (l := l) u).trans_lt hc⟩
+  obtain ⟨c', hc1, hc2⟩ := EReal.lt_iff_exists_real_btwn.1 hc
+  obtain ⟨δ, hδ, hball⟩ := Metric.eventually_nhds_iff.1 (hlsc _ hc2)
+  have hA : (0 : ℝ) < 4 * (|c'| + r * ‖u‖ ^ 2 + 1) := by
+    nlinarith [abs_nonneg c', mul_nonneg hr (sq_nonneg ‖u‖)]
+  have hB : (0 : ℝ) < 4 * (r + 1) := by linarith
+  filter_upwards [self_mem_nhdsWithin, nhdsWithin_le_nhds
+    (Iio_mem_nhds (div_pos (pow_pos hδ 2) hA)),
+    nhdsWithin_le_nhds (Iio_mem_nhds (div_pos one_pos hB))] with l hl hlt hlr
+  have hl : 0 < l := hl
+  refine hc1.trans_le (le_iInf fun x ↦ ?_)
+  show (c' : EReal) ≤ φ x + (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal)
+  by_cases hx : dist x u < δ
+  · exact (hball hx).le.trans (le_add_of_nonneg_right (EReal.coe_nonneg.2 (by positivity)))
+  · have hsum := add_le_add (hφ x) (le_refl (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal))
+    rw [← EReal.coe_add] at hsum
+    refine le_trans (EReal.coe_le_coe_iff.2 ?_) hsum
+    have hd : δ ≤ ‖x - u‖ := by rw [← dist_eq_norm]; exact not_lt.1 hx
+    have hd2 : δ ^ 2 ≤ ‖x - u‖ ^ 2 := pow_le_pow_left₀ hδ.le hd 2
+    have hxn : ‖x‖ ≤ ‖u‖ + ‖x - u‖ := norm_le_norm_add_norm_sub' x u
+    have hx2 : ‖x‖ ^ 2 ≤ 2 * ‖u‖ ^ 2 + 2 * ‖x - u‖ ^ 2 := by
+      nlinarith [sq_nonneg (‖u‖ - ‖x - u‖), norm_nonneg x, norm_nonneg u, norm_nonneg (x - u)]
+    have h0 : r / 2 * ‖x‖ ^ 2 ≤ r / 2 * (2 * ‖u‖ ^ 2 + 2 * ‖x - u‖ ^ 2) :=
+      mul_le_mul_of_nonneg_left hx2 (by linarith)
+    have hlr' : l * (4 * (r + 1)) < 1 := (lt_div_iff₀ hB).1 hlr
+    have h1 : l * (4 * (|c'| + r * ‖u‖ ^ 2 + 1)) < δ ^ 2 := (lt_div_iff₀ hA).1 hlt
+    have a1 : c' * l ≤ |c'| * l := mul_le_mul_of_nonneg_right (le_abs_self c') hl.le
+    have a2 : l * r * ‖x - u‖ ^ 2 ≤ 1 / 4 * ‖x - u‖ ^ 2 :=
+      mul_le_mul_of_nonneg_right (by nlinarith) (sq_nonneg _)
+    have key : (c' + r * ‖u‖ ^ 2 + r * ‖x - u‖ ^ 2) * (2 * l) ≤ ‖x - u‖ ^ 2 := by
+      nlinarith [a1, a2, h1, hd2, hl]
+    have h2 : c' + r * ‖u‖ ^ 2 + r * ‖x - u‖ ^ 2 ≤ (2 * l)⁻¹ * ‖x - u‖ ^ 2 := by
+      rw [inv_mul_eq_div, le_div_iff₀ (by positivity)]; exact key
+    linarith
+
 end Moreau
 
 /-! ### Exercise 1.135(i): epi-convergence via Moreau envelopes -/
@@ -539,11 +580,12 @@ theorem EpiTendsto.tendsto_moreauEnvelope_apply [ProperSpace E] [l.IsCountablyGe
   (h.tendsto_moreauEnvelope hm hr hmr hφ u).comp (tendsto_id.prodMk tendsto_const_nhds)
 
 /-- **Epi-convergence via Moreau envelopes** [Mordukhovich 2024, Ex. 1.135(i)], the converse
-part: if `φ_i ≥ 0`, `φ₀ ≥ 0` is l.s.c., and `e_λφ_i → e_λφ₀` pointwise for all small `λ > 0`,
-then `φ_i` epi-converges to `φ₀`. -/
+part: if `φ_i ≥ -(r/2)‖·‖²`, `φ₀ ≥ -(r/2)‖·‖²` is l.s.c., and `e_λφ_i → e_λφ₀` pointwise for all
+small `λ > 0`, then `φ_i` epi-converges to `φ₀`. -/
 theorem epiTendsto_of_tendsto_moreauEnvelope [l.IsCountablyGenerated] [l.NeBot]
-    (hφ : ∀ i x, 0 ≤ φ i x) (hφ₀ : ∀ x, 0 ≤ φ₀ x) (hlsc : LowerSemicontinuous φ₀) {m₀ : ℝ}
-    (hm₀ : 0 < m₀)
+    {r : ℝ} (hr : 0 ≤ r) (hφ : ∀ᶠ i in l, ∀ x, ((-(r / 2) * ‖x‖ ^ 2 : ℝ) : EReal) ≤ φ i x)
+    (hφ₀ : ∀ x, ((-(r / 2) * ‖x‖ ^ 2 : ℝ) : EReal) ≤ φ₀ x) (hlsc : LowerSemicontinuous φ₀)
+    {m₀ : ℝ} (hm₀ : 0 < m₀)
     (h : ∀ m ∈ Ioo 0 m₀, ∀ u,
       Tendsto (fun i ↦ moreauEnvelope (φ i) m u) l (𝓝 (moreauEnvelope φ₀ m u))) :
     EpiTendsto l φ φ₀ := by
@@ -557,7 +599,7 @@ theorem epiTendsto_of_tendsto_moreauEnvelope [l.IsCountablyGenerated] [l.NeBot]
     obtain ⟨p, hp, hlt'⟩ := exists_seq_forall_of_frequently
       (frequently_lt_of_liminf_lt (by isBoundedDefault) hc1)
     have hev : ∀ᶠ m in 𝓝[>] (0 : ℝ), (c' : EReal) < moreauEnvelope φ₀ m x ∧ m ∈ Ioo 0 m₀ :=
-      ((tendsto_moreauEnvelope_nhdsGT_zero hφ₀ (hlsc x)).eventually_const_lt hc4).and
+      ((tendsto_moreauEnvelope_nhdsGT_zero_of_ge hr hφ₀ (hlsc x)).eventually_const_lt hc4).and
         (Ioo_mem_nhdsGT hm₀)
     obtain ⟨m, hm1, hm2⟩ := hev.exists
     have ht : Tendsto (fun k ↦ moreauEnvelope (φ (p k).1) m x) atTop
@@ -578,63 +620,84 @@ theorem epiTendsto_of_tendsto_moreauEnvelope [l.IsCountablyGenerated] [l.NeBot]
     rcases eq_or_ne (φ₀ x) ⊤ with hx | hxt
     · exact ⟨fun _ ↦ x, tendsto_const_nhds, hx ▸ le_top⟩
     obtain ⟨s, hs⟩ : ∃ s : ℝ, φ₀ x = s :=
-      ⟨_, (EReal.coe_toReal hxt (lt_of_lt_of_le EReal.bot_lt_zero hx0).ne').symm⟩
-    have hs0 : 0 ≤ s := by rw [hs] at hx0; exact_mod_cast hx0
+      ⟨_, (EReal.coe_toReal hxt (lt_of_lt_of_le (EReal.bot_lt_coe _) hx0).ne').symm⟩
+    obtain ⟨M, hM, hMm, hMr⟩ : ∃ M > (0 : ℝ), M ≤ m₀ ∧ M * (4 * (r + 1)) ≤ 1 := by
+      refine ⟨min m₀ (1 / (4 * (r + 1))), lt_min hm₀ (by positivity), min_le_left _ _, ?_⟩
+      have := min_le_right m₀ (1 / (4 * (r + 1)))
+      rwa [le_div_iff₀ (by linarith)] at this
+    obtain ⟨C, hC⟩ : ∃ C : ℝ, C = |s| + 1 + r * ‖x‖ ^ 2 := ⟨_, rfl⟩
     -- near-minimizers of the envelopes with parameters `m₀/(n + 2) ↓ 0`
-    have hmpos : ∀ n : ℕ, 0 < m₀ / ((n : ℝ) + 2) := fun n ↦ by positivity
-    have hmm : ∀ n : ℕ, m₀ / ((n : ℝ) + 2) ∈ Ioo 0 m₀ := fun n ↦ ⟨hmpos n, by
+    have hmpos : ∀ n : ℕ, 0 < M / ((n : ℝ) + 2) := fun n ↦ by positivity
+    have hmm : ∀ n : ℕ, M / ((n : ℝ) + 2) ∈ Ioo 0 m₀ := fun n ↦ ⟨hmpos n, lt_of_lt_of_le (by
       rw [div_lt_iff₀ (by positivity)]
-      nlinarith [Nat.cast_nonneg (α := ℝ) n]⟩
+      nlinarith [Nat.cast_nonneg (α := ℝ) n]) hMm⟩
+    have hmr : ∀ n : ℕ, M / ((n : ℝ) + 2) * r ≤ 1 / 4 := fun n ↦ by
+      have h1 : M / ((n : ℝ) + 2) ≤ M := div_le_self hM.le (by
+        linarith [Nat.cast_nonneg (α := ℝ) n])
+      have h2 := mul_le_mul_of_nonneg_right h1 hr
+      nlinarith
     let P : ℕ → ℕ → Prop := fun n k ↦ ∃ y,
-      proxObjective (φ (a k)) (m₀ / ((n : ℝ) + 2)) x y < ((s + 1 / ((n : ℝ) + 1) : ℝ) : EReal)
+      proxObjective (φ (a k)) (M / ((n : ℝ) + 2)) x y < ((s + 1 / ((n : ℝ) + 1) : ℝ) : EReal)
     have hP : ∀ n, ∀ᶠ k in atTop, P n k := by
       intro n
-      have ht : Tendsto (fun k ↦ moreauEnvelope (φ (a k)) (m₀ / ((n : ℝ) + 2)) x) atTop
-          (𝓝 (moreauEnvelope φ₀ (m₀ / ((n : ℝ) + 2)) x)) := (h _ (hmm n) x).comp ha
-      have hlt : moreauEnvelope φ₀ (m₀ / ((n : ℝ) + 2)) x
+      have ht : Tendsto (fun k ↦ moreauEnvelope (φ (a k)) (M / ((n : ℝ) + 2)) x) atTop
+          (𝓝 (moreauEnvelope φ₀ (M / ((n : ℝ) + 2)) x)) := (h _ (hmm n) x).comp ha
+      have hlt : moreauEnvelope φ₀ (M / ((n : ℝ) + 2)) x
           < ((s + 1 / ((n : ℝ) + 1) : ℝ) : EReal) := by
         refine (moreauEnvelope_le_self x).trans_lt ?_
         rw [hs]
         have : (0 : ℝ) < 1 / ((n : ℝ) + 1) := by positivity
         exact EReal.coe_lt_coe_iff.2 (by linarith)
       filter_upwards [ht.eventually_lt_const hlt] with k hk
-      have hk' : (⨅ y, proxObjective (φ (a k)) (m₀ / ((n : ℝ) + 2)) x y)
+      have hk' : (⨅ y, proxObjective (φ (a k)) (M / ((n : ℝ) + 2)) x y)
           < ((s + 1 / ((n : ℝ) + 1) : ℝ) : EReal) := hk
       exact iInf_lt_iff.1 hk'
     obtain ⟨n, hn, hPn⟩ := exists_diag_nat hP
     let z : ℕ → E := fun k ↦ if hk : P (n k) k then hk.choose else x
     have hz : ∀ᶠ k in atTop, φ (a k) (z k) < ((s + 1 / ((n k : ℝ) + 1) : ℝ) : EReal) ∧
-        ‖z k - x‖ ^ 2 < 2 * (m₀ / ((n k : ℝ) + 2)) * (s + 1) := by
-      filter_upwards [hPn] with k hk
+        ‖z k - x‖ ^ 2 < 4 * (M / ((n k : ℝ) + 2)) * C := by
+      filter_upwards [hPn, ha.eventually hφ] with k hk hφk
       have hzk : z k = hk.choose := dif_pos hk
       have hspec : φ (a k) (z k)
-          + (((2 * (m₀ / ((n k : ℝ) + 2)))⁻¹ * ‖z k - x‖ ^ 2 : ℝ) : EReal)
+          + (((2 * (M / ((n k : ℝ) + 2)))⁻¹ * ‖z k - x‖ ^ 2 : ℝ) : EReal)
           < ((s + 1 / ((n k : ℝ) + 1) : ℝ) : EReal) := by
         rw [hzk]
         exact hk.choose_spec
       have hmk := hmpos (n k)
       have hnn : (0 : EReal)
-          ≤ (((2 * (m₀ / ((n k : ℝ) + 2)))⁻¹ * ‖z k - x‖ ^ 2 : ℝ) : EReal) :=
+          ≤ (((2 * (M / ((n k : ℝ) + 2)))⁻¹ * ‖z k - x‖ ^ 2 : ℝ) : EReal) :=
         EReal.coe_nonneg.2 (by positivity)
       refine ⟨(le_add_of_nonneg_right hnn).trans_lt hspec, ?_⟩
-      have h2 : (2 * (m₀ / ((n k : ℝ) + 2)))⁻¹ * ‖z k - x‖ ^ 2 < s + 1 / ((n k : ℝ) + 1) :=
-        EReal.coe_lt_coe_iff.1 ((le_add_of_nonneg_left (hφ (a k) (z k))).trans_lt hspec)
+      obtain ⟨s', -, hs'1, hs'2⟩ := exists_real_of_coe_le_of_add_lt (hφk (z k)) hspec
       have h3 : 1 / ((n k : ℝ) + 1) ≤ 1 := by
         rw [div_le_one (by positivity)]
         linarith [Nat.cast_nonneg (α := ℝ) (n k)]
-      rw [inv_mul_eq_div, div_lt_iff₀ (by positivity)] at h2
-      calc ‖z k - x‖ ^ 2 < (s + 1 / ((n k : ℝ) + 1)) * (2 * (m₀ / ((n k : ℝ) + 2))) := h2
-        _ ≤ (s + 1) * (2 * (m₀ / ((n k : ℝ) + 2))) :=
-          mul_le_mul_of_nonneg_right (by linarith) (by linarith)
-        _ = 2 * (m₀ / ((n k : ℝ) + 2)) * (s + 1) := by ring
+      have hzn : ‖z k‖ ≤ ‖x‖ + ‖z k - x‖ := norm_le_norm_add_norm_sub' (z k) x
+      have hz2 : ‖z k‖ ^ 2 ≤ 2 * ‖x‖ ^ 2 + 2 * ‖z k - x‖ ^ 2 := by
+        nlinarith [sq_nonneg (‖x‖ - ‖z k - x‖), norm_nonneg (z k), norm_nonneg x,
+          norm_nonneg (z k - x)]
+      have h0 : r / 2 * ‖z k‖ ^ 2 ≤ r / 2 * (2 * ‖x‖ ^ 2 + 2 * ‖z k - x‖ ^ 2) :=
+        mul_le_mul_of_nonneg_left hz2 (by linarith)
+      have h2 : (2 * (M / ((n k : ℝ) + 2)))⁻¹ * ‖z k - x‖ ^ 2 < C + r * ‖z k - x‖ ^ 2 := by
+        rw [hC]; linarith [le_abs_self s]
+      have h4 := mul_lt_mul_of_pos_left h2 (show (0 : ℝ) < 4 * (M / ((n k : ℝ) + 2)) by positivity)
+      have e1 : 4 * (M / ((n k : ℝ) + 2)) * ((2 * (M / ((n k : ℝ) + 2)))⁻¹ * ‖z k - x‖ ^ 2) =
+          2 * ‖z k - x‖ ^ 2 := by
+        rw [mul_inv, ← mul_assoc, ← mul_assoc, mul_assoc 4, mul_comm (M / ((n k : ℝ) + 2)),
+          ← mul_assoc, mul_assoc (4 * 2⁻¹), mul_inv_cancel₀ hmk.ne']
+        ring
+      have h5 : M / ((n k : ℝ) + 2) * r * ‖z k - x‖ ^ 2 ≤ 1 / 4 * ‖z k - x‖ ^ 2 :=
+        mul_le_mul_of_nonneg_right (hmr (n k)) (sq_nonneg _)
+      rw [e1] at h4
+      nlinarith [h4, h5]
     refine ⟨z, Metric.tendsto_nhds.2 fun ε hε ↦ ?_, ?_⟩
-    · filter_upwards [hz, hn.eventually_ge_atTop ⌈2 * m₀ * (s + 1) / ε ^ 2⌉₊] with k hk hkn
-      have h1 : 2 * m₀ * (s + 1) / ε ^ 2 ≤ (n k : ℝ) :=
+    · filter_upwards [hz, hn.eventually_ge_atTop ⌈4 * M * C / ε ^ 2⌉₊] with k hk hkn
+      have h1 : 4 * M * C / ε ^ 2 ≤ (n k : ℝ) :=
         (Nat.le_ceil _).trans (by exact_mod_cast hkn)
       rw [div_le_iff₀ (by positivity)] at h1
-      have h2 : 2 * (m₀ / ((n k : ℝ) + 2)) * (s + 1) < ε ^ 2 := by
-        have h3 : 2 * (m₀ / ((n k : ℝ) + 2)) * (s + 1)
-            = 2 * m₀ * (s + 1) / ((n k : ℝ) + 2) := by ring
+      have h2 : 4 * (M / ((n k : ℝ) + 2)) * C < ε ^ 2 := by
+        have h3 : 4 * (M / ((n k : ℝ) + 2)) * C
+            = 4 * M * C / ((n k : ℝ) + 2) := by ring
         rw [h3, div_lt_iff₀ (by positivity)]
         nlinarith [sq_pos_of_pos hε]
       rw [dist_eq_norm]
