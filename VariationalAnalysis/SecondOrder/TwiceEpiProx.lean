@@ -33,6 +33,13 @@ quotients `t⁻¹P_λφ(tw)` of the proximal mapping to the proximal mapping of 
   nonempty-valued near `0` and the proximal objective grows quadratically around its minimizers,
   then `P_λ(d²φ(0, 0)/2)` is single-valued and `t_k⁻¹p_k` converges to its value at `w`.
 
+* `ProxRegularFor.exists_proxObjective_growth`: for an l.s.c., prox-bounded function that is
+  prox-regular at `x̄` for `v̄ = ⟨g, ·⟩` and all small `λ`, `P_λφ` is nonempty-valued near
+  `x̄ + λg` and the proximal objective grows quadratically around its minimizers.
+* `ProxRegularFor.exists_tendsto_inv_smul_proximalMap`: the semidifferentiability of `P_λφ` at
+  `0` for an l.s.c. function with `φ(0) = 0`, `φ ≥ -(r/2)‖·‖²` that is prox-regular and twice
+  epi-differentiable at `0` for `0`.
+
 ## Implementation notes
 
 The proof combines [Mordukhovich 2024, Lemma 1.94] (`proximalMap_half_secondDiffQuot`) with
@@ -387,5 +394,122 @@ theorem TwiceEpiDifferentiableAt.exists_tendsto_inv_smul_proximalMap
   exact hq
 
 end TwiceEpi
+
+/-! ### Prox-regular functions -/
+
+section ProxRegular
+
+open InnerProductSpace
+open scoped RealInnerProductSpace
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+  {φ : E → EReal} {x₀ : E}
+
+/-- **Quadratic growth of the proximal objective of a prox-regular function.** Let `φ` be l.s.c.,
+prox-bounded and prox-regular at `x̄` for `v̄ = ⟨g, ·⟩`. Then for all small `λ > 0` there are
+`δ, c, ε > 0` such that for `u ∈ B(x̄ + λg, δ)` the proximal mapping `P_λφ(u)` is nonempty and
+`φ(p) + ‖p - u‖²/(2λ) + c‖x - p‖² ≤ φ(x) + ‖x - u‖²/(2λ)` for `p ∈ P_λφ(u)` and
+`x ∈ B(x̄, ε)`. -/
+theorem ProxRegularFor.exists_proxObjective_growth {g : E}
+    (hφ : ProxRegularFor φ x₀ (toDual ℝ E g)) (hlsc : ∀ x, LowerSemicontinuousAt φ x)
+    (hbd : ∃ a b : ℝ, ∀ x, ((a - b * ‖x - x₀‖ ^ 2 : ℝ) : EReal) ≤ φ x) :
+    ∃ l₀ > (0 : ℝ), ∀ l, 0 < l → l < l₀ → ∃ δ > (0 : ℝ), ∃ c > (0 : ℝ), ∃ ε > (0 : ℝ),
+      ∀ u ∈ ball (x₀ + l • g) δ, (proximalMap φ l u).Nonempty ∧
+        ∀ p ∈ proximalMap φ l u, ∀ x ∈ ball x₀ ε,
+          proxObjective φ l u p + ((c * ‖x - p‖ ^ 2 : ℝ) : EReal) ≤ proxObjective φ l u x := by
+  obtain ⟨ε', hε', l₁, hl₁, Hprox⟩ := hφ.exists_proximalMap hlsc hbd
+  obtain ⟨hv₀, -, ε, hε, η, hη, H⟩ := hφ
+  have ⟨r₀, hr₀, _⟩ := hv₀
+  refine ⟨min l₁ (1 / (η + 1)), lt_min hl₁ (by positivity), fun l hl hll ↦ ?_⟩
+  have hlη : l * η < 1 := by
+    have h1 : l < 1 / (η + 1) := hll.trans_le (min_le_right _ _)
+    rw [lt_div_iff₀ (by positivity)] at h1
+    nlinarith
+  have hηl : η < l⁻¹ := by
+    have := mul_lt_mul_of_pos_right hlη (inv_pos.2 hl)
+    rwa [mul_comm l, mul_assoc, mul_inv_cancel₀ hl.ne', mul_one, one_mul] at this
+  have h2l : (2 * l)⁻¹ = l⁻¹ / 2 := by rw [mul_inv]; ring
+  obtain ⟨δ, hδ, p, hp0, hP, hLip, hloc, -⟩ := Hprox l hl (hll.trans_le (min_le_left _ _))
+  have hpc : ContinuousAt p (x₀ + l • g) :=
+    hLip.continuousOn.continuousAt (ball_mem_nhds _ hδ)
+  have e1 : ∀ᶠ u in 𝓝 (x₀ + l • g), ‖p u - x₀‖ < ε :=
+    ContinuousAt.eventually_lt (f := fun u ↦ ‖p u - x₀‖) (g := fun _ ↦ ε)
+      (hpc.sub continuousAt_const).norm continuousAt_const (by simpa [hp0] using hε)
+  have e2 : ∀ᶠ u in 𝓝 (x₀ + l • g), ‖l⁻¹ • (u - p u) - g‖ < ε :=
+    ContinuousAt.eventually_lt (f := fun u ↦ ‖l⁻¹ • (u - p u) - g‖) (g := fun _ ↦ ε)
+      (((continuousAt_id.sub hpc).const_smul l⁻¹).sub continuousAt_const).norm
+      continuousAt_const (by simpa [hp0, smul_smul, inv_mul_cancel₀ hl.ne'] using hε)
+  have e3 : ∀ᶠ u in 𝓝 (x₀ + l • g), (2 * l)⁻¹ * (‖x₀ - u‖ ^ 2 - ‖p u - u‖ ^ 2) < ε :=
+    ContinuousAt.eventually_lt
+      (f := fun u ↦ (2 * l)⁻¹ * (‖x₀ - u‖ ^ 2 - ‖p u - u‖ ^ 2)) (g := fun _ ↦ ε)
+      (continuousAt_const.mul (((continuousAt_const.sub continuousAt_id).norm.pow 2).sub
+        ((hpc.sub continuousAt_id).norm.pow 2))) continuousAt_const
+      (by simpa [hp0] using hε)
+  obtain ⟨δ₁, hδ₁, hball⟩ := Metric.eventually_nhds_iff.1
+    (e1.and (e2.and (e3.and (eventually_mem_set.2 (ball_mem_nhds _ hδ)))))
+  refine ⟨δ₁, hδ₁, (2 * l)⁻¹ - η / 2, by rw [h2l]; linarith, ε, hε, fun u hu ↦ ?_⟩
+  obtain ⟨h1, h2, h3, hub⟩ := hball hu
+  have hPu := hP u hub
+  refine ⟨by rw [hPu]; exact singleton_nonempty _, fun q hq x hx ↦ ?_⟩
+  rw [hPu, mem_singleton_iff] at hq
+  subst hq
+  obtain ⟨hv, -, -, s, hs, -⟩ := hloc u hub
+  have hmem : p u ∈ proximalMap φ l u := by rw [hPu]; exact mem_singleton _
+  have hmin : φ (p u) + (((2 * l)⁻¹ * ‖p u - u‖ ^ 2 : ℝ) : EReal) ≤
+      φ x₀ + (((2 * l)⁻¹ * ‖x₀ - u‖ ^ 2 : ℝ) : EReal) := hmem x₀
+  rw [hs, hr₀, ← EReal.coe_add, ← EReal.coe_add, EReal.coe_le_coe_iff] at hmin
+  have hs_le : s ≤ r₀ + ε := by linarith
+  have hφle : φ (p u) ≤ φ x₀ + (ε : EReal) := by
+    rw [hs, hr₀, ← EReal.coe_add]
+    exact EReal.coe_le_coe_iff.2 hs_le
+  have hvn : ‖toDual ℝ E (l⁻¹ • (u - p u)) - toDual ℝ E g‖ ≤ ε := by
+    rw [← map_sub, LinearIsometryEquiv.norm_map]
+    exact h2.le
+  have key := H (p u) x _ hv s hs hvn (mem_ball_iff_norm.1 hx).le h1.le hφle
+  rw [toDual_apply_apply, real_inner_smul_left] at key
+  have key' := add_le_add key (le_refl (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal))
+  rw [← EReal.coe_add] at key'
+  show φ (p u) + (((2 * l)⁻¹ * ‖p u - u‖ ^ 2 : ℝ) : EReal) +
+    ((((2 * l)⁻¹ - η / 2) * ‖x - p u‖ ^ 2 : ℝ) : EReal) ≤
+    φ x + (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal)
+  rw [hs, ← EReal.coe_add, ← EReal.coe_add]
+  refine le_trans (EReal.coe_le_coe_iff.2 ?_) key'
+  have hN := norm_sub_sq_real (x - p u) (u - p u)
+  have e : x - p u - (u - p u) = x - u := by abel
+  have hcomm : ⟪x - p u, u - p u⟫_ℝ = ⟪u - p u, x - p u⟫_ℝ := real_inner_comm _ _
+  rw [e, hcomm] at hN
+  rw [hN, norm_sub_rev (p u) u, h2l]
+  linarith
+
+/-- **Semidifferentiability of the proximal mapping of a prox-regular function**
+[Mordukhovich 2024, Thm. 1.98, Cor. 1.101], normalized form. Let `φ` be l.s.c. with `φ(0) = 0`
+and `φ ≥ -(r/2)‖·‖²`, prox-regular at `0` for `0` and twice epi-differentiable at `0` for `0`.
+Then for all small `λ > 0` the proximal mapping `P_λ(d²φ(0, 0)/2)` is single-valued, with value
+`D(w)` say, and `t_k⁻¹p_k → D(w)` whenever `p_k ∈ P_λφ(t_k w_k)`, `t_k ↓ 0` and `w_k → w`. -/
+theorem ProxRegularFor.exists_tendsto_inv_smul_proximalMap {r : ℝ}
+    (hφ : ProxRegularFor φ 0 0) (H : TwiceEpiDifferentiableAt φ 0 0) (h0 : φ 0 = 0)
+    (hr : 0 ≤ r) (hmin : ∀ x, ((-(r / 2) * ‖x‖ ^ 2 : ℝ) : EReal) ≤ φ x)
+    (hlsc : ∀ x, LowerSemicontinuousAt φ x) :
+    ∃ l₀ > (0 : ℝ), ∀ m, 0 < m → m < l₀ → ∃ D : E → E,
+      (∀ w, proximalMap (fun w ↦ ((1 / 2 : ℝ) : EReal) * secondSubderiv φ 0 0 w) m w = {D w}) ∧
+      ∀ t : ℕ → ℝ, Tendsto t atTop (𝓝[>] 0) → ∀ (w p : ℕ → E) (w₀ : E),
+        Tendsto w atTop (𝓝 w₀) → (∀ᶠ k in atTop, p k ∈ proximalMap φ m (t k • w k)) →
+        Tendsto (fun k ↦ (t k)⁻¹ • p k) atTop (𝓝 (D w₀)) := by
+  have hφ' : ProxRegularFor φ 0 (toDual ℝ E 0) := by simpa using hφ
+  have hbd : ∃ a b : ℝ, ∀ x : E, ((a - b * ‖x - 0‖ ^ 2 : ℝ) : EReal) ≤ φ x :=
+    ⟨0, r / 2, fun x ↦ by rw [sub_zero, zero_sub, ← neg_mul]; exact hmin x⟩
+  obtain ⟨l₁, hl₁, Hg⟩ := hφ'.exists_proxObjective_growth hlsc hbd
+  refine ⟨min l₁ (1 / (r + 1)), lt_min hl₁ (by positivity), fun m hm hml ↦ ?_⟩
+  have hmr : m * r < 1 := by
+    have h1 : m < 1 / (r + 1) := hml.trans_le (min_le_right _ _)
+    rw [lt_div_iff₀ (by positivity)] at h1
+    nlinarith
+  obtain ⟨δ, hδ, c, hc, ε, hε, Hu⟩ := Hg m hm (hml.trans_le (min_le_left _ _))
+  simp only [smul_zero, add_zero] at Hu
+  exact H.exists_tendsto_inv_smul_proximalMap h0 hm hr hmr hmin
+    (Metric.eventually_nhds_iff.2 ⟨δ, hδ, fun u hu ↦ (Hu u (mem_ball.2 hu)).1⟩) hc hε
+    (Metric.eventually_nhds_iff.2 ⟨δ, hδ, fun u hu ↦ (Hu u (mem_ball.2 hu)).2⟩)
+
+end ProxRegular
 
 end VariationalAnalysis
