@@ -21,6 +21,9 @@ proto-differentiable at `(x̄, v̄)`.
   continuously prox-regular function and small `λ`, near `(x̄, g)` one has `⟨y, ·⟩ ∈ ∂φ(x)` iff
   `x = P_λφ(x + λy)`.
 * `proxGraphEquiv`: the linear isomorphism `(x, v) ↦ (x + λv, x)` of `E × E*` onto `E × E`.
+* `protoDifferentiableAt_iff_geometricallyDerivableAt_graph`: under this isomorphism,
+  proto-differentiability of a mapping corresponds to geometric derivability of the graph of
+  its resolvent.
 * `TwiceEpiDifferentiableAt.congr`, `SubdiffContinuousFor.congr`,
   `ProxRegularFor.exists_localization`: twice epi-differentiability and subdifferential
   continuity are local properties, and a prox-regular function agrees near `x̄` with an l.s.c.,
@@ -340,6 +343,67 @@ theorem proxGraphEquiv_apply {l : ℝ} (hl : l ≠ 0) (q : E × StrongDual ℝ E
 theorem proxGraphEquiv_symm_apply {l : ℝ} (hl : l ≠ 0) (q : E × E) :
     (proxGraphEquiv l hl).symm q = (q.2, toDual ℝ E (l⁻¹ • (q.1 - q.2))) := rfl
 
+/-- If near `(x̄, g)` one has `⟨y, ·⟩ ∈ S(x)` iff `x = p(x + λy)`, then `S` is proto-differentiable
+at `(x̄, ⟨g, ·⟩)` iff the graph of `p` is geometrically derivable at `(x̄ + λg, x̄)`. -/
+theorem protoDifferentiableAt_iff_geometricallyDerivableAt_graph
+    {S : E → Set (StrongDual ℝ E)} {p : E → E} {l : ℝ} (hl : l ≠ 0) {g : E}
+    (hp0 : p (x₀ + l • g) = x₀)
+    (hgraph : ∀ᶠ q : E × E in 𝓝 (x₀, g),
+      (toDual ℝ E q.2 ∈ S q.1 ↔ q.1 = p (q.1 + l • q.2))) :
+    ProtoDifferentiableAt S x₀ (toDual ℝ E g) ↔
+      GeometricallyDerivableAt (graph fun u ↦ ({p u} : Set E)) (x₀ + l • g, x₀) := by
+  have hmem : toDual ℝ E g ∈ S x₀ := hgraph.self_of_nhds.2 hp0.symm
+  let e : (E × StrongDual ℝ E) ≃L[ℝ] (E × E) := proxGraphEquiv l hl
+  have he : ∀ q : E × StrongDual ℝ E, e q = (q.1 + l • (toDual ℝ E).symm q.2, q.1) :=
+    fun q ↦ rfl
+  have hes : ∀ q : E × E, e.symm q = (q.2, toDual ℝ E (l⁻¹ • (q.1 - q.2))) := fun q ↦ rfl
+  have he0 : e (x₀, toDual ℝ E g) = (x₀ + l • g, x₀) := by
+    rw [he, LinearIsometryEquiv.symm_apply_apply]
+  have hes0 : e.symm (x₀ + l • g, x₀) = (x₀, toDual ℝ E g) := by
+    rw [hes]
+    simp only [add_sub_cancel_left, smul_smul, inv_mul_cancel₀ hl, one_smul]
+  constructor
+  · intro hproto
+    have hc : Tendsto (fun q : E × E ↦ (q.2, l⁻¹ • (q.1 - q.2))) (𝓝 (x₀ + l • g, x₀))
+        (𝓝 (x₀, g)) := by
+      have : Continuous (fun q : E × E ↦ (q.2, l⁻¹ • (q.1 - q.2))) := by fun_prop
+      have h := this.tendsto (x₀ + l • g, x₀)
+      simp only [add_sub_cancel_left, smul_smul, inv_mul_cancel₀ hl, one_smul] at h
+      exact h
+    obtain ⟨W, hW, hWloc⟩ := (hc.eventually hgraph).exists_mem
+    refine GeometricallyDerivableAt.of_inter_eq_preimage (Φ := e.symm) (e := e.symm)
+      (by rw [hes0]; exact hproto) hW ?_ e.symm.hasStrictFDerivAt
+      (show x₀ ∈ ({p (x₀ + l • g)} : Set E) by rw [hp0]; exact mem_singleton _)
+    ext q
+    have h1 := hWloc q
+    have h3 : q.2 + l • l⁻¹ • (q.1 - q.2) = q.1 := by
+      rw [smul_smul, mul_inv_cancel₀ hl, one_smul, add_sub_cancel]
+    rw [h3] at h1
+    have h2 : q ∈ e.symm ⁻¹' graph S ↔ toDual ℝ E (l⁻¹ • (q.1 - q.2)) ∈ S q.2 := Iff.rfl
+    have h4 : q ∈ (graph fun u ↦ ({p u} : Set E)) ↔ q.2 = p q.1 := Iff.rfl
+    simp only [mem_inter_iff]
+    rw [h2, h4]
+    exact ⟨fun ⟨hq, hqW⟩ ↦ ⟨(h1 hqW).2 hq, hqW⟩, fun ⟨hq, hqW⟩ ↦ ⟨(h1 hqW).1 hq, hqW⟩⟩
+  · intro hG
+    have hc : Tendsto (fun q : E × StrongDual ℝ E ↦ (q.1, (toDual ℝ E).symm q.2))
+        (𝓝 (x₀, toDual ℝ E g)) (𝓝 (x₀, g)) := by
+      have : Continuous (fun q : E × StrongDual ℝ E ↦ (q.1, (toDual ℝ E).symm q.2)) :=
+        continuous_fst.prodMk ((toDual ℝ E).symm.continuous.comp continuous_snd)
+      have h := this.tendsto (x₀, toDual ℝ E g)
+      simp only [LinearIsometryEquiv.symm_apply_apply] at h
+      exact h
+    obtain ⟨W, hW, hWloc⟩ := (hc.eventually hgraph).exists_mem
+    refine GeometricallyDerivableAt.of_inter_eq_preimage (Φ := e) (e := e)
+      (by rw [he0]; exact hG) hW ?_ e.hasStrictFDerivAt hmem
+    ext q
+    have h1 := hWloc q
+    simp only [LinearIsometryEquiv.apply_symm_apply] at h1
+    have h2 : q ∈ e ⁻¹' (graph fun u ↦ ({p u} : Set E)) ↔
+        q.1 = p (q.1 + l • (toDual ℝ E).symm q.2) := Iff.rfl
+    simp only [mem_inter_iff]
+    rw [h2]
+    exact ⟨fun ⟨hq, hqW⟩ ↦ ⟨(h1 hqW).1 hq, hqW⟩, fun ⟨hq, hqW⟩ ↦ ⟨(h1 hqW).2 hq, hqW⟩⟩
+
 /-- [Mordukhovich 2024, Thm. 1.98], one implication for l.s.c. and prox-bounded functions. -/
 theorem ContinuouslyProxRegularFor.protoDifferentiableAt_subdiff_of_lsc {g : E}
     (hφ : ContinuouslyProxRegularFor φ x₀ (toDual ℝ E g))
@@ -371,31 +435,7 @@ theorem ContinuouslyProxRegularFor.protoDifferentiableAt_subdiff_of_lsc {g : E}
         rw [hpU _ hk]
         exact mem_singleton _)
     rwa [hp0] at this
-  -- the linear isomorphism `(x, v) ↦ (x + λv, x)`
-  let e : (E × StrongDual ℝ E) ≃L[ℝ] (E × E) := proxGraphEquiv l hl.ne'
-  have he : ∀ q : E × StrongDual ℝ E, e q = (q.1 + l • (toDual ℝ E).symm q.2, q.1) :=
-    fun q ↦ rfl
-  have he0 : e (x₀, toDual ℝ E g) = (x₀ + l • g, x₀) := by
-    rw [he, LinearIsometryEquiv.symm_apply_apply]
-  -- the local description of the graph of `∂φ`
-  have hc : Tendsto (fun q : E × StrongDual ℝ E ↦ (q.1, (toDual ℝ E).symm q.2))
-      (𝓝 (x₀, toDual ℝ E g)) (𝓝 (x₀, g)) := by
-    have : Continuous (fun q : E × StrongDual ℝ E ↦ (q.1, (toDual ℝ E).symm q.2)) :=
-      continuous_fst.prodMk ((toDual ℝ E).symm.continuous.comp continuous_snd)
-    have h := this.tendsto (x₀, toDual ℝ E g)
-    simp only [LinearIsometryEquiv.symm_apply_apply] at h
-    exact h
-  obtain ⟨W, hW, hWloc⟩ := (hc.eventually hgraph).exists_mem
-  refine GeometricallyDerivableAt.of_inter_eq_preimage (Φ := e) (e := e)
-    (by rw [he0]; exact hG) hW ?_ e.hasStrictFDerivAt hφ.1.1
-  ext q
-  have h1 := hWloc q
-  simp only [LinearIsometryEquiv.apply_symm_apply] at h1
-  have h2 : q ∈ e ⁻¹' (graph fun u ↦ ({p u} : Set E)) ↔
-      q.1 = p (q.1 + l • (toDual ℝ E).symm q.2) := Iff.rfl
-  simp only [mem_inter_iff]
-  rw [h2]
-  exact ⟨fun ⟨hq, hqW⟩ ↦ ⟨(h1 hqW).1 hq, hqW⟩, fun ⟨hq, hqW⟩ ↦ ⟨(h1 hqW).2 hq, hqW⟩⟩
+  exact (protoDifferentiableAt_iff_geometricallyDerivableAt_graph hl.ne' hp0 hgraph).2 hG
 
 /-- [Mordukhovich 2024, Thm. 1.98], one implication: if `φ` is continuously prox-regular at `x̄`
 for `v̄` and twice epi-differentiable at `x̄` for `v̄`, then `∂φ` is proto-differentiable at
