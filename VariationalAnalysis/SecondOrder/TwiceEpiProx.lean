@@ -28,6 +28,11 @@ quotients `t⁻¹P_λφ(tw)` of the proximal mapping to the proximal mapping of 
   at most one point `d`, then `t_k⁻¹p_k → d`
   [Mordukhovich 2024, Thm. 1.98 and Cor. 1.101, first part of the proofs].
 
+* `TwiceEpiDifferentiableAt.exists_proximalMap_half_secondSubderiv_eq_singleton`,
+  `TwiceEpiDifferentiableAt.exists_tendsto_inv_smul_proximalMap`: if moreover `P_λφ` is
+  nonempty-valued near `0` and the proximal objective grows quadratically around its minimizers,
+  then `P_λ(d²φ(0, 0)/2)` is single-valued and `t_k⁻¹p_k` converges to its value at `w`.
+
 ## Implementation notes
 
 The proof combines [Mordukhovich 2024, Lemma 1.94] (`proximalMap_half_secondDiffQuot`) with
@@ -202,6 +207,184 @@ theorem TwiceEpiDifferentiableAt.tendsto_inv_smul_of_mem_proximalMap
   exact H.epiTendsto_half.tendsto_of_mem_proximalMap hm hr hmr
     (eventually_half_secondDiffQuot_ge h0 hφ) htop huniq ht hw
     (eventually_inv_smul_mem_proximalMap h0 ht hp)
+
+omit [ProperSpace E] in
+/-- Quadratic growth of the proximal objective passes from `φ` to `Δ²_tφ(0, 0)/2`. -/
+theorem proxObjective_half_secondDiffQuot_add_le (h0 : φ 0 = 0) {t : ℝ} (ht : 0 < t) {c : ℝ}
+    {u q z : E}
+    (h : proxObjective φ m (t • u) (t • q) + ((c * ‖t • z - t • q‖ ^ 2 : ℝ) : EReal) ≤
+      proxObjective φ m (t • u) (t • z)) :
+    proxObjective (fun w ↦ ((1 / 2 : ℝ) : EReal) * secondDiffQuot φ 0 0 t w) m u q +
+        ((c * ‖z - q‖ ^ 2 : ℝ) : EReal) ≤
+      proxObjective (fun w ↦ ((1 / 2 : ℝ) : EReal) * secondDiffQuot φ 0 0 t w) m u z := by
+  simp only [half_secondDiffQuot_zero h0 ht.ne', proxObjective_scale φ ht]
+  have h1 := (coe_mul_le_coe_mul_iff (show (0 : ℝ) < t⁻¹ ^ 2 by positivity)).2 h
+  rw [EReal.left_distrib_of_nonneg_of_ne_top (EReal.coe_nonneg.2 (by positivity))
+    (EReal.coe_ne_top _), ← EReal.coe_mul] at h1
+  have h2 : t⁻¹ ^ 2 * (c * ‖t • z - t • q‖ ^ 2) = c * ‖z - q‖ ^ 2 := by
+    rw [← smul_sub, norm_smul, Real.norm_of_nonneg ht.le]
+    field_simp
+  rwa [h2] at h1
+
+/-- **Single-valuedness of the proximal mapping of `d²φ(0, 0)/2`.** Let `φ(0) = 0`,
+`φ ≥ -(r/2)‖·‖²`, `λr < 1`, and let `φ` be twice epi-differentiable at `0` for `0`. If near `0`
+the proximal mapping `P_λφ` is nonempty-valued and the proximal objective grows quadratically
+around its minimizers on a ball around `0` (as for prox-regular functions), then
+`P_λ(d²φ(0, 0)/2)(w)` is a singleton for every `w`. -/
+theorem TwiceEpiDifferentiableAt.exists_proximalMap_half_secondSubderiv_eq_singleton
+    (H : TwiceEpiDifferentiableAt φ 0 0) (h0 : φ 0 = 0) (hm : 0 < m) (hr : 0 ≤ r)
+    (hmr : m * r < 1) (hφ : ∀ x, ((-(r / 2) * ‖x‖ ^ 2 : ℝ) : EReal) ≤ φ x)
+    (hex : ∀ᶠ u in 𝓝 (0 : E), (proximalMap φ m u).Nonempty) {c ε : ℝ} (hc : 0 < c)
+    (hε : 0 < ε)
+    (hqg : ∀ᶠ u in 𝓝 (0 : E), ∀ p ∈ proximalMap φ m u, ∀ x ∈ ball (0 : E) ε,
+      proxObjective φ m u p + ((c * ‖x - p‖ ^ 2 : ℝ) : EReal) ≤ proxObjective φ m u x)
+    (w : E) :
+    ∃ d, proximalMap (fun w ↦ ((1 / 2 : ℝ) : EReal) * secondSubderiv φ 0 0 w) m w = {d} := by
+  classical
+  have htopE := H.moreauEnvelope_half_secondSubderiv_le h0 hm hr hmr hφ w
+  obtain ⟨Ψ, hΨ⟩ : ∃ Ψ : ℝ → E → EReal,
+      Ψ = fun t w ↦ ((1 / 2 : ℝ) : EReal) * secondDiffQuot φ 0 0 t w := ⟨_, rfl⟩
+  obtain ⟨Ψ₀, hΨ₀⟩ : ∃ Ψ₀ : E → EReal,
+      Ψ₀ = fun w ↦ ((1 / 2 : ℝ) : EReal) * secondSubderiv φ 0 0 w := ⟨_, rfl⟩
+  rw [← hΨ₀] at htopE ⊢
+  have hepi : EpiTendsto (𝓝[>] (0 : ℝ)) Ψ Ψ₀ := by
+    rw [hΨ, hΨ₀]
+    exact H.epiTendsto_half
+  have hbd : ∀ᶠ t in 𝓝[>] (0 : ℝ), ∀ w : E, ((-(r / 2) * ‖w‖ ^ 2 : ℝ) : EReal) ≤ Ψ t w := by
+    rw [hΨ]
+    exact eventually_half_secondDiffQuot_ge h0 hφ
+  -- a sequence `t_k ↓ 0` and proximal points `p_k ∈ P_λφ(t_k w)`
+  obtain ⟨t, ht, htpos⟩ : ∃ t : ℕ → ℝ, Tendsto t atTop (𝓝[>] 0) ∧ ∀ k, 0 < t k :=
+    ⟨fun k ↦ 1 / ((k : ℝ) + 1), tendsto_nhdsWithin_iff.2
+      ⟨tendsto_one_div_add_atTop_nhds_zero_nat,
+        Eventually.of_forall fun k ↦ mem_Ioi.2 Nat.one_div_pos_of_nat⟩,
+      fun k ↦ Nat.one_div_pos_of_nat⟩
+  have ht0 : Tendsto t atTop (𝓝 0) := tendsto_nhds_of_tendsto_nhdsWithin ht
+  have htw : Tendsto (fun k ↦ t k • w) atTop (𝓝 (0 : E)) := by
+    simpa using ht0.smul_const w
+  have hch : ∀ k, ∃ p, (proximalMap φ m (t k • w)).Nonempty → p ∈ proximalMap φ m (t k • w) := by
+    intro k
+    by_cases h : (proximalMap φ m (t k • w)).Nonempty
+    · exact ⟨h.some, fun _ ↦ h.some_mem⟩
+    · exact ⟨0, fun h' ↦ absurd h' h⟩
+  choose p hp using hch
+  have hp' : ∀ᶠ k in atTop, p k ∈ proximalMap φ m (t k • w) :=
+    (htw.eventually hex).mono fun k hk ↦ hp k hk
+  set q : ℕ → E := fun k ↦ (t k)⁻¹ • p k with hq_def
+  have hq : ∀ᶠ k in atTop, q k ∈ proximalMap (Ψ (t k)) m w := by
+    rw [hΨ]
+    exact eventually_inv_smul_mem_proximalMap h0 ht (w := fun _ ↦ w) hp'
+  have hE : Tendsto (fun k ↦ moreauEnvelope (Ψ (t k)) m w) atTop
+      (𝓝 (moreauEnvelope Ψ₀ m w)) :=
+    (hepi.tendsto_moreauEnvelope_apply hm hr hmr hbd w).comp ht
+  -- every proximal point of the limit is the limit of `q_k`
+  have key : ∀ d ∈ proximalMap Ψ₀ m w, Tendsto q atTop (𝓝 d) := by
+    intro d hd
+    obtain ⟨z, hz, hl⟩ := (epiTendsto_iff.1 hepi d).2 t ht
+    have hsb : Ψ₀ d ≠ ⊥ := by
+      have h1 : ((-(r / 2) * ‖d‖ ^ 2 - 1 : ℝ) : EReal) ≤
+          limsup (fun k ↦ Ψ (t k) (z k)) atTop := by
+        refine le_limsup_of_frequently_le' (Eventually.frequently ?_)
+        have hc' : Tendsto (fun k ↦ -(r / 2) * ‖z k‖ ^ 2) atTop (𝓝 (-(r / 2) * ‖d‖ ^ 2)) :=
+          (hz.norm.pow 2).const_mul _
+        filter_upwards [ht.eventually hbd, hc'.eventually_const_lt
+          (show -(r / 2) * ‖d‖ ^ 2 - 1 < -(r / 2) * ‖d‖ ^ 2 by linarith)] with k hk1 hk2
+        exact (EReal.coe_le_coe_iff.2 hk2.le).trans (hk1 (z k))
+      exact ne_bot_of_le_ne_bot (EReal.coe_ne_bot _) (h1.trans hl)
+    have hd' : moreauEnvelope Ψ₀ m w = Ψ₀ d + (((2 * m)⁻¹ * ‖d - w‖ ^ 2 : ℝ) : EReal) :=
+      moreauEnvelope_eq_of_mem_proximalMap hd
+    have hst : Ψ₀ d ≠ ⊤ := by
+      intro h
+      rw [hd', h, EReal.top_add_coe] at htopE
+      exact EReal.coe_ne_top _ (top_le_iff.1 htopE)
+    obtain ⟨s₀, hs₀⟩ : ∃ s₀ : ℝ, Ψ₀ d = s₀ := ⟨_, (EReal.coe_toReal hst hsb).symm⟩
+    rw [hd', hs₀, ← EReal.coe_add] at hE
+    rw [hs₀] at hl
+    have hρ : Tendsto (fun k ↦ (2 * m)⁻¹ * ‖z k - w‖ ^ 2) atTop
+        (𝓝 ((2 * m)⁻¹ * ‖d - w‖ ^ 2)) := ((hz.sub_const w).norm.pow 2).const_mul _
+    have htz : Tendsto (fun k ↦ t k • z k) atTop (𝓝 (0 : E)) := by
+      simpa using ht0.smul hz
+    have hg : ∀ᶠ k in atTop, proxObjective (Ψ (t k)) m w (q k) +
+        ((c * ‖z k - q k‖ ^ 2 : ℝ) : EReal) ≤ proxObjective (Ψ (t k)) m w (z k) := by
+      filter_upwards [htw.eventually hqg, hp', htz.eventually (ball_mem_nhds 0 hε)]
+        with k hk hpk hzk
+      have htq : t k • q k = p k := by
+        rw [hq_def]
+        simp only [smul_smul, mul_inv_cancel₀ (htpos k).ne', one_smul]
+      rw [hΨ]
+      refine proxObjective_half_secondDiffQuot_add_le h0 (htpos k) ?_
+      rw [htq]
+      exact hk (p k) hpk _ hzk
+    have hzq : Tendsto (fun k ↦ ‖z k - q k‖) atTop (𝓝 0) := by
+      refine Metric.tendsto_nhds.2 fun ε₁ hε₁ ↦ ?_
+      have hη : 0 < c * ε₁ ^ 2 / 3 := by positivity
+      filter_upwards [hg, hq, hE.eventually_const_lt (show
+          ((s₀ + (2 * m)⁻¹ * ‖d - w‖ ^ 2 - c * ε₁ ^ 2 / 3 : ℝ) : EReal) <
+            ((s₀ + (2 * m)⁻¹ * ‖d - w‖ ^ 2 : ℝ) : EReal) from
+          EReal.coe_lt_coe_iff.2 (by linarith)),
+        eventually_lt_of_limsup_lt (hl.trans_lt (show (s₀ : EReal) <
+          ((s₀ + c * ε₁ ^ 2 / 3 : ℝ) : EReal) from EReal.coe_lt_coe_iff.2 (by linarith))),
+        hρ.eventually_lt_const (show (2 * m)⁻¹ * ‖d - w‖ ^ 2 <
+          (2 * m)⁻¹ * ‖d - w‖ ^ 2 + c * ε₁ ^ 2 / 3 by linarith)] with k hgk hqk h1 h2 h3
+      rw [moreauEnvelope_eq_of_mem_proximalMap hqk] at h1
+      have h4 := EReal.add_lt_add_right_coe h1 (c * ‖z k - q k‖ ^ 2)
+      have h5 : proxObjective (Ψ (t k)) m w (z k) < ((s₀ + c * ε₁ ^ 2 / 3 +
+          ((2 * m)⁻¹ * ‖d - w‖ ^ 2 + c * ε₁ ^ 2 / 3) : ℝ) : EReal) := by
+        rw [EReal.coe_add]
+        exact EReal.add_lt_add h2 (EReal.coe_lt_coe_iff.2 h3)
+      have h6 := (h4.trans_le hgk).trans h5
+      rw [← EReal.coe_add, EReal.coe_lt_coe_iff] at h6
+      have h7 : c * ‖z k - q k‖ ^ 2 < c * ε₁ ^ 2 := by linarith
+      have h8 : ‖z k - q k‖ ^ 2 < ε₁ ^ 2 := lt_of_mul_lt_mul_left h7 hc.le
+      rw [Real.dist_eq, sub_zero, abs_of_nonneg (norm_nonneg _)]
+      exact lt_of_pow_lt_pow_left₀ 2 hε₁.le h8
+    have hlim : Tendsto (fun k ↦ z k - (z k - q k)) atTop (𝓝 (d - 0)) :=
+      hz.sub (tendsto_zero_iff_norm_tendsto_zero.2 hzq)
+    simpa using hlim
+  -- existence of a proximal point of the limit, as a cluster point of `q_k`
+  obtain ⟨C, hC, -⟩ := EReal.lt_iff_exists_real_btwn.1
+    (lt_top_iff_ne_top.2 (ne_top_of_le_ne_top (EReal.coe_ne_top _) htopE))
+  have hb : ∀ᶠ k in atTop, q k ∈ closedBall (0 : E)
+      (‖w‖ + ((2 * (m * r) * ‖w‖ + 2 * m * |C| + m * r * ‖w‖ ^ 2) / (1 - m * r) + 1)) := by
+    filter_upwards [hE.eventually_lt_const hC, hq, ht.eventually hbd] with k hk hqk hbk
+    rw [moreauEnvelope_eq_of_mem_proximalMap hqk] at hk
+    have hk' : Ψ (t k) (q k) + (((2 * m)⁻¹ * ‖q k - w‖ ^ 2 : ℝ) : EReal) < C := hk
+    obtain ⟨s, -, hs0, hsc⟩ := exists_real_of_coe_le_of_add_lt (hbk (q k)) hk'
+    exact mem_closedBall_zero_iff.2 (norm_le_of_quadratic_lt hm hr hmr hs0 hsc le_rfl)
+  obtain ⟨d, -, θ, hθ, hdθ⟩ :=
+    tendsto_subseq_of_frequently_bounded isBounded_closedBall hb.frequently
+  have hd : d ∈ proximalMap Ψ₀ m w := by
+    rw [hΨ₀]
+    exact H.mem_proximalMap_of_tendsto h0 hm hr hmr hφ (ht.comp hθ.tendsto_atTop)
+      (w := fun _ ↦ w) (p := fun j ↦ p (θ j)) tendsto_const_nhds
+      (hθ.tendsto_atTop.eventually hp') hdθ
+  exact ⟨d, Subset.antisymm (fun x hx ↦ tendsto_nhds_unique (key x hx) (key d hd))
+    (singleton_subset_iff.2 hd)⟩
+
+/-- **Semidifferentiability of the proximal mapping** [Mordukhovich 2024, Thm. 1.98,
+Cor. 1.101], normalized form. Let `φ(0) = 0`, `φ ≥ -(r/2)‖·‖²`, `λr < 1`, and let `φ` be twice
+epi-differentiable at `0` for `0`. If near `0` the proximal mapping `P_λφ` is nonempty-valued
+and the proximal objective grows quadratically around its minimizers, then
+`P_λ(d²φ(0, 0)/2)` is single-valued, with value `D(w)` say, and `t_k⁻¹p_k → D(w)` whenever
+`p_k ∈ P_λφ(t_k w_k)`, `t_k ↓ 0` and `w_k → w`. -/
+theorem TwiceEpiDifferentiableAt.exists_tendsto_inv_smul_proximalMap
+    (H : TwiceEpiDifferentiableAt φ 0 0) (h0 : φ 0 = 0) (hm : 0 < m) (hr : 0 ≤ r)
+    (hmr : m * r < 1) (hφ : ∀ x, ((-(r / 2) * ‖x‖ ^ 2 : ℝ) : EReal) ≤ φ x)
+    (hex : ∀ᶠ u in 𝓝 (0 : E), (proximalMap φ m u).Nonempty) {c ε : ℝ} (hc : 0 < c)
+    (hε : 0 < ε)
+    (hqg : ∀ᶠ u in 𝓝 (0 : E), ∀ p ∈ proximalMap φ m u, ∀ x ∈ ball (0 : E) ε,
+      proxObjective φ m u p + ((c * ‖x - p‖ ^ 2 : ℝ) : EReal) ≤ proxObjective φ m u x) :
+    ∃ D : E → E,
+      (∀ w, proximalMap (fun w ↦ ((1 / 2 : ℝ) : EReal) * secondSubderiv φ 0 0 w) m w = {D w}) ∧
+      ∀ t : ℕ → ℝ, Tendsto t atTop (𝓝[>] 0) → ∀ (w p : ℕ → E) (w₀ : E),
+        Tendsto w atTop (𝓝 w₀) → (∀ᶠ k in atTop, p k ∈ proximalMap φ m (t k • w k)) →
+        Tendsto (fun k ↦ (t k)⁻¹ • p k) atTop (𝓝 (D w₀)) := by
+  choose D hD using fun w ↦
+    H.exists_proximalMap_half_secondSubderiv_eq_singleton h0 hm hr hmr hφ hex hc hε hqg w
+  refine ⟨D, hD, fun t ht w p w₀ hw hp ↦ ?_⟩
+  refine H.tendsto_inv_smul_of_mem_proximalMap h0 hm hr hmr hφ (fun q hq ↦ ?_) ht hw hp
+  rw [hD w₀] at hq
+  exact hq
 
 end TwiceEpi
 
