@@ -77,6 +77,7 @@ subgradients and the port of OptLib), pinned in `lakefile.toml`.
 | Second-order expansion of Moreau envelopes | `SecondOrder/EnvelopeExpansion` | second-order expansion of a `C^{1,1}` function with directionally differentiable gradient; for `φ` l.s.c., prox-bounded, continuously prox-regular with `∂φ` proto-differentiable: directional differentiability of `P_λφ` and second-order expansion of `e_λφ` at `x̄ + λv̄` (first part of the converse implication of M24 Thm. 1.98) |
 | Twice epi-differentiability ⇔ proto-differentiability | `SecondOrder/ProtoTwiceEpi` | for `φ` continuously prox-regular at `x̄` for `v̄`: `φ` is twice epi-differentiable at `x̄` for `v̄` iff `∂φ` is proto-differentiable at `(x̄, v̄)` (M24 Thm. 1.98, the equivalence) |
 | Semidifferentiability of proximal mappings | `SecondOrder/ProxSemidiff` | for `φ` l.s.c., prox-bounded, continuously prox-regular at `x̄` for `v̄` and small `λ`: twice epi-differentiability of `φ` ⇔ proto-differentiability of `P_λφ` ⇔ semidifferentiability of `P_λφ` at `x̄ + λv̄`, with `DP_λφ = P_λ(d²φ(x̄, v̄)/2)` (M24 Cor. 1.101, (b), (c) and the second formula) |
+| Twice epi-differentiability of Moreau envelopes | `SecondOrder/EnvelopeTwiceEpi` | Lemma 1.94 at a general point, `e_λ(Δ²_tφ(x̄, v̄)/2) = Δ²_t(e_λφ)(x̄ + λv̄, v̄)/2`; for `φ` l.s.c., prox-bounded, prox-regular and twice epi-differentiable at `x̄` for `v̄`: `e_λφ` is twice epi-differentiable at `x̄ + λv̄` with `d²(e_λφ)/2 = e_λ(d²φ/2)` (M24 Cor. 1.101, one implication of (a) and the first formula) |
 | Piecewise linear-quadratic functions | `SecondOrder/PLQ` | polyhedral sets, piecewise linear-quadratic and piecewise linear functions (M24 Def. 1.59); local linear-quadratic model on polyhedral cones; second subderivatives, twice epi-differentiability and critical cones of convex piecewise linear-quadratic functions (M24 Thm. 1.91) |
 | Cyclic monotonicity | `SecondOrder/CyclicMonotone` | resolvents of monotone operators (M24 Lemma 1.95); cyclically monotone mappings and Rockafellar's theorem, with uniqueness up to a constant (M24 Def. 1.96, Lemma 1.97) |
 | Theorems of the alternative | `Analysis/Motzkin` | Motzkin's theorem of the alternative in finite dimensions ([Mordukhovich 2024, Lemma 3.1]) |
@@ -102,7 +103,7 @@ that avoids Lemma 1.81), Def. 1.85–Thm. 1.86, and in Sect. 1.5 Def. 1.88–Lem
 (with Def. 1.59 for Thm. 1.91) and Def. 1.100. Thm. 1.70–1.71
 assume prox-boundedness, which the book omits (a correction). Of the exercises used in
 Sect. 1.5, Ex. 1.133, 1.134(i), (iii), 1.135, 1.136 and 1.139(iii) are formalized.
-The equivalence of Thm. 1.98 is formalized (`SecondOrder/ProtoTwiceEpi`); so are parts (b), (c) and the second formula of Cor. 1.101 (`SecondOrder/ProxSemidiff`); formula (1.135) and part (a) of Cor. 1.101 are open; Cor. 1.87 and
+The equivalence of Thm. 1.98 is formalized (`SecondOrder/ProtoTwiceEpi`); so are parts (b), (c) and the second formula of Cor. 1.101 (`SecondOrder/ProxSemidiff`); one implication of part (a) with the first formula is in `SecondOrder/EnvelopeTwiceEpi`; formula (1.135) and the converse implication of part (a) are open; Cor. 1.87 and
 Cor. 1.99 remain, which need Ex. 1.139(ii).
 
 For SCD mappings, `ROADMAP.md` lists the results of [Gfrerer–Outrata 2022, Sect. 3–6] and their

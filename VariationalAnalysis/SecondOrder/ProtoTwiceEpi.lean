@@ -14,7 +14,8 @@ if and only if `∂φ` is proto-differentiable at `(x̄, v̄)`.
 
 ## Main results
 
-* `coe_mul_liminf`, `lowerSemicontinuous_liminf_prod`: auxiliary facts on lower limits.
+* `coeMulOrderIso`, `coe_mul_liminf`, `lowerSemicontinuous_liminf_prod`: auxiliary facts on
+  multiplication by positive reals in `EReal` and on lower limits.
 * `twiceEpiDifferentiableAt_zero_of_moreauEnvelope`: a function `ψ` with `ψ(0) = 0` and a
   quadratic minorant is twice epi-differentiable at `0` for `0` if, for all small `λ`, `P_λψ` is
   single-valued near `0` and directionally differentiable at `0`, and `t⁻²e_λψ(tw)` converges as
@@ -41,20 +42,25 @@ namespace VariationalAnalysis
 
 section Liminf
 
+/-- Multiplication by a positive real as an order isomorphism of `EReal`. -/
+noncomputable def coeMulOrderIso (c : ℝ) (hc : 0 < c) : EReal ≃o EReal where
+  toFun a := (c : EReal) * a
+  invFun a := ((c⁻¹ : ℝ) : EReal) * a
+  left_inv a := by
+    show ((c⁻¹ : ℝ) : EReal) * ((c : EReal) * a) = a
+    rw [← mul_assoc, ← EReal.coe_mul, inv_mul_cancel₀ hc.ne', EReal.coe_one, one_mul]
+  right_inv a := by
+    show (c : EReal) * (((c⁻¹ : ℝ) : EReal) * a) = a
+    rw [← mul_assoc, ← EReal.coe_mul, mul_inv_cancel₀ hc.ne', EReal.coe_one, one_mul]
+  map_rel_iff' := coe_mul_le_coe_mul_iff hc
+
+theorem coeMulOrderIso_apply {c : ℝ} (hc : 0 < c) (a : EReal) :
+    coeMulOrderIso c hc a = (c : EReal) * a := rfl
+
 /-- Multiplication by a positive real commutes with lower limits in `EReal`. -/
 theorem coe_mul_liminf {ι : Type*} {F : Filter ι} {c : ℝ} (hc : 0 < c) (u : ι → EReal) :
-    (c : EReal) * liminf u F = liminf (fun i ↦ (c : EReal) * u i) F := by
-  have hinv : ∀ a : EReal, ((c⁻¹ : ℝ) : EReal) * ((c : EReal) * a) = a := fun a ↦ by
-    rw [← mul_assoc, ← EReal.coe_mul, inv_mul_cancel₀ hc.ne', EReal.coe_one, one_mul]
-  have hinv' : ∀ a : EReal, (c : EReal) * (((c⁻¹ : ℝ) : EReal) * a) = a := fun a ↦ by
-    rw [← mul_assoc, ← EReal.coe_mul, mul_inv_cancel₀ hc.ne', EReal.coe_one, one_mul]
-  let e : EReal ≃o EReal :=
-    { toFun := fun a ↦ (c : EReal) * a
-      invFun := fun a ↦ ((c⁻¹ : ℝ) : EReal) * a
-      left_inv := hinv
-      right_inv := hinv'
-      map_rel_iff' := coe_mul_le_coe_mul_iff hc }
-  exact e.liminf_apply
+    (c : EReal) * liminf u F = liminf (fun i ↦ (c : EReal) * u i) F :=
+  (coeMulOrderIso c hc).liminf_apply
 
 /-- If `a + b = c` in `EReal` with `b, c` real, then `a = c - b`. -/
 theorem eq_coe_sub_of_add_coe_eq {a : EReal} {b c : ℝ} (h : a + (b : EReal) = c) :
