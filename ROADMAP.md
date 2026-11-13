@@ -385,6 +385,7 @@ GO Prop 5.3 is `max 1 ‖C_L‖` instead of `√(n(1+‖C_L‖²))`.
 | # | Statement | Status | Lean | Notes |
 |---|---|---|---|---|
 | [Mordukhovich 2024, Lemma 3.1] | Motzkin's theorem of the alternative | ✓ | `exists_multipliers_of_not_exists_direction` (`Analysis/Motzkin`) | finite dimensions, with equality constraints `⟨ξₖ, d⟩ = 0`; via separation |
+| Farkas' lemma | `c = ∑ μᵢ aᵢ` with `μ ≥ 0` if `⟨aᵢ, v⟩ ≥ 0 ∀ i ⇒ ⟨c, v⟩ ≥ 0`; closedness of finitely generated cones; conic Carathéodory | ✓ | `exists_nonneg_eq_sum_of_forall_nonneg`, `isClosed_nonnegSpan`, `exists_nonneg_linearIndependent_sum_eq` (`Analysis/Farkas`) | finite dimensions; Mathlib has the separation form for closed cones but not closedness of finitely generated cones; moved from `lean-bilevel` |
 
 ## Suggested order of work
 
