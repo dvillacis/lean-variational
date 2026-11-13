@@ -47,6 +47,7 @@ import VariationalAnalysis.SecondOrder.Basic
 import VariationalAnalysis.SecondOrder.C11
 import VariationalAnalysis.SecondOrder.CyclicMonotone
 import VariationalAnalysis.SecondOrder.EnvelopeExpansion
+import VariationalAnalysis.SecondOrder.EnvelopeTwiceEpi
 import VariationalAnalysis.SecondOrder.EpiAnalytic
 import VariationalAnalysis.SecondOrder.EpiConvergence
 import VariationalAnalysis.SecondOrder.GraphicalDerivative
