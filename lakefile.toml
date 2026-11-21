@@ -1,6 +1,8 @@
 name = "variationalanalysis"
 version = "0.1.0"
 defaultTargets = ["VariationalAnalysis"]
+# Dependents download the compiled library from the GitHub release of the pinned tag.
+preferReleaseBuild = true
 
 [leanOptions]
 pp.unicode.fun = true
@@ -15,7 +17,7 @@ rev = "v4.33.1"
 [[require]]
 name = "convexanalysis"
 git = "https://github.com/dvillacis/lean-convex"
-rev = "b9b860e50bb44748bf8fbce80090558e5f1bf140"
+rev = "v0.1.0"
 
 [[lean_lib]]
 name = "VariationalAnalysis"
