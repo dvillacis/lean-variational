@@ -43,6 +43,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDim
 variable {f : E → E} {x : E} {A : E →L[ℝ] E}
 
 omit [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] in
+/-- `(x, y)` lies in the graph of `x ↦ {f x}` iff `y = f x`. -/
 theorem mem_graph_singleton_iff {p : E × E} : p ∈ graph (fun x ↦ ({f x} : Set E)) ↔ p.2 = f p.1 :=
   Iff.rfl
 
@@ -105,15 +106,19 @@ theorem contingentCone_graph_of_hasFDerivAt (hf : HasFDerivAt f A x) :
     rw [Prod.mk_sub_mk, Prod.smul_mk]
 
 omit [FiniteDimensional ℝ E] in
+/-- If `f` is differentiable at `x`, then `x ↦ {f x}` is graphically smooth at `(x, f x)`. -/
 theorem graphicallySmoothAt_of_hasFDerivAt (hf : HasFDerivAt f A x) :
     GraphicallySmoothAt (fun x ↦ ({f x} : Set E)) (x, f x) :=
   ⟨rfl, _, finrank_graph _, (contingentCone_graph_of_hasFDerivAt hf).symm⟩
 
 omit [FiniteDimensional ℝ E] in
+/-- If `f` is differentiable at `x` with derivative `A`, then the tangent subspace of `x ↦ {f x}` at
+`(x, f x)` is `rge(I, A)`. -/
 theorem tangentSubspace_of_hasFDerivAt (hf : HasFDerivAt f A x) :
     tangentSubspace (fun x ↦ ({f x} : Set E)) (x, f x) = (A : E →ₗ[ℝ] E).graph := by
   rw [tangentSubspace, contingentCone_graph_of_hasFDerivAt hf, Submodule.span_eq]
 
+/-- If `f` is differentiable at `x` with derivative `A`, then `rge(I, A) ∈ 𝒮f(x, f x)`. -/
 theorem graph_mem_scDeriv_of_hasFDerivAt (hf : HasFDerivAt f A x) :
     (A : E →ₗ[ℝ] E).graph ∈ scDeriv (fun x ↦ ({f x} : Set E)) (x, f x) := by
   rw [← tangentSubspace_of_hasFDerivAt hf]
@@ -135,6 +140,8 @@ theorem grassTendsto_graph {B : ℕ → E →L[ℝ] E} (hB : Tendsto B atTop (�
 /-! ### Lemma 3.2(ii): calmness and graphical smoothness give differentiability -/
 
 omit [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] in
+/-- If `f` is calm at `x`, i.e. `‖f x' - f x‖ ≤ κ ‖x' - x‖` for `x'` near `x`, then `f` is
+continuous at `x`. -/
 theorem continuousAt_of_calm {κ : ℝ} (hcalm : ∀ᶠ x' in 𝓝 x, ‖f x' - f x‖ ≤ κ * ‖x' - x‖) :
     ContinuousAt f x := by
   rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero]

@@ -79,16 +79,22 @@ def localProximalMap (x₀ : E) (ε : ℝ) (u : E) : Set E :=
 
 variable {φ l}
 
+/-- The Moreau envelope is bounded above by the proximal objective at every `x`:
+`e_λφ(u) ≤ φ(x) + ‖x - u‖² / (2λ)`. -/
 theorem moreauEnvelope_le (u x : E) : moreauEnvelope φ l u ≤ proxObjective φ l u x :=
   iInf_le _ x
 
+/-- `e_λφ(u) ≤ φ(u)`. -/
 theorem moreauEnvelope_le_self (u : E) : moreauEnvelope φ l u ≤ φ u := by
   simpa [proxObjective] using moreauEnvelope_le (φ := φ) (l := l) u u
 
+/-- The Moreau envelope is attained at proximal points: `e_λφ(u) = φ(x) + ‖x - u‖² / (2λ)` for
+`x ∈ P_λφ(u)`. -/
 theorem moreauEnvelope_eq_of_mem_proximalMap {u x : E} (hx : x ∈ proximalMap φ l u) :
     moreauEnvelope φ l u = proxObjective φ l u x :=
   le_antisymm (moreauEnvelope_le u x) (le_iInf hx)
 
+/-- The Moreau envelope is bounded above by the local one: `e_λφ(u) ≤ e_{λ,ε}φ(u)`. -/
 theorem moreauEnvelope_le_localMoreauEnvelope (x₀ : E) (ε : ℝ) (u : E) :
     moreauEnvelope φ l u ≤ localMoreauEnvelope φ l x₀ ε u :=
   le_iInf₂ fun x _ ↦ moreauEnvelope_le u x

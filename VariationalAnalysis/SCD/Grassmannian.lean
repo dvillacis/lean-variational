@@ -71,65 +71,84 @@ section Basic
 
 variable {L L₀ L₁ L₂ L₃ : Submodule ℝ V}
 
+/-- `w` lies in the Euclidean image of `L` iff `w = toEuclidean x` for some `x ∈ L`. -/
 theorem mem_euclideanImage_iff {w : 𝕎} :
     w ∈ euclideanImage L ↔ ∃ x ∈ L, toEuclidean x = w := by
   rw [euclideanImage, Submodule.mem_map]
   rfl
 
+/-- `toEuclidean x` lies in the Euclidean image of `L` iff `x ∈ L`. -/
 theorem toEuclidean_mem_euclideanImage_iff {x : V} :
     toEuclidean x ∈ euclideanImage L ↔ x ∈ L := by
   rw [mem_euclideanImage_iff]
   exact ⟨fun ⟨y, hy, h⟩ ↦ toEuclidean.injective h ▸ hy, fun h ↦ ⟨x, h, rfl⟩⟩
 
+/-- The Euclidean image of `L` has the same dimension as `L`. -/
 theorem finrank_euclideanImage (L : Submodule ℝ V) :
     finrank ℝ (euclideanImage L) = finrank ℝ L :=
   LinearEquiv.finrank_map_eq (toEuclidean : V ≃L[ℝ] 𝕎).toLinearEquiv L
 
+/-- `L ↦ euclideanImage L` is injective. -/
 theorem euclideanImage_injective : Function.Injective (euclideanImage (V := V)) :=
   Submodule.map_injective_of_injective (toEuclidean : V ≃L[ℝ] 𝕎).injective
 
+/-- The projection `grassProj L` takes values in the Euclidean image of `L`. -/
 theorem grassProj_apply_mem (L : Submodule ℝ V) (w : 𝕎) : grassProj L w ∈ euclideanImage L :=
   Submodule.starProjection_apply_mem _ w
 
+/-- `grassProj L` fixes `w` iff `w` lies in the Euclidean image of `L`. -/
 theorem grassProj_eq_self_iff {w : 𝕎} : grassProj L w = w ↔ w ∈ euclideanImage L :=
   Submodule.starProjection_eq_self_iff
 
+/-- `grassProj L` fixes `toEuclidean x` for `x ∈ L`. -/
 theorem grassProj_toEuclidean_of_mem {x : V} (hx : x ∈ L) :
     grassProj L (toEuclidean x) = toEuclidean x :=
   grassProj_eq_self_iff.2 (toEuclidean_mem_euclideanImage_iff.2 hx)
 
+/-- The range of `grassProj L` is the Euclidean image of `L`. -/
 theorem range_grassProj (L : Submodule ℝ V) :
     LinearMap.range (grassProj L : 𝕎 →ₗ[ℝ] 𝕎) = euclideanImage L :=
   Submodule.range_starProjection _
 
+/-- The orthogonal projection `grassProj L` has operator norm at most `1`. -/
 theorem norm_grassProj_le (L : Submodule ℝ V) : ‖grassProj L‖ ≤ 1 :=
   Submodule.starProjection_norm_le _
 
+/-- A subspace is determined by its projection: `L ↦ grassProj L` is injective. -/
 theorem grassProj_injective : Function.Injective (grassProj (V := V)) := fun L₁ L₂ h ↦
   euclideanImage_injective (by rw [← range_grassProj, ← range_grassProj, h])
 
+/-- The Grassmannian distance is symmetric: `d(L₁, L₂) = d(L₂, L₁)`. -/
 theorem grassDist_comm (L₁ L₂ : Submodule ℝ V) : grassDist L₁ L₂ = grassDist L₂ L₁ :=
   norm_sub_rev _ _
 
+/-- The Grassmannian distance is nonnegative. -/
 theorem grassDist_nonneg (L₁ L₂ : Submodule ℝ V) : 0 ≤ grassDist L₁ L₂ := norm_nonneg _
 
+/-- `d(L, L) = 0`. -/
 theorem grassDist_self (L : Submodule ℝ V) : grassDist L L = 0 := by simp [grassDist]
 
+/-- Triangle inequality for the Grassmannian distance: `d(L₁, L₃) ≤ d(L₁, L₂) + d(L₂, L₃)`. -/
 theorem grassDist_triangle (L₁ L₂ L₃ : Submodule ℝ V) :
     grassDist L₁ L₃ ≤ grassDist L₁ L₂ + grassDist L₂ L₃ :=
   norm_sub_le_norm_sub_add_norm_sub _ _ _
 
+/-- `d(L₁, L₂) = 0` iff `L₁ = L₂`. -/
 theorem grassDist_eq_zero_iff : grassDist L₁ L₂ = 0 ↔ L₁ = L₂ := by
   rw [grassDist, norm_sub_eq_zero_iff]
   exact ⟨fun h ↦ grassProj_injective h, fun h ↦ h ▸ rfl⟩
 
+/-- `Lₖ → L₀` in the Grassmannian metric iff `d(Lₖ, L₀) → 0`. -/
 theorem grassTendsto_iff {L : ℕ → Submodule ℝ V} :
     GrassTendsto L L₀ ↔ Tendsto (fun k ↦ grassDist (L k) L₀) atTop (𝓝 0) :=
   tendsto_iff_norm_sub_tendsto_zero
 
+/-- A constant sequence of subspaces converges to its value. -/
 theorem grassTendsto_const (L₀ : Submodule ℝ V) : GrassTendsto (fun _ ↦ L₀) L₀ :=
   tendsto_const_nhds
 
+/-- If `Lₖ → L₀` in the Grassmannian metric and `φ(k) → ∞`, then `L_{φ(k)} → L₀`; in particular
+this holds for subsequences. -/
 theorem GrassTendsto.comp {L : ℕ → Submodule ℝ V} (h : GrassTendsto L L₀) {φ : ℕ → ℕ}
     (hφ : Tendsto φ atTop atTop) : GrassTendsto (L ∘ φ) L₀ :=
   Filter.Tendsto.comp h hφ

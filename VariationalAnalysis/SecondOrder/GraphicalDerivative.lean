@@ -58,11 +58,13 @@ section Contingent
 variable {X Y : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
   [NormedAddCommGroup Y] [NormedSpace ℝ Y]
 
+/-- The contingent cone is monotone in the set: `Ω ⊆ Ω'` gives `T(x; Ω) ⊆ T(x; Ω')`. -/
 theorem contingentCone_mono {Ω Ω' : Set X} {x : X} (h : Ω ⊆ Ω') :
     contingentCone Ω x ⊆ contingentCone Ω' x := by
   rintro w ⟨hx, xs, α, hxα, h1, h2⟩
   exact ⟨h hx, xs, α, fun k ↦ ⟨h (hxα k).1, (hxα k).2⟩, h1, h2⟩
 
+/-- If `Ω` and `Ω'` coincide near `x`, then `T(x; Ω) ⊆ T(x; Ω')`. -/
 theorem contingentCone_subset_of_eventuallyEq {Ω Ω' : Set X} {x : X} (h : Ω =ᶠ[𝓝 x] Ω') :
     contingentCone Ω x ⊆ contingentCone Ω' x := by
   rintro w ⟨hx, xs, α, hxα, h1, h2⟩
@@ -137,6 +139,8 @@ theorem graphDeriv_congr {S T : E → Set F} {x₀ : E} (h : ∀ᶠ x in 𝓝 x�
     rw [hp]
   simp only [graphDeriv, contingentCone_congr hg]
 
+/-- Graphical derivatives are monotone in the mapping: if `S x ⊆ T x` for all `x`, then
+`DS(x₀, y₀)(u) ⊆ DT(x₀, y₀)(u)`. -/
 theorem graphDeriv_mono {S T : E → Set F} (h : ∀ x, S x ⊆ T x) (x₀ : E) (y₀ : F) (u : E) :
     graphDeriv S x₀ y₀ u ⊆ graphDeriv T x₀ y₀ u :=
   fun _ hv ↦ contingentCone_mono (fun p hp ↦ h p.1 hp) hv
@@ -362,6 +366,7 @@ section ConvexificationInner
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
+/-- In an inner product space, `x ↦ (ρ/2)‖x - x₀‖²` has Fréchet derivative `ρ⟨x - x₀, ·⟩` at `x`. -/
 theorem hasFDerivAt_half_mul_norm_sub_sq (ρ : ℝ) (x₀ x : E) :
     HasFDerivAt (fun x ↦ ρ / 2 * ‖x - x₀‖ ^ 2) (ρ • innerSL ℝ (x - x₀)) x := by
   refine ((((hasFDerivAt_id x).sub_const x₀).norm_sq).const_mul (ρ / 2)).congr_fderiv ?_

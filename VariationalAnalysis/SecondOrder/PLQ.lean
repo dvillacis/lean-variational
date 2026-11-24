@@ -62,15 +62,19 @@ section Liminf
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 omit [NormedSpace ℝ E] in
+/-- A continuous `F : ℝ × E → ℝ` tends to `F (0, w)` as `t ↓ 0`, `u → w`. -/
 theorem tendsto_nhdsGT_prod_of_continuous {F : ℝ × E → ℝ} (hF : Continuous F) (w : E) :
     Tendsto F (𝓝[>] (0 : ℝ) ×ˢ 𝓝 w) (𝓝 (F (0, w))) :=
   (hF.tendsto (0, w)).mono_left (by rw [nhds_prod_eq]; exact prod_mono nhdsWithin_le_nhds le_rfl)
 
+/-- For continuous `G : ℝ → ℝ`, `G t → G 0` in `EReal` as `t ↓ 0`. -/
 theorem tendsto_coe_nhdsGT {G : ℝ → ℝ} (hG : Continuous G) :
     Tendsto (fun t ↦ ((G t : ℝ) : EReal)) (𝓝[>] 0) (𝓝 ((G 0 : ℝ) : EReal)) :=
   (continuous_coe_real_ereal.tendsto _).comp ((hG.tendsto 0).mono_left nhdsWithin_le_nhds)
 
 omit [NormedSpace ℝ E] in
+/-- A property which holds eventually as `t ↓ 0`, `u → w` holds eventually as `t ↓ 0` along
+`u = w`. -/
 theorem eventually_nhdsGT_of_prod {P : ℝ × E → Prop} {w : E}
     (h : ∀ᶠ p in 𝓝[>] (0 : ℝ) ×ˢ 𝓝 w, P p) : ∀ᶠ t in 𝓝[>] (0 : ℝ), P (t, w) :=
   (tendsto_id.prodMk (tendsto_const_nhds (x := w))).eventually h
@@ -93,6 +97,8 @@ theorem liminf_nhdsGT_prod_eq {f : ℝ × E → EReal} {w : E} {c : EReal}
     exact hb1.trans_le (le_liminf_of_le (by isBoundedDefault) (hlow b' hb2))
 
 omit [NormedSpace ℝ E] in
+/-- If `f` is eventually above every real `b` as `t ↓ 0`, `u → w`, then `f (t, w) → ∞` as
+`t ↓ 0`. -/
 theorem tendsto_top_of_eventually_le {f : ℝ × E → EReal} {w : E}
     (hlow : ∀ b : ℝ, ∀ᶠ p in 𝓝[>] (0 : ℝ) ×ˢ 𝓝 w, (b : EReal) ≤ f p) :
     Tendsto (fun t ↦ f (t, w)) (𝓝[>] 0) (𝓝 ⊤) := by
@@ -102,6 +108,8 @@ theorem tendsto_top_of_eventually_le {f : ℝ × E → EReal} {w : E}
   exact (EReal.coe_lt_coe_iff.2 (lt_add_one x)).trans_le ht
 
 omit [NormedSpace ℝ E] in
+/-- If `f` is eventually above every real `b` as `t ↓ 0`, `u → w`, then its lower limit there
+is `∞`. -/
 theorem liminf_nhdsGT_prod_eq_top {f : ℝ × E → EReal} {w : E}
     (hlow : ∀ b : ℝ, ∀ᶠ p in 𝓝[>] (0 : ℝ) ×ˢ 𝓝 w, (b : EReal) ≤ f p) :
     liminf f (𝓝[>] (0 : ℝ) ×ˢ 𝓝 w) = ⊤ :=
@@ -131,12 +139,19 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {ι : Type*}
 `φ(x₀ + w) = ∞` when `w` lies in none of the cones. -/
 structure LocalPLQ (φ : E → EReal) (x₀ : E) (T : ι → Set E) (g : ι → StrongDual ℝ E)
     (A : ι → E →L[ℝ] StrongDual ℝ E) (φ₀ r : ℝ) : Prop where
+  /-- The radius `r` of the model is positive. -/
   r_pos : 0 < r
+  /-- The value `φ(x₀)` is the real number `φ₀`. -/
   eq₀ : φ x₀ = φ₀
+  /-- The cones `T j` are closed. -/
   isClosed : ∀ j, IsClosed (T j)
+  /-- The sets `T j` are cones: `cw ∈ T j` for `c > 0` and `w ∈ T j`. -/
   smul_mem : ∀ j (c : ℝ) w, 0 < c → w ∈ T j → c • w ∈ T j
+  /-- On each cone the model is linear-quadratic: `φ(x₀ + w) = φ₀ + ⟨g j, w⟩ + ½⟨A j w, w⟩` for
+  `w ∈ T j`, `‖w‖ < r`. -/
   eq_of_mem : ∀ j w, ‖w‖ < r → w ∈ T j →
     φ (x₀ + w) = ((φ₀ + g j w + 1 / 2 * A j w w : ℝ) : EReal)
+  /-- `φ(x₀ + w) = ∞` for `‖w‖ < r` outside all the cones. -/
   eq_top : ∀ w, ‖w‖ < r → (∀ j, w ∉ T j) → φ (x₀ + w) = ⊤
 
 namespace LocalPLQ
@@ -146,6 +161,8 @@ variable {φ : E → EReal} {x₀ : E} {T : ι → Set E} {g : ι → StrongDual
   {j k : ι} {t : ℝ} {u w : E} {v : StrongDual ℝ E}
 include h
 
+/-- The model along a ray: `φ(x₀ + tu) = φ₀ + t⟨g k, u⟩ + (t²/2)⟨A k u, u⟩` for `u ∈ T k`, `t > 0`
+and `‖tu‖ < r`. -/
 theorem apply_smul (hu : u ∈ T k) (ht : 0 < t) (hs : ‖t • u‖ < r) :
     φ (x₀ + t • u) = ((φ₀ + t * g k u + t ^ 2 / 2 * A k u u : ℝ) : EReal) := by
   rw [h.eq_of_mem k _ hs (h.smul_mem k t u ht hu)]
@@ -153,12 +170,14 @@ theorem apply_smul (hu : u ∈ T k) (ht : 0 < t) (hs : ‖t • u‖ < r) :
   simp only [map_smul, smul_apply, smul_eq_mul]
   ring
 
+/-- `φ(x₀ + tu) = ∞` for `u` in none of the cones, `t > 0` and `‖tu‖ < r`. -/
 theorem apply_smul_of_not_mem (hu : ∀ k, u ∉ T k) (ht : 0 < t) (hs : ‖t • u‖ < r) :
     φ (x₀ + t • u) = ⊤ := by
   refine h.eq_top _ hs fun k hk ↦ hu k ?_
   have := h.smul_mem k t⁻¹ _ (inv_pos.2 ht) hk
   rwa [smul_smul, inv_mul_cancel₀ ht.ne', one_smul] at this
 
+/-- For every `w` there is `t > 0` with `‖sw‖ < r` for all `0 < s ≤ t`. -/
 theorem exists_small (w : E) : ∃ t > (0 : ℝ), ∀ s, 0 < s → s ≤ t → ‖s • w‖ < r := by
   refine ⟨r / (‖w‖ + 1), div_pos h.r_pos (by positivity), fun s hs hst ↦ ?_⟩
   rw [norm_smul, Real.norm_of_nonneg hs.le]
@@ -168,12 +187,14 @@ theorem exists_small (w : E) : ∃ t > (0 : ℝ), ∀ s, 0 < s → s ≤ t → �
     nlinarith [h.r_pos, norm_nonneg w]
   linarith
 
+/-- As `t ↓ 0`, `u → w`, eventually `t > 0` and `‖tu‖ < r`. -/
 theorem eventually_small (w : E) :
     ∀ᶠ p : ℝ × E in 𝓝[>] (0 : ℝ) ×ˢ 𝓝 w, 0 < p.1 ∧ ‖p.1 • p.2‖ < r :=
   (eventually_pos_nhdsGT_prod w).and
     (((tendsto_smul_nhdsGT_prod w).eventually (ball_mem_nhds 0 h.r_pos)).mono
       fun p hp ↦ by simpa using hp)
 
+/-- As `t ↓ 0`, eventually `t > 0` and `‖tw‖ < r`. -/
 theorem eventually_small' (w : E) : ∀ᶠ t in 𝓝[>] (0 : ℝ), 0 < t ∧ ‖t • w‖ < r :=
   eventually_nhdsGT_of_prod (h.eventually_small w)
 
@@ -198,6 +219,8 @@ theorem consistent (hj : w ∈ T j) (hk : w ∈ T k) : g j w = g k w ∧ A j w w
 
 /-! #### Difference quotients -/
 
+/-- The first-order difference quotient on a cone: `Δ_tφ(x̄)(u) = ⟨g k, u⟩ + (t/2)⟨A k u, u⟩` for
+`u ∈ T k`, `t > 0` and `‖tu‖ < r`. -/
 theorem diffQuot_of_mem (hu : u ∈ T k) (ht : 0 < t) (hs : ‖t • u‖ < r) :
     diffQuot φ x₀ t u = ((g k u + t / 2 * A k u u : ℝ) : EReal) := by
   rw [diffQuot, h.apply_smul hu ht hs, h.eq₀, ← EReal.coe_sub, ← EReal.coe_mul]
@@ -205,11 +228,14 @@ theorem diffQuot_of_mem (hu : u ∈ T k) (ht : 0 < t) (hs : ‖t • u‖ < r) :
   field_simp
   ring
 
+/-- `Δ_tφ(x̄)(u) = ∞` for `u` in none of the cones, `t > 0` and `‖tu‖ < r`. -/
 theorem diffQuot_of_not_mem (hu : ∀ k, u ∉ T k) (ht : 0 < t) (hs : ‖t • u‖ < r) :
     diffQuot φ x₀ t u = ⊤ := by
   rw [diffQuot, h.apply_smul_of_not_mem hu ht hs, h.eq₀, EReal.top_sub_coe,
     EReal.coe_mul_top_of_pos (inv_pos.2 ht)]
 
+/-- The second-order difference quotient on a cone:
+`Δ²_tφ(x̄, v)(u) = ⟨A k u, u⟩ + (2/t)(⟨g k, u⟩ - ⟨v, u⟩)` for `u ∈ T k`, `t > 0` and `‖tu‖ < r`. -/
 theorem secondDiffQuot_of_mem (hu : u ∈ T k) (ht : 0 < t) (hs : ‖t • u‖ < r) :
     secondDiffQuot φ x₀ v t u = ((A k u u + 2 / t * (g k u - v u) : ℝ) : EReal) := by
   rw [secondDiffQuot, h.apply_smul hu ht hs, h.eq₀, ← EReal.coe_sub, ← EReal.coe_sub,
@@ -218,6 +244,7 @@ theorem secondDiffQuot_of_mem (hu : u ∈ T k) (ht : 0 < t) (hs : ‖t • u‖ 
   field_simp
   ring
 
+/-- `Δ²_tφ(x̄, v)(u) = ∞` for `u` in none of the cones, `t > 0` and `‖tu‖ < r`. -/
 theorem secondDiffQuot_of_not_mem (hu : ∀ k, u ∉ T k) (ht : 0 < t) (hs : ‖t • u‖ < r) :
     secondDiffQuot φ x₀ v t u = ⊤ := by
   rw [secondDiffQuot, h.apply_smul_of_not_mem hu ht hs, h.eq₀, EReal.top_sub_coe,
@@ -225,6 +252,7 @@ theorem secondDiffQuot_of_not_mem (hu : ∀ k, u ∉ T k) (ht : 0 < t) (hs : ‖
 
 variable [Finite ι]
 
+/-- For `u` near `w`, every cone `T k` containing `u` contains `w` (finitely many closed cones). -/
 theorem eventually_mem_imp (w : E) : ∀ᶠ u in 𝓝 w, ∀ k, u ∈ T k → w ∈ T k := by
   refine eventually_all.2 fun k ↦ ?_
   by_cases hk : w ∈ T k
@@ -256,6 +284,8 @@ theorem eventually_le_of_pieces {f : ℝ × E → EReal} {F : ι → ℝ × E �
 
 /-! #### The subderivative -/
 
+/-- If `b < ⟨g k, w⟩` for every cone `T k` containing `w`, then `b ≤ Δ_tφ(x̄)(u)` eventually as
+`t ↓ 0`, `u → w`. -/
 theorem eventually_le_diffQuot {b : ℝ} (hb : ∀ k, w ∈ T k → b < g k w) :
     ∀ᶠ p in 𝓝[>] (0 : ℝ) ×ˢ 𝓝 w, (b : EReal) ≤ diffQuot φ x₀ p.1 p.2 := by
   refine h.eventually_le_of_pieces (F := fun k p ↦ g k p.2 + p.1 / 2 * A k p.2 p.2)
@@ -265,6 +295,7 @@ theorem eventually_le_diffQuot {b : ℝ} (hb : ∀ k, w ∈ T k → b < g k w) :
   · filter_upwards [h.eventually_small w] with p hp hk
     exact h.diffQuot_of_not_mem hk hp.1 hp.2
 
+/-- The subderivative on a cone: `dφ(x̄)(w) = ⟨g j, w⟩` for `w ∈ T j`. -/
 theorem subderiv_of_mem (hw : w ∈ T j) : subderiv φ x₀ w = (g j w : ℝ) := by
   refine liminf_nhdsGT_prod_eq (fun b hb ↦ h.eventually_le_diffQuot fun k hk ↦ ?_) ?_
   · rw [(h.consistent hk hw).1]; exact_mod_cast hb
@@ -274,11 +305,14 @@ theorem subderiv_of_mem (hw : w ∈ T j) : subderiv φ x₀ w = (g j w : ℝ) :=
     refine Tendsto.congr' (EventuallyEq.symm ev) ?_
     simpa using tendsto_coe_nhdsGT (G := fun t ↦ g j w + t / 2 * A j w w) (by fun_prop)
 
+/-- `dφ(x̄)(w) = ∞` for `w` in none of the cones. -/
 theorem subderiv_of_not_mem (hw : ∀ k, w ∉ T k) : subderiv φ x₀ w = ⊤ :=
   liminf_nhdsGT_prod_eq_top fun _ ↦ h.eventually_le_diffQuot fun k hk ↦ absurd hk (hw k)
 
 /-! #### The second subderivative `d²φ(x̄)` -/
 
+/-- The second-order difference quotient on a cone: `Δ²_tφ(x̄)(u) = ⟨A k u, u⟩` for `u ∈ T k`,
+`t > 0` and `‖tu‖ < r`. -/
 theorem secondDiffQuot'_of_mem (hu : u ∈ T k) (ht : 0 < t) (hs : ‖t • u‖ < r) :
     secondDiffQuot' φ x₀ t u = ((A k u u : ℝ) : EReal) := by
   have happ := h.apply_smul hu ht hs
@@ -291,11 +325,14 @@ theorem secondDiffQuot'_of_mem (hu : u ∈ T k) (ht : 0 < t) (hs : ‖t • u‖
     · rw [happ] at h1; exact EReal.coe_ne_top _ h1
     · rw [happ] at h1; exact EReal.coe_ne_bot _ h1
 
+/-- `Δ²_tφ(x̄)(u) = ∞` for `u` in none of the cones, `t > 0` and `‖tu‖ < r`. -/
 theorem secondDiffQuot'_of_not_mem (hu : ∀ k, u ∉ T k) (ht : 0 < t) (hs : ‖t • u‖ < r) :
     secondDiffQuot' φ x₀ t u = ⊤ := by
   rw [secondDiffQuot',
     if_pos (Or.inl ⟨h.apply_smul_of_not_mem hu ht hs, h.subderiv_of_not_mem hu⟩)]
 
+/-- If `b < ⟨A k w, w⟩` for every cone `T k` containing `w`, then `b ≤ Δ²_tφ(x̄)(u)` eventually as
+`t ↓ 0`, `u → w`. -/
 theorem eventually_le_secondDiffQuot' {b : ℝ} (hb : ∀ k, w ∈ T k → b < A k w w) :
     ∀ᶠ p in 𝓝[>] (0 : ℝ) ×ˢ 𝓝 w, (b : EReal) ≤ secondDiffQuot' φ x₀ p.1 p.2 := by
   refine h.eventually_le_of_pieces (F := fun k p ↦ A k p.2 p.2)
@@ -305,17 +342,20 @@ theorem eventually_le_secondDiffQuot' {b : ℝ} (hb : ∀ k, w ∈ T k → b < A
   · filter_upwards [h.eventually_small w] with p hp hk
     exact h.secondDiffQuot'_of_not_mem hk hp.1 hp.2
 
+/-- `Δ²_tφ(x̄)(w) → ⟨A j w, w⟩` as `t ↓ 0` for `w ∈ T j`. -/
 theorem tendsto_secondDiffQuot'_of_mem (hw : w ∈ T j) :
     Tendsto (fun t ↦ secondDiffQuot' φ x₀ t w) (𝓝[>] 0) (𝓝 ((A j w w : ℝ) : EReal)) := by
   have ev : ∀ᶠ t in 𝓝[>] (0 : ℝ), secondDiffQuot' φ x₀ t w = ((A j w w : ℝ) : EReal) :=
     (h.eventually_small' w).mono fun t ht ↦ h.secondDiffQuot'_of_mem hw ht.1 ht.2
   exact Tendsto.congr' (EventuallyEq.symm ev) tendsto_const_nhds
 
+/-- The second subderivative on a cone: `d²φ(x̄)(w) = ⟨A j w, w⟩` for `w ∈ T j`. -/
 theorem secondSubderiv'_of_mem (hw : w ∈ T j) :
     secondSubderiv' φ x₀ w = ((A j w w : ℝ) : EReal) :=
   liminf_nhdsGT_prod_eq (fun b hb ↦ h.eventually_le_secondDiffQuot' fun k hk ↦ by
     rw [(h.consistent hk hw).2]; exact_mod_cast hb) (h.tendsto_secondDiffQuot'_of_mem hw)
 
+/-- `d²φ(x̄)(w) = ∞` for `w` in none of the cones. -/
 theorem secondSubderiv'_of_not_mem (hw : ∀ k, w ∉ T k) : secondSubderiv' φ x₀ w = ⊤ :=
   liminf_nhdsGT_prod_eq_top fun _ ↦
     h.eventually_le_secondDiffQuot' fun k hk ↦ absurd hk (hw k)
@@ -342,6 +382,8 @@ theorem eq_add_subderiv_add (hw : ‖w‖ < r) (hfin : φ (x₀ + w) ≠ ⊤) :
 
 /-! #### The second subderivative `d²φ(x̄, v)` -/
 
+/-- The critical cone of the local model: `w ∈ K_φ(x̄, v)` iff `w ∈ T j` and `⟨g j, w⟩ = ⟨v, w⟩`
+for some `j`. -/
 theorem mem_criticalCone_iff : w ∈ criticalCone φ x₀ v ↔ ∃ j, w ∈ T j ∧ g j w = v w := by
   change subderiv φ x₀ w = _ ↔ _
   by_cases hw : ∃ j, w ∈ T j
@@ -351,6 +393,7 @@ theorem mem_criticalCone_iff : w ∈ criticalCone φ x₀ v ↔ ∃ j, w ∈ T j
   · rw [h.subderiv_of_not_mem (not_exists.1 hw)]
     exact iff_of_false (by simp) fun ⟨j, hj, _⟩ ↦ hw ⟨j, hj⟩
 
+/-- For `w` in none of the cones, `d²φ(x̄, v)(w) = ∞` and `Δ²_tφ(x̄, v)(w) → ∞` as `t ↓ 0`. -/
 theorem secondSubderiv_of_not_mem (hw : ∀ k, w ∉ T k) :
     secondSubderiv φ x₀ v w = ⊤ ∧
       Tendsto (fun t ↦ secondDiffQuot φ x₀ v t w) (𝓝[>] 0) (𝓝 ⊤) := by
@@ -368,6 +411,8 @@ theorem secondSubderiv_of_not_mem (hw : ∀ k, w ∉ T k) :
 variable (hv : ∀ k, ∀ u ∈ T k, v u ≤ g k u)
 include hv
 
+/-- Assume `⟨v, u⟩ ≤ ⟨g k, u⟩` on each cone `T k`. If `b < ⟨A k w, w⟩ + M(⟨g k, w⟩ - ⟨v, w⟩)` for
+every cone `T k` containing `w`, then `b ≤ Δ²_tφ(x̄, v)(u)` eventually as `t ↓ 0`, `u → w`. -/
 theorem eventually_le_secondDiffQuot {b M : ℝ}
     (hb : ∀ k, w ∈ T k → b < A k w w + M * (g k w - v w)) :
     ∀ᶠ p in 𝓝[>] (0 : ℝ) ×ˢ 𝓝 w, (b : EReal) ≤ secondDiffQuot φ x₀ v p.1 p.2 := by
@@ -383,6 +428,8 @@ theorem eventually_le_secondDiffQuot {b M : ℝ}
   · filter_upwards [h.eventually_small w] with p hp hk
     exact h.secondDiffQuot_of_not_mem hk hp.1 hp.2
 
+/-- Assume `⟨v, u⟩ ≤ ⟨g k, u⟩` on each cone `T k`. For `w ∈ T j` with `⟨g j, w⟩ = ⟨v, w⟩`,
+`d²φ(x̄, v)(w) = ⟨A j w, w⟩`, and `Δ²_tφ(x̄, v)(w)` converges to this value as `t ↓ 0`. -/
 theorem secondSubderiv_of_mem_of_eq (hw : w ∈ T j) (he : g j w = v w) :
     secondSubderiv φ x₀ v w = ((A j w w : ℝ) : EReal) ∧
       Tendsto (fun t ↦ secondDiffQuot φ x₀ v t w) (𝓝[>] 0) (𝓝 ((A j w w : ℝ) : EReal)) := by
@@ -397,6 +444,8 @@ theorem secondSubderiv_of_mem_of_eq (hw : w ∈ T j) (he : g j w = v w) :
   rw [zero_mul, add_zero, (h.consistent hk hw).2]
   exact_mod_cast hb
 
+/-- Assume `⟨v, u⟩ ≤ ⟨g k, u⟩` on each cone `T k`. For `w ∈ T j` with `⟨g j, w⟩ ≠ ⟨v, w⟩`,
+`d²φ(x̄, v)(w) = ∞` and `Δ²_tφ(x̄, v)(w) → ∞` as `t ↓ 0`. -/
 theorem secondSubderiv_of_mem_of_ne (hw : w ∈ T j) (hne : g j w ≠ v w) :
     secondSubderiv φ x₀ v w = ⊤ ∧
       Tendsto (fun t ↦ secondDiffQuot φ x₀ v t w) (𝓝[>] 0) (𝓝 ⊤) := by
@@ -442,6 +491,8 @@ theorem tendsto_secondDiffQuot (w : E) :
   · rw [(h.secondSubderiv_of_not_mem (not_exists.1 hw)).1]
     exact (h.secondSubderiv_of_not_mem (not_exists.1 hw)).2
 
+/-- A function with a local linear-quadratic model at `x̄` on finitely many cones is twice
+epi-differentiable at `x̄` for every `v` with `⟨v, u⟩ ≤ ⟨g k, u⟩` on each cone `T k`. -/
 theorem twiceEpiDifferentiableAt : TwiceEpiDifferentiableAt φ x₀ v :=
   twiceEpiDifferentiableAt_of_tendsto ⟨φ₀, h.eq₀⟩ (h.tendsto_secondDiffQuot hv)
 
@@ -450,6 +501,8 @@ omit hv
 /-! #### Convexity -/
 
 omit [Finite ι] in
+/-- For convex `φ`, the quadratic parts of the local model are nonnegative on their cones:
+`⟨A j w, w⟩ ≥ 0` for `w ∈ T j`. -/
 theorem nonneg_of_convex (hconv : Convex ℝ (φ.Epi univ)) (hw : w ∈ T j) : 0 ≤ A j w w := by
   obtain ⟨t, ht, hsmall⟩ := h.exists_small w
   have h1 := h.apply_smul hw ht (hsmall t ht le_rfl)
@@ -464,6 +517,7 @@ theorem nonneg_of_convex (hconv : Convex ℝ (φ.Epi univ)) (hw : w ∈ T j) : 0
   exact (mul_nonneg_iff_of_pos_left (by positivity)).1 h3
 
 omit [Finite ι] in
+/-- For convex `φ` and `v ∈ ∂φ(x̄)`, `⟨v, u⟩ ≤ ⟨g k, u⟩` for `u ∈ T k`. -/
 theorem le_of_mem_subdiff (hconv : Convex ℝ (φ.Epi univ)) (hvs : v ∈ subdiff φ x₀)
     (hu : u ∈ T k) : v u ≤ g k u := by
   rw [mem_subdiff_of_convex hconv h.eq₀] at hvs
@@ -493,14 +547,18 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Set E}
 def IsPolyhedral (Ω : Set E) : Prop :=
   ∃ (n : ℕ) (b : Fin n → StrongDual ℝ E) (β : Fin n → ℝ), Ω = {x | ∀ i, b i x ≤ β i}
 
+/-- Polyhedral sets are closed. -/
 theorem IsPolyhedral.isClosed (h : IsPolyhedral Ω) : IsClosed Ω := by
   obtain ⟨n, b, β, rfl⟩ := h
   simp only [ofPred_forall]
   exact isClosed_iInter fun i ↦ isClosed_le (b i).continuous continuous_const
 
+/-- The empty set is polyhedral. -/
 theorem isPolyhedral_empty : IsPolyhedral (∅ : Set E) :=
   ⟨1, fun _ ↦ 0, fun _ ↦ -1, by ext x; simp⟩
 
+/-- The intersection of a polyhedral set with a closed half-space `{x | ⟨c, x⟩ ≤ γ}` is
+polyhedral. -/
 theorem IsPolyhedral.inter_halfspace (h : IsPolyhedral Ω) (c : StrongDual ℝ E) (γ : ℝ) :
     IsPolyhedral (Ω ∩ {x | c x ≤ γ}) := by
   obtain ⟨n, b, β, rfl⟩ := h
@@ -577,6 +635,7 @@ def IsPiecewiseLinear (φ : E → EReal) : Prop :=
     (∀ j, IsPolyhedral (Ω j)) ∧ {x | φ x ≠ ⊤} = ⋃ j, Ω j ∧
     ∀ j, ∀ x ∈ Ω j, φ x = ((a j x + α j : ℝ) : EReal)
 
+/-- Piecewise linear functions are piecewise linear-quadratic (with `A = 0`). -/
 theorem IsPiecewiseLinear.isPLQ (h : IsPiecewiseLinear φ) : IsPLQ φ := by
   obtain ⟨s, Ω, a, α, hΩ, hdom, hval⟩ := h
   exact ⟨s, Ω, fun _ ↦ 0, a, α, hΩ, fun _ _ _ ↦ rfl, hdom, fun j x hx ↦ by

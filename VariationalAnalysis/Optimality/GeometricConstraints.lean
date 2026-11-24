@@ -165,6 +165,8 @@ section Many
 variable {ι : Type*} [Fintype ι] {Ω : ι → Set E}
 
 omit [NormedSpace ℝ E] [Fintype ι] in
+/-- The intersection of finitely many sets locally closed around `x₀` is locally closed around
+`x₀`. -/
 theorem locallyClosed_iInter [Finite ι] (hloc : ∀ i, ∃ ρ > 0, IsClosed (Ω i ∩ closedBall x₀ ρ)) :
     ∃ ρ > 0, IsClosed ((⋂ i, Ω i) ∩ closedBall x₀ ρ) := by
   have := Fintype.ofFinite ι

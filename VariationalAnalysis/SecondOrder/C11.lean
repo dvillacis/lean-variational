@@ -67,10 +67,12 @@ def DirDifferentiableAt (f : E → F) (x : E) : Prop :=
 
 variable {f : E → F} {x x₀ w u : E} {v v₁ v₂ : F}
 
+/-- The directional derivative `f'(x; w)` is unique. -/
 theorem HasDirDerivAt.unique (h₁ : HasDirDerivAt f x w v₁) (h₂ : HasDirDerivAt f x w v₂) :
     v₁ = v₂ :=
   tendsto_nhds_unique h₁ h₂
 
+/-- Every mapping has directional derivative `f'(x; 0) = 0` in the direction `0`. -/
 theorem hasDirDerivAt_zero (f : E → F) (x : E) : HasDirDerivAt f x 0 0 := by
   simp [HasDirDerivAt]
 
@@ -82,6 +84,7 @@ theorem HasFDerivAt.hasDirDerivAt {A : E →L[ℝ] F} (hf : HasFDerivAt f A x) (
   have h := (hf.comp_hasDerivAt_of_eq 0 hl (by simp)).tendsto_slope_zero_right
   simpa [HasDirDerivAt, Function.comp_def] using h
 
+/-- `x + tw → x` as `t ↓ 0`. -/
 theorem tendsto_add_smul_nhdsGT (x w : E) :
     Tendsto (fun t : ℝ ↦ x + t • w) (𝓝[>] 0) (𝓝 x) := by
   have : Tendsto (fun t : ℝ ↦ x + t • w) (𝓝 0) (𝓝 (x + (0 : ℝ) • w)) :=
@@ -216,6 +219,8 @@ at `x₀` iff the blow-ups converge pointwise as `t ↓ 0`. -/
 noncomputable def blowUp (f : E → F) (x₀ : E) (t : ℝ) (z : E) : F :=
   t⁻¹ • (f (x₀ + t • z) - f x₀)
 
+/-- If `f` is `L`-Lipschitz on `U`, `t > 0` and `x₀ + tz ∈ U` for all `z ∈ S`, then the blow-up
+`blowUp f x₀ t` is `L`-Lipschitz on `S`. -/
 theorem lipschitzOnWith_blowUp {f : E → F} {x₀ : E} {U S : Set E} {L : ℝ≥0}
     (hL : LipschitzOnWith L f U) {t : ℝ} (ht : 0 < t) (hS : ∀ z ∈ S, x₀ + t • z ∈ U) :
     LipschitzOnWith L (blowUp f x₀ t) S := by
@@ -230,6 +235,8 @@ theorem lipschitzOnWith_blowUp {f : E → F} {x₀ : E} {U S : Set E} {L : ℝ�
         mul_le_mul_of_nonneg_left this (inv_nonneg.2 ht.le)
     _ = L * ‖z - z'‖ := by field_simp
 
+/-- For a neighborhood `U` of `x₀` and a radius `R`, `x₀ + tz ∈ U` for all `‖z‖ ≤ R` once `t > 0`
+is small enough. -/
 theorem eventually_add_smul_mem {x₀ : E} {U : Set E} (hU : U ∈ 𝓝 x₀) (R : ℝ) :
     ∀ᶠ t in 𝓝[>] (0 : ℝ), ∀ z ∈ closedBall (0 : E) R, x₀ + t • z ∈ U := by
   obtain ⟨η, hη, hηU⟩ := Metric.mem_nhds_iff.1 hU

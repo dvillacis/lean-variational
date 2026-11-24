@@ -85,11 +85,13 @@ graph of the limiting coderivative. -/
 def IsSemismoothStarAt (F : E → Set E) (p : E × E) : Prop :=
   IsSemismoothStarWrtAt (coderivGraph F) F p
 
+/-- `gph D*F(q)` is a cone: it is closed under multiplication by `t ≥ 0`. -/
 theorem coderivGraph_smul {q w : E × E} (hw : w ∈ coderivGraph F q) {t : ℝ} (ht : 0 ≤ t) :
     t • w ∈ coderivGraph F q := by
   have h := smul_mem_coderiv hw ht
   simpa [coderivGraph] using h
 
+/-- `(0, 0) ∈ gph D*F(q)` for `q ∈ gph F`. -/
 theorem zero_mem_coderivGraph {q : E × E} (hq : q ∈ graph F) : (0 : E × E) ∈ coderivGraph F q := by
   change toDual ℝ E 0 ∈ coderiv F q.1 q.2 (toDual ℝ E 0)
   have h0 : ((0 : StrongDual ℝ E).coprod (-(0 : StrongDual ℝ E))) = 0 := by ext <;> simp
@@ -117,15 +119,18 @@ theorem isSemismoothStarAt_iff :
 def scCoderivUnion (F : E → Set E) (q : E × E) : Set (E × E) :=
   ⋃ L ∈ scCoderiv F q, (L : Set (E × E))
 
+/-- `w ∈ (⋃ 𝒮*F)(q)` iff `w ∈ L` for some `L ∈ 𝒮*F(q)`. -/
 theorem mem_scCoderivUnion_iff {q w : E × E} :
     w ∈ scCoderivUnion F q ↔ ∃ L ∈ scCoderiv F q, w ∈ L := by
   simp [scCoderivUnion]
 
+/-- `(⋃ 𝒮*F)(q)` is closed under multiplication by every real `t`. -/
 theorem scCoderivUnion_smul {q w : E × E} (hw : w ∈ scCoderivUnion F q) (t : ℝ) :
     t • w ∈ scCoderivUnion F q := by
   obtain ⟨L, hL, hwL⟩ := mem_scCoderivUnion_iff.1 hw
   exact mem_scCoderivUnion_iff.2 ⟨L, hL, L.smul_mem t hwL⟩
 
+/-- `(⋃ 𝒮*F)(q) ≠ ∅` iff `F` has the SCD property at `q`. -/
 theorem scCoderivUnion_nonempty_iff {q : E × E} :
     (scCoderivUnion F q).Nonempty ↔ HasSCDPropertyAt F q := by
   rw [hasSCDPropertyAt_iff_scCoderiv_nonempty]
@@ -136,6 +141,8 @@ theorem scCoderivUnion_nonempty_iff {q : E × E} :
   · rintro ⟨L, hL⟩
     exact ⟨0, mem_scCoderivUnion_iff.2 ⟨L, hL, L.zero_mem⟩⟩
 
+/-- `F` has the SCD property around `p` iff it has the SCD property at every `q ∈ gph F` near `p`,
+in terms of the neighbourhood filter. -/
 theorem hasSCDPropertyAround_iff_eventually :
     HasSCDPropertyAround F p ↔ ∀ᶠ q in 𝓝 p, q ∈ graph F → HasSCDPropertyAt F q := by
   constructor

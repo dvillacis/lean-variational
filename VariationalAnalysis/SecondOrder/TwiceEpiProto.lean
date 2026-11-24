@@ -337,9 +337,13 @@ noncomputable def proxGraphEquiv (l : ℝ) (hl : l ≠ 0) : (E × StrongDual ℝ
       rw [LinearIsometryEquiv.symm_apply_apply, smul_smul, mul_inv_cancel₀ hl, one_smul,
         add_sub_cancel]) rfl)
 
+/-- The isomorphism `proxGraphEquiv l hl` acts by `(x, v) ↦ (x + λv, x)`, with `v ∈ E*` identified
+with an element of `E` by the Riesz isomorphism. -/
 theorem proxGraphEquiv_apply {l : ℝ} (hl : l ≠ 0) (q : E × StrongDual ℝ E) :
     proxGraphEquiv l hl q = (q.1 + l • (toDual ℝ E).symm q.2, q.1) := rfl
 
+/-- The inverse of `proxGraphEquiv l hl` acts by `(u, x) ↦ (x, λ⁻¹(u - x))`, with `λ⁻¹(u - x)`
+regarded as an element of `E*` by the Riesz isomorphism. -/
 theorem proxGraphEquiv_symm_apply {l : ℝ} (hl : l ≠ 0) (q : E × E) :
     (proxGraphEquiv l hl).symm q = (q.2, toDual ℝ E (l⁻¹ • (q.1 - q.2))) := rfl
 

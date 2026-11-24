@@ -41,9 +41,11 @@ def contingentCone (Ω : Set E) (x₀ : E) : Set E :=
   {w | x₀ ∈ Ω ∧ ∃ x : ℕ → E, ∃ α : ℕ → ℝ, (∀ k, x k ∈ Ω ∧ 0 ≤ α k) ∧
     Tendsto x atTop (𝓝 x₀) ∧ Tendsto (fun k ↦ α k • (x k - x₀)) atTop (𝓝 w)}
 
+/-- The contingent cone to `Ω` at a point `x₀ ∈ Ω` contains `0`. -/
 theorem zero_mem_contingentCone (hx : x₀ ∈ Ω) : (0 : E) ∈ contingentCone Ω x₀ :=
   ⟨hx, fun _ ↦ x₀, fun _ ↦ 0, fun _ ↦ ⟨hx, le_rfl⟩, tendsto_const_nhds, by simp⟩
 
+/-- The contingent cone is a cone: it is stable under multiplication by `t ≥ 0`. -/
 theorem smul_mem_contingentCone (hw : w ∈ contingentCone Ω x₀) {t : ℝ} (ht : 0 ≤ t) :
     t • w ∈ contingentCone Ω x₀ := by
   obtain ⟨hx, x, α, hxα, hxlim, hlim⟩ := hw

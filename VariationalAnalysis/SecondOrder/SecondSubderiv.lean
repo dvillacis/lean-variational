@@ -127,17 +127,22 @@ section Real
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+/-- For a real-valued `φ` the difference quotient is the real number
+`Δ_tφ(x̄)(w) = (φ(x̄ + tw) - φ(x̄)) / t`. -/
 theorem diffQuot_coe (φ : E → ℝ) (x₀ : E) (t : ℝ) (w : E) :
     diffQuot (fun x ↦ (φ x : EReal)) x₀ t w = ((t⁻¹ * (φ (x₀ + t • w) - φ x₀) : ℝ) : EReal) := by
   simp only [diffQuot]
   rw [← EReal.coe_sub, ← EReal.coe_mul]
 
+/-- For a real-valued `φ` the second-order difference quotient is the real number
+`Δ²_tφ(x̄, v)(w) = (2 / t²) (φ(x̄ + tw) - φ(x̄) - t⟨v, w⟩)`. -/
 theorem secondDiffQuot_coe (φ : E → ℝ) (x₀ : E) (v : StrongDual ℝ E) (t : ℝ) (w : E) :
     secondDiffQuot (fun x ↦ (φ x : EReal)) x₀ v t w =
       ((2 / t ^ 2 * (φ (x₀ + t • w) - φ x₀ - t * v w) : ℝ) : EReal) := by
   simp only [secondDiffQuot]
   rw [← EReal.coe_sub, ← EReal.coe_sub, ← EReal.coe_mul]
 
+/-- `t • w' → 0` as `t ↓ 0` and `w' → w`. -/
 theorem tendsto_smul_nhdsGT_prod (w : E) :
     Tendsto (fun p : ℝ × E ↦ p.1 • p.2) (𝓝[>] 0 ×ˢ 𝓝 w) (𝓝 0) := by
   have h : Tendsto (fun p : ℝ × E ↦ p.1 • p.2) (𝓝 ((0 : ℝ), w)) (𝓝 ((0 : ℝ) • w)) :=
@@ -146,6 +151,7 @@ theorem tendsto_smul_nhdsGT_prod (w : E) :
   exact h.mono_left (prod_mono nhdsWithin_le_nhds le_rfl)
 
 omit [NormedSpace ℝ E] in
+/-- The first component is eventually positive along `t ↓ 0`, `w' → w`. -/
 theorem eventually_pos_nhdsGT_prod (w : E) : ∀ᶠ p : ℝ × E in 𝓝[>] 0 ×ˢ 𝓝 w, 0 < p.1 :=
   (eventually_mem_nhdsWithin (s := Ioi (0 : ℝ)) (a := 0)).prod_inl _
 
@@ -353,6 +359,7 @@ section Convex
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {φ : E → EReal} {x₀ : E} {v : StrongDual ℝ E} {r : ℝ}
 
+/-- If `φ(x̄) = r` is finite and `φ(x̄) + ⟨v, tw⟩ ≤ φ(x̄ + tw)`, then `Δ²_tφ(x̄, v)(w) ≥ 0`. -/
 theorem secondDiffQuot_nonneg (hr : φ x₀ = r) {t : ℝ} {w : E}
     (h : ((r + v (t • w) : ℝ) : EReal) ≤ φ (x₀ + t • w)) :
     0 ≤ secondDiffQuot φ x₀ v t w := by
@@ -376,6 +383,8 @@ theorem secondSubderiv_nonneg_of_convex (hconv : Convex ℝ (φ.Epi univ)) (hr :
   refine le_liminf_of_le (by isBoundedDefault) (Eventually.of_forall fun p ↦ ?_)
   exact secondDiffQuot_nonneg hr (by simpa using hv (x₀ + p.1 • p.2))
 
+/-- For `t > 0` and `φ(x̄) = r` finite, `Δ²_tφ(x̄, v)(u) ≤ β` if and only if
+`φ(x̄ + tu) ≤ φ(x̄) + t⟨v, u⟩ + (t² / 2) β`. -/
 theorem secondDiffQuot_le_coe_iff (hr : φ x₀ = r) {t : ℝ} (ht : 0 < t) {u : E} {β : ℝ} :
     secondDiffQuot φ x₀ v t u ≤ β ↔
       φ (x₀ + t • u) ≤ ((r + t * v u + t ^ 2 / 2 * β : ℝ) : EReal) := by
@@ -467,6 +476,8 @@ section Scaling
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+/-- Multiplication by a real `c > 0` preserves and reflects the order of `EReal`:
+`c * a ≤ c * b ↔ a ≤ b`. -/
 theorem coe_mul_le_coe_mul_iff {c : ℝ} (hc : 0 < c) {a b : EReal} :
     (c : EReal) * a ≤ c * b ↔ a ≤ b := by
   refine ⟨fun h ↦ ?_, fun h ↦ PosMulMono.mul_le_mul_of_nonneg_left (EReal.coe_nonneg.2 hc.le) h⟩
@@ -474,6 +485,8 @@ theorem coe_mul_le_coe_mul_iff {c : ℝ} (hc : 0 < c) {a b : EReal} :
   rwa [← mul_assoc, ← mul_assoc, ← EReal.coe_mul, inv_mul_cancel₀ hc.ne', EReal.coe_one,
     one_mul, one_mul] at h'
 
+/-- Multiplication by a real `c > 0` commutes with infima in `EReal`:
+`c * ⨅ i, f i = ⨅ i, c * f i`. -/
 theorem coe_mul_iInf_of_pos {ι : Sort*} {c : ℝ} (hc : 0 < c) (f : ι → EReal) :
     (c : EReal) * ⨅ i, f i = ⨅ i, (c : EReal) * f i := by
   have hinv : ∀ a : EReal, (c : EReal) * (((c⁻¹ : ℝ) : EReal) * a) = a := fun a ↦ by
@@ -489,6 +502,8 @@ theorem coe_mul_iInf_of_pos {ι : Sort*} {c : ℝ} (hc : 0 < c) (f : ι → ERea
 
 variable {φ : E → EReal} {t l : ℝ}
 
+/-- For `t > 0`, the proximal objective of the scaled function `ψ(w) = t⁻² φ(tw)` at `(u, w)` is
+`t⁻²` times the proximal objective of `φ` at `(tu, tw)`. -/
 theorem proxObjective_scale (φ : E → EReal) (ht : 0 < t) (l : ℝ) (u w : E) :
     proxObjective (fun w ↦ ((t⁻¹ ^ 2 : ℝ) : EReal) * φ (t • w)) l u w =
       ((t⁻¹ ^ 2 : ℝ) : EReal) * proxObjective φ l (t • u) (t • w) := by
@@ -498,6 +513,7 @@ theorem proxObjective_scale (φ : E → EReal) (ht : 0 < t) (l : ℝ) (u w : E) 
   congr 2
   field_simp
 
+/-- Scalar multiplication `w ↦ t • w` by `t ≠ 0` is surjective. -/
 theorem smul_surjective_of_ne_zero (ht : t ≠ 0) : Function.Surjective fun w : E ↦ t • w :=
   fun z ↦ ⟨t⁻¹ • z, by simp [smul_smul, ht]⟩
 
@@ -522,6 +538,8 @@ theorem mem_proximalMap_scale_iff (φ : E → EReal) (ht : 0 < t) (l : ℝ) {u x
   have := h (t⁻¹ • z)
   rwa [smul_smul, mul_inv_cancel₀ ht.ne', one_smul] at this
 
+/-- For `t > 0`, the proximal mapping of the scaled function `ψ(w) = t⁻² φ(tw)` is
+`P_λψ(u) = t⁻¹ P_λφ(tu)`. -/
 theorem proximalMap_scale (φ : E → EReal) (ht : 0 < t) (l : ℝ) (u : E) :
     proximalMap (fun w ↦ ((t⁻¹ ^ 2 : ℝ) : EReal) * φ (t • w)) l u =
       t⁻¹ • proximalMap φ l (t • u) := by
@@ -565,9 +583,11 @@ noncomputable def scaleSnd (c : ℝ) (hc : c ≠ 0) : (E × ℝ) ≃L[ℝ] (E ×
     (fun p ↦ Prod.ext rfl (by simp [inv_mul_cancel_left₀ hc]))
     (fun p ↦ Prod.ext rfl (by simp [mul_inv_cancel_left₀ hc]))
 
+/-- The isomorphism `scaleSnd c hc` acts by `(x, α) ↦ (x, cα)`. -/
 theorem scaleSnd_apply (c : ℝ) (hc : c ≠ 0) (p : E × ℝ) :
     scaleSnd c hc p = (p.1, c * p.2) := rfl
 
+/-- For `c > 0`, the epigraph of `cθ` is the image of `epi θ` under `(x, α) ↦ (x, cα)`. -/
 theorem epi_coe_mul {θ : E → EReal} {c : ℝ} (hc : 0 < c) :
     (fun x ↦ (c : EReal) * θ x).Epi univ = scaleSnd c hc.ne' '' θ.Epi univ := by
   ext ⟨x, α⟩

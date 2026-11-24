@@ -72,23 +72,30 @@ theorem coe_le_add_coe_iff {A c : ℝ} {y : EReal} :
     rw [← EReal.coe_add, EReal.coe_le_coe_iff, EReal.coe_le_coe_iff]
     constructor <;> intro h <;> linarith
 
+/-- The indicator function `δ_Ω` vanishes on `Ω`. -/
 theorem convex_indicator_of_mem {α : Type*} {Ω : Set α} {x : α} (h : x ∈ Ω) :
     Ω.convex_indicator x = ((0 : ℝ) : EReal) := by
   simp [Set.convex_indicator, h]
 
+/-- The indicator function `δ_Ω` equals `⊤` off `Ω`. -/
 theorem convex_indicator_of_notMem {α : Type*} {Ω : Set α} {x : α} (h : x ∉ Ω) :
     Ω.convex_indicator x = ⊤ := by
   simp [Set.convex_indicator, h]
 
+/-- For `ω = 0` the `ω`-subgradients are the regular subgradients: `∂̂₀φ(x₀) = ∂̂φ(x₀)`. -/
 theorem epsSubdiff_zero : epsSubdiff 0 φ x₀ = regularSubdiff φ x₀ := by
   ext v; simp [epsSubdiff, regularSubdiff]
 
+/-- Membership in `∂̂φ(x₀)` when `φ(x₀) = r` is finite: `v ∈ ∂̂φ(x₀)` iff for every `ε > 0`,
+`r + ⟨v, x - x₀⟩ - ε ‖x - x₀‖ ≤ φ(x)` for all `x` near `x₀`. -/
 theorem mem_regularSubdiff_iff (hr : φ x₀ = r) : v ∈ regularSubdiff φ x₀ ↔
     ∀ ε > 0, ∀ᶠ x in 𝓝 x₀, ((r + v (x - x₀) - ε * ‖x - x₀‖ : ℝ) : EReal) ≤ φ x := by
   refine ⟨fun ⟨s, hs, h⟩ ↦ ?_, fun h ↦ ⟨r, hr, h⟩⟩
   rw [hr, EReal.coe_eq_coe_iff] at hs
   exact hs ▸ h
 
+/-- Membership in `∂̂_ωφ(x₀)` when `φ(x₀) = r` is finite: `v ∈ ∂̂_ωφ(x₀)` iff for every `ε > 0`,
+`r + ⟨v, x - x₀⟩ - (ω + ε) ‖x - x₀‖ ≤ φ(x)` for all `x` near `x₀`. -/
 theorem mem_epsSubdiff_iff (hr : φ x₀ = r) : v ∈ epsSubdiff ω φ x₀ ↔
     ∀ ε > 0, ∀ᶠ x in 𝓝 x₀, ((r + v (x - x₀) - (ω + ε) * ‖x - x₀‖ : ℝ) : EReal) ≤ φ x := by
   refine ⟨fun ⟨s, hs, h⟩ ↦ ?_, fun h ↦ ⟨r, hr, h⟩⟩
@@ -101,6 +108,7 @@ theorem mem_regularSubdiff_coe {f : E → ℝ} : v ∈ regularSubdiff (fun x ↦
   rw [mem_regularSubdiff_iff (φ := fun x ↦ (f x : EReal)) (r := f x₀) rfl]
   simp only [EReal.coe_le_coe_iff]
 
+/-- Regular subgradients are `ω`-subgradients for every `ω ≥ 0`: `∂̂φ(x₀) ⊆ ∂̂_ωφ(x₀)`. -/
 theorem regularSubdiff_subset_epsSubdiff (hω : 0 ≤ ω) :
     regularSubdiff φ x₀ ⊆ epsSubdiff ω φ x₀ := by
   refine fun v ⟨r, hr, h⟩ ↦ ⟨r, hr, fun ε hε ↦ (h ε hε).mono fun x hx ↦ le_trans ?_ hx⟩

@@ -54,6 +54,7 @@ noncomputable def coeMulOrderIso (c : ℝ) (hc : 0 < c) : EReal ≃o EReal where
     rw [← mul_assoc, ← EReal.coe_mul, mul_inv_cancel₀ hc.ne', EReal.coe_one, one_mul]
   map_rel_iff' := coe_mul_le_coe_mul_iff hc
 
+/-- For `c > 0`, the order isomorphism `coeMulOrderIso c hc` is `a ↦ c * a`. -/
 theorem coeMulOrderIso_apply {c : ℝ} (hc : 0 < c) (a : EReal) :
     coeMulOrderIso c hc a = (c : EReal) * a := rfl
 

@@ -36,6 +36,8 @@ section Locality
 variable {φ₁ φ₂ : E → EReal}
 
 omit [NormedSpace ℝ E] in
+/-- If `φ₁ = φ₂` near `x₀`, then `epi φ₁` and `epi φ₂` coincide near `(x₀, r)` for every
+real `r`. -/
 theorem epi_eventuallyEq (h : φ₁ =ᶠ[𝓝 x₀] φ₂) (r : ℝ) :
     φ₁.Epi univ =ᶠ[𝓝 ((x₀, r) : E × ℝ)] φ₂.Epi univ := by
   filter_upwards [(continuous_fst.tendsto ((x₀, r) : E × ℝ)).eventually h] with p hp

@@ -61,10 +61,13 @@ variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
 def sharpTangentCone (Ω : Set X) (x : X) : Set X :=
   outerLimit (𝓝[Ω] x) (contingentCone Ω)
 
+/-- For `x ∈ Ω`, the contingent cone is contained in the outer limiting tangent cone:
+`T_Ω(x) ⊆ T♯_Ω(x)`. -/
 theorem contingentCone_subset_sharpTangentCone {Ω : Set X} {x : X} (hx : x ∈ Ω) :
     contingentCone Ω x ⊆ sharpTangentCone Ω x :=
   subset_outerLimit (pure_le_nhdsWithin hx) _
 
+/-- The outer limiting tangent cone `T♯_Ω(x)` is closed. -/
 theorem isClosed_sharpTangentCone (Ω : Set X) (x : X) : IsClosed (sharpTangentCone Ω x) :=
   isClosed_outerLimit_nhdsWithin _
 
@@ -91,17 +94,21 @@ noncomputable def tangentSubspace (F : E → Set E) (p : E × E) : Submodule ℝ
   Submodule.span ℝ (contingentCone (graph F) p)
 
 omit [FiniteDimensional ℝ E] in
+/-- At a point of graphical smoothness, `tangentSubspace F p` is the contingent cone
+`T_{gph F}(p)` as a set. -/
 theorem GraphicallySmoothAt.coe_tangentSubspace (h : GraphicallySmoothAt F p) :
     (tangentSubspace F p : Set (E × E)) = contingentCone (graph F) p := by
   obtain ⟨-, L, -, hL⟩ := h
   rw [tangentSubspace, ← hL, Submodule.span_eq]
 
 omit [FiniteDimensional ℝ E] in
+/-- At a point of graphical smoothness, `w ∈ tangentSubspace F p` iff `w ∈ T_{gph F}(p)`. -/
 theorem GraphicallySmoothAt.mem_tangentSubspace_iff (h : GraphicallySmoothAt F p) {w : E × E} :
     w ∈ tangentSubspace F p ↔ w ∈ contingentCone (graph F) p := by
   rw [← SetLike.mem_coe, h.coe_tangentSubspace]
 
 omit [FiniteDimensional ℝ E] in
+/-- At a point of graphical smoothness, the tangent subspace has dimension `n = dim E`. -/
 theorem GraphicallySmoothAt.finrank_tangentSubspace (h : GraphicallySmoothAt F p) :
     finrank ℝ (tangentSubspace F p) = finrank ℝ E := by
   obtain ⟨-, L, hdim, hL⟩ := h
@@ -112,10 +119,13 @@ an element of an adjoint subspace is read as a normal to a graph. -/
 noncomputable def graphFunctional (y x : E) : StrongDual ℝ (E × E) :=
   (toDual ℝ E x).coprod (-(toDual ℝ E y))
 
+/-- `graphFunctional y x` is the functional `w ↦ ⟪x, w.1⟫ - ⟪y, w.2⟫`. -/
 @[simp] theorem graphFunctional_apply (y x : E) (w : E × E) :
     graphFunctional y x w = ⟪x, w.1⟫_ℝ - ⟪y, w.2⟫_ℝ := by
   simp [graphFunctional, ContinuousLinearMap.coprod_apply, toDual_apply_apply, sub_eq_add_neg]
 
+/-- `graphFunctional` is sequentially continuous: if `yₖ → y₀` and `xₖ → x₀`, then
+`graphFunctional yₖ xₖ → graphFunctional y₀ x₀` in `StrongDual ℝ (E × E)`. -/
 theorem tendsto_graphFunctional {y x : ℕ → E} {y₀ x₀ : E} (hy : Tendsto y atTop (𝓝 y₀))
     (hx : Tendsto x atTop (𝓝 x₀)) :
     Tendsto (fun k ↦ graphFunctional (y k) (x k)) atTop (𝓝 (graphFunctional y₀ x₀)) :=
@@ -172,24 +182,29 @@ def HasSCDPropertyAround (F : E → Set E) (p : E × E) : Prop :=
 [Gfrerer–Outrata 2022, Def. 3.3]. -/
 def IsSCDMapping (F : E → Set E) : Prop := ∀ p ∈ graph F, HasSCDPropertyAt F p
 
+/-- An SCD mapping has the SCD property around every point `p`. -/
 theorem IsSCDMapping.hasSCDPropertyAround (hF : IsSCDMapping F) (p : E × E) :
     HasSCDPropertyAround F p :=
   ⟨univ, univ_mem, fun q hq ↦ hF q hq.1⟩
 
+/-- `F` has the SCD property at `p` iff `𝒮*F(p) ≠ ∅`. -/
 theorem hasSCDPropertyAt_iff_scCoderiv_nonempty :
     HasSCDPropertyAt F p ↔ (scCoderiv F p).Nonempty :=
   image_nonempty.symm
 
+/-- Every subspace `L ∈ 𝒮F(p)` has dimension `n = dim E`. -/
 theorem finrank_of_mem_scDeriv {L : Submodule ℝ (E × E)} (hL : L ∈ scDeriv F p) :
     finrank ℝ L = finrank ℝ E := by
   obtain ⟨q, hq, -, hT⟩ := hL
   exact hT.finrank_eq fun k ↦ (hq k).finrank_tangentSubspace
 
+/-- Every subspace `L ∈ 𝒮*F(p)` has dimension `n = dim E`. -/
 theorem finrank_of_mem_scCoderiv {L : Submodule ℝ (E × E)} (hL : L ∈ scCoderiv F p) :
     finrank ℝ L = finrank ℝ E := by
   obtain ⟨L', hL', rfl⟩ := hL
   exact finrank_adjointSubspace_of_eq (finrank_of_mem_scDeriv hL')
 
+/-- `L ∈ 𝒮*F(p)` iff `L* ∈ 𝒮F(p)`. -/
 theorem mem_scCoderiv_iff_adjoint_mem_scDeriv {L : Submodule ℝ (E × E)} :
     L ∈ scCoderiv F p ↔ adjointSubspace L ∈ scDeriv F p := by
   constructor
@@ -202,6 +217,7 @@ theorem GraphicallySmoothAt.tangentSubspace_mem_scDeriv (h : GraphicallySmoothAt
     tangentSubspace F p ∈ scDeriv F p :=
   ⟨fun _ ↦ p, fun _ ↦ h, tendsto_const_nhds, grassTendsto_const _⟩
 
+/-- `F` has the SCD property at every point of graphical smoothness. -/
 theorem GraphicallySmoothAt.hasSCDPropertyAt (h : GraphicallySmoothAt F p) :
     HasSCDPropertyAt F p :=
   ⟨_, h.tangentSubspace_mem_scDeriv⟩
@@ -256,6 +272,8 @@ theorem mem_sharpTangentCone_of_mem_scDeriv {L : Submodule ℝ (E × E)} (hL : L
   exact ⟨q, v, tendsto_nhdsWithin_iff.2 ⟨hqlim, Eventually.of_forall fun k ↦ (hq k).1⟩, hvlim,
     fun k ↦ (hq k).mem_tangentSubspace_iff.1 (hv k)⟩
 
+/-- Lemma 3.10 of [Gfrerer–Outrata 2022] in derivative form: if `(u, v) ∈ L ∈ 𝒮F(p)`, then
+`v ∈ D♯F(p)(u)`. -/
 theorem mem_sharpDeriv_of_mem_scDeriv {L : Submodule ℝ (E × E)} (hL : L ∈ scDeriv F p)
     {u v : E} (huv : (u, v) ∈ L) : v ∈ sharpDeriv F p.1 p.2 u :=
   mem_sharpTangentCone_of_mem_scDeriv hL huv

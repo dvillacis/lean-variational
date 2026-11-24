@@ -113,9 +113,11 @@ variable {E Q : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddComm
 def indicatorMap (Ω : Set E) : E → Set Q := fun x ↦ {y | x ∈ Ω ∧ y = 0}
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℝ Q] in
+/-- `gph Δ(·; Ω) = Ω × {0}`. -/
 theorem graph_indicatorMap (Ω : Set E) : graph (indicatorMap Ω : E → Set Q) = Ω ×ˢ {0} := rfl
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℝ Q] in
+/-- `dom Δ(·; Ω) = Ω`. -/
 theorem dom_indicatorMap (Ω : Set E) : dom (indicatorMap Ω : E → Set Q) = Ω := by
   ext x
   exact ⟨fun ⟨_, h, _⟩ ↦ h, fun h ↦ ⟨0, h, rfl⟩⟩
@@ -192,6 +194,7 @@ variable {F : Y → Set Z} {G : X → Set Y}
 
 omit [NormedAddCommGroup X] [NormedSpace ℝ X] [NormedAddCommGroup Y] [NormedSpace ℝ Y]
   [NormedAddCommGroup Z] [NormedSpace ℝ Z] in
+/-- `z ∈ (F ∘ G)(x)` iff `z ∈ F y` for some `y ∈ G x`. -/
 theorem mem_setComp_iff {x : X} {z : Z} : z ∈ setComp F G x ↔ ∃ y ∈ G x, z ∈ F y := by
   simp [setComp]
 
@@ -240,12 +243,15 @@ noncomputable abbrev chainProj : (X × Y) × Z →L[ℝ] X × Z :=
 theorem graph_chainGraphMap :
     graph (chainGraphMap F G) = chainProj₁ ⁻¹' graph G ∩ chainProj₂ ⁻¹' graph F := rfl
 
+/-- The projection `((x, y), z) ↦ (x, y)` is surjective. -/
 theorem chainProj₁_surjective : Function.Surjective (chainProj₁ : (X × Y) × Z →L[ℝ] X × Y) :=
   fun q ↦ ⟨(q, 0), rfl⟩
 
+/-- The projection `((x, y), z) ↦ (y, z)` is surjective. -/
 theorem chainProj₂_surjective : Function.Surjective (chainProj₂ : (X × Y) × Z →L[ℝ] Y × Z) :=
   fun q ↦ ⟨((0, q.1), q.2), rfl⟩
 
+/-- The projection `((x, y), z) ↦ (x, z)` maps `gph Φ` into `gph(F ∘ G)`. -/
 theorem mapsTo_chainProj :
     MapsTo chainProj (graph (chainGraphMap F G)) (graph (setComp F G)) :=
   fun _ hp ↦ mem_setComp_iff.2 ⟨_, hp.1, hp.2⟩

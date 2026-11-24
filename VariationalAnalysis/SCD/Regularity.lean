@@ -66,6 +66,7 @@ noncomputable def rgeSubspace (C : E →L[ℝ] E) : Submodule ℝ (E × E) :=
   LinearMap.range ((C : E →ₗ[ℝ] E).prod LinearMap.id)
 
 omit [FiniteDimensional ℝ E] in
+/-- `w ∈ rge(C, I)` iff `w.1 = C w.2`. -/
 theorem mem_rgeSubspace_iff {C : E →L[ℝ] E} {w : E × E} : w ∈ rgeSubspace C ↔ w.1 = C w.2 := by
   constructor
   · rintro ⟨x, rfl⟩
@@ -74,14 +75,17 @@ theorem mem_rgeSubspace_iff {C : E →L[ℝ] E} {w : E × E} : w ∈ rgeSubspace
     exact ⟨w.2, Prod.ext (by simp [h]) (by simp)⟩
 
 omit [FiniteDimensional ℝ E] in
+/-- `(y, x) ∈ rge(C, I)` iff `y = C x`. -/
 theorem mk_mem_rgeSubspace_iff {C : E →L[ℝ] E} {y x : E} : (y, x) ∈ rgeSubspace C ↔ y = C x :=
   mem_rgeSubspace_iff
 
 omit [FiniteDimensional ℝ E] in
+/-- `dim rge(C, I) = dim E`. -/
 theorem finrank_rgeSubspace (C : E →L[ℝ] E) : finrank ℝ (rgeSubspace C) = finrank ℝ E :=
   LinearMap.finrank_range_of_inj fun x y hxy ↦ by simpa using congrArg Prod.snd hxy
 
 omit [FiniteDimensional ℝ E] in
+/-- `rge(C, I) ∈ 𝓛ₙ^reg` for every linear `C`. -/
 theorem isRegularSubspace_rgeSubspace (C : E →L[ℝ] E) : IsRegularSubspace (rgeSubspace C) :=
   ⟨finrank_rgeSubspace C, fun y hy ↦ by simpa using mk_mem_rgeSubspace_iff.1 hy⟩
 
@@ -93,6 +97,7 @@ variable {L : Submodule ℝ (E × E)}
 noncomputable def subspaceSnd (L : Submodule ℝ (E × E)) : L →ₗ[ℝ] E :=
   (LinearMap.snd ℝ E E).comp L.subtype
 
+/-- For regular `L`, the second projection `L → E` is bijective. -/
 theorem IsRegularSubspace.bijective_subspaceSnd (hL : IsRegularSubspace L) :
     Function.Bijective (subspaceSnd L) := by
   have hinj : Function.Injective (subspaceSnd L) := by
@@ -118,11 +123,14 @@ noncomputable def regularSubspaceOp (L : Submodule ℝ (E × E)) : E →L[ℝ] E
       ((LinearMap.fst ℝ E E).comp (L.subtype.comp hL.sndEquiv.symm.toLinearMap))
   else 0
 
+/-- For regular `L`, `C_L x` is the first component of the unique element of `L` with second
+component `x`. -/
 theorem IsRegularSubspace.regularSubspaceOp_apply (hL : IsRegularSubspace L) (x : E) :
     regularSubspaceOp L x = (hL.sndEquiv.symm x : E × E).1 := by
   rw [regularSubspaceOp, dif_pos hL]
   rfl
 
+/-- For regular `L`, the element `hL.sndEquiv.symm x` of `L` has second component `x`. -/
 theorem IsRegularSubspace.snd_sndEquiv_symm (hL : IsRegularSubspace L) (x : E) :
     (hL.sndEquiv.symm x : E × E).2 = x :=
   hL.sndEquiv.apply_symm_apply x
@@ -146,10 +154,13 @@ theorem IsRegularSubspace.mem_iff (hL : IsRegularSubspace L) {y x : E} :
   · rintro rfl
     exact hL.mk_mem x
 
+/-- For regular `L`, `w ∈ L` iff `w.1 = C_L w.2`; the form of `IsRegularSubspace.mem_iff` for
+unsplit pairs. -/
 theorem IsRegularSubspace.mem_iff' (hL : IsRegularSubspace L) {w : E × E} :
     w ∈ L ↔ w.1 = regularSubspaceOp L w.2 :=
   hL.mem_iff
 
+/-- For regular `L`, `L = rge(C_L, I)`. -/
 theorem IsRegularSubspace.eq_rgeSubspace (hL : IsRegularSubspace L) :
     L = rgeSubspace (regularSubspaceOp L) := by
   ext w
@@ -169,6 +180,7 @@ theorem regularSubspaceOp_of_forall_mem_iff {C : E →L[ℝ] E}
   refine ⟨hreg, ContinuousLinearMap.ext fun x ↦ ?_⟩
   exact ((h _ _).1 (hreg.mk_mem x))
 
+/-- For `L = rge(C, I)`, `C_L = C`. -/
 theorem regularSubspaceOp_rgeSubspace (C : E →L[ℝ] E) : regularSubspaceOp (rgeSubspace C) = C :=
   (regularSubspaceOp_of_forall_mem_iff fun _ _ ↦ mk_mem_rgeSubspace_iff).2
 
@@ -256,16 +268,19 @@ noncomputable def subspaceBound (L : Submodule ℝ (E × E)) : ℝ≥0∞ :=
   ⨆ (w : E × E) (_ : w ∈ L) (_ : ‖w.2‖ ≤ 1), (‖w.1‖₊ : ℝ≥0∞)
 
 omit [FiniteDimensional ℝ E] in
+/-- `‖w.1‖ ≤ subspaceBound L` for every `w ∈ L` with `‖w.2‖ ≤ 1`. -/
 theorem le_subspaceBound {w : E × E} (hw : w ∈ L) (h : ‖w.2‖ ≤ 1) :
     (‖w.1‖₊ : ℝ≥0∞) ≤ subspaceBound L :=
   le_iSup₂_of_le w hw (le_iSup_of_le h le_rfl)
 
 omit [FiniteDimensional ℝ E] in
+/-- `subspaceBound L ≤ c` iff `‖y*‖ ≤ c` for all `(y*, x*) ∈ L` with `‖x*‖ ≤ 1`. -/
 theorem subspaceBound_le_iff {c : ℝ≥0∞} :
     subspaceBound L ≤ c ↔ ∀ w ∈ L, ‖w.2‖ ≤ 1 → (‖w.1‖₊ : ℝ≥0∞) ≤ c := by
   simp [subspaceBound]
 
 omit [FiniteDimensional ℝ E] in
+/-- `c < subspaceBound L` iff `c < ‖y*‖` for some `(y*, x*) ∈ L` with `‖x*‖ ≤ 1`. -/
 theorem lt_subspaceBound_iff {c : ℝ≥0∞} :
     c < subspaceBound L ↔ ∃ w ∈ L, ‖w.2‖ ≤ 1 ∧ c < ‖w.1‖₊ := by
   simp only [subspaceBound, lt_iSup_iff, exists_prop]
@@ -334,18 +349,22 @@ def IsSCDRegularAround (F : E → Set E) (p : E × E) : Prop :=
 noncomputable def scdreg (F : E → Set E) (p : E × E) : ℝ≥0∞ :=
   ⨆ L ∈ scCoderiv F p, subspaceBound L
 
+/-- If `F` is SCD regular around `p`, then every `L ∈ 𝒮*F(p)` is regular. -/
 theorem IsSCDRegularAround.isRegularSubspace (h : IsSCDRegularAround F p)
     {L : Submodule ℝ (E × E)} (hL : L ∈ scCoderiv F p) : IsRegularSubspace L :=
   ⟨finrank_of_mem_scCoderiv hL, h.2 L hL⟩
 
+/-- `‖y*‖ ≤ scdreg F(p)` for every `(y*, x*) ∈ L`, `L ∈ 𝒮*F(p)`, with `‖x*‖ ≤ 1`. -/
 theorem le_scdreg {L : Submodule ℝ (E × E)} (hL : L ∈ scCoderiv F p) {w : E × E} (hw : w ∈ L)
     (h : ‖w.2‖ ≤ 1) : (‖w.1‖₊ : ℝ≥0∞) ≤ scdreg F p :=
   (le_subspaceBound hw h).trans (le_iSup₂_of_le L hL le_rfl)
 
+/-- `scdreg F(p) ≤ c` iff `‖y*‖ ≤ c` for all `(y*, x*) ∈ ⋃ 𝒮*F(p)` with `‖x*‖ ≤ 1`. -/
 theorem scdreg_le_iff {c : ℝ≥0∞} :
     scdreg F p ≤ c ↔ ∀ L ∈ scCoderiv F p, ∀ w ∈ L, ‖w.2‖ ≤ 1 → (‖w.1‖₊ : ℝ≥0∞) ≤ c := by
   simp only [scdreg, iSup_le_iff, subspaceBound_le_iff]
 
+/-- `c < scdreg F(p)` iff `c < ‖y*‖` for some `(y*, x*) ∈ ⋃ 𝒮*F(p)` with `‖x*‖ ≤ 1`. -/
 theorem lt_scdreg_iff {c : ℝ≥0∞} :
     c < scdreg F p ↔ ∃ L ∈ scCoderiv F p, ∃ w ∈ L, ‖w.2‖ ≤ 1 ∧ c < ‖w.1‖₊ := by
   simp only [scdreg, lt_iSup_iff, lt_subspaceBound_iff, exists_prop]
@@ -384,6 +403,7 @@ theorem IsSCDRegularAround.scdreg_eq_iSup_scDeriv (h : IsSCDRegularAround F p) :
   exact iSup_congr fun L ↦ iSup_congr fun hL ↦
     IsRegularSubspace.subspaceBound_adjointSubspace ⟨finrank_of_mem_scDeriv hL, h' L hL⟩
 
+/-- Under SCD regularity around `p`, `scdreg F(p) = sup {‖C_L‖ | L ∈ 𝒮F(p)}`. -/
 theorem IsSCDRegularAround.scdreg_eq_iSup_scDeriv_nnnorm (h : IsSCDRegularAround F p) :
     scdreg F p = ⨆ L ∈ scDeriv F p, (‖regularSubspaceOp L‖₊ : ℝ≥0∞) := by
   have h' := (isSCDRegularAround_iff_scDeriv.1 h).2
@@ -410,6 +430,7 @@ theorem exists_mem_scCoderiv_of_bounded {q : ℕ → E × E} (hq : Tendsto q atT
     (fun k ↦ hL _) hconv, w₀, hconv.mem_of_tendsto (fun k ↦ hw _) hw₀, φ₁ ∘ φ₂,
     hφ₁.comp hφ₂, hw₀⟩
 
+/-- The norm `‖x‖₊` as an element of `ℝ≥0∞` is `ENNReal.ofReal ‖x‖`. -/
 theorem coe_nnnorm_eq_ofReal {G : Type*} [SeminormedAddCommGroup G] (x : G) :
     (‖x‖₊ : ℝ≥0∞) = ENNReal.ofReal ‖x‖ := by
   rw [← ENNReal.ofReal_coe_nnreal, coe_nnnorm]

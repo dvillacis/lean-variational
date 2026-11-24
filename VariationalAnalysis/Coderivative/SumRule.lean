@@ -223,6 +223,7 @@ noncomputable abbrev pairProj₂ : E × (Y₁ × Y₂) →L[ℝ] E × Y₂ :=
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup Y₁] [NormedSpace ℝ Y₁]
   [NormedAddCommGroup Y₂] [NormedSpace ℝ Y₂] in
+/-- `(y₁, y₂) ∈ F₁ x × F₂ x` iff `y₁ ∈ F₁ x` and `y₂ ∈ F₂ x`. -/
 theorem mem_pairMap_iff {F₁ : E → Set Y₁} {F₂ : E → Set Y₂} {x : E} {y : Y₁ × Y₂} :
     y ∈ pairMap F₁ F₂ x ↔ y.1 ∈ F₁ x ∧ y.2 ∈ F₂ x := Iff.rfl
 
@@ -231,9 +232,11 @@ Thm. 3.9]. -/
 theorem graph_pairMap (F₁ : E → Set Y₁) (F₂ : E → Set Y₂) :
     graph (pairMap F₁ F₂) = pairProj₁ ⁻¹' graph F₁ ∩ pairProj₂ ⁻¹' graph F₂ := rfl
 
+/-- The projection `(x, y₁, y₂) ↦ (x, y₁)` is surjective. -/
 theorem pairProj₁_surjective : Function.Surjective (pairProj₁ : E × (Y₁ × Y₂) →L[ℝ] E × Y₁) :=
   fun q ↦ ⟨(q.1, (q.2, 0)), rfl⟩
 
+/-- The projection `(x, y₁, y₂) ↦ (x, y₂)` is surjective. -/
 theorem pairProj₂_surjective : Function.Surjective (pairProj₂ : E × (Y₁ × Y₂) →L[ℝ] E × Y₂) :=
   fun q ↦ ⟨(q.1, (0, q.2)), rfl⟩
 
@@ -351,6 +354,7 @@ theorem dom_sumAuxMap (F₁ F₂ : E → Set F) :
 noncomputable abbrev sumProj : E × (F × F) →L[ℝ] E × F :=
   (fst ℝ E (F × F)).prod ((fst ℝ F F + snd ℝ F F).comp (snd ℝ E (F × F)))
 
+/-- The map `(x, y₁, y₂) ↦ (x, y₁ + y₂)` maps `gph(F₁ × F₂)` into `gph(F₁ + F₂)`. -/
 theorem mapsTo_sumProj (F₁ F₂ : E → Set F) :
     MapsTo sumProj (graph (pairMap F₁ F₂)) (graph fun x ↦ F₁ x + F₂ x) :=
   fun _ hp ↦ Set.add_mem_add hp.1 hp.2

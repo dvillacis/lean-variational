@@ -88,6 +88,7 @@ def clarkeSubdiff (f : E → ℝ) (x₀ : E) : Set (StrongDual ℝ E) :=
 
 variable {f g : E → ℝ} {x₀ : E}
 
+/-- `ξ ∈ ∂̄f(x₀)` if and only if `⟨ξ, v⟩ ≤ f°(x₀; v)` for all `v`. -/
 theorem mem_clarkeSubdiff_iff {ξ : StrongDual ℝ E} :
     ξ ∈ clarkeSubdiff f x₀ ↔ ∀ v, (ξ v : EReal) ≤ clarkeDeriv f x₀ v :=
   Iff.rfl
@@ -96,6 +97,7 @@ theorem mem_clarkeSubdiff_iff {ξ : StrongDual ℝ E} :
 
 section Normed
 
+/-- The set `{ξ | ⟨ξ, v⟩ ≤ c}` of functionals is convex for every `v` and every `c : EReal`. -/
 theorem convex_setOf_coe_apply_le (v : E) (c : EReal) :
     Convex ℝ {ξ : StrongDual ℝ E | (ξ v : EReal) ≤ c} := by
   induction c with
@@ -107,6 +109,7 @@ theorem convex_setOf_coe_apply_le (v : E) (c : EReal) :
     have e : s * c + t * c = c := by rw [← add_mul, hst, one_mul]
     nlinarith [mul_le_mul_of_nonneg_left ha hs, mul_le_mul_of_nonneg_left hb ht]
 
+/-- The set `{ξ | ⟨ξ, v⟩ ≤ c}` of functionals is norm closed for every `v` and every `c : EReal`. -/
 theorem isClosed_setOf_coe_apply_le (v : E) (c : EReal) :
     IsClosed {ξ : StrongDual ℝ E | (ξ v : EReal) ≤ c} := by
   induction c with
@@ -116,6 +119,7 @@ theorem isClosed_setOf_coe_apply_le (v : E) (c : EReal) :
     simp only [EReal.coe_le_coe_iff]
     exact isClosed_le (continuous_id.clm_apply continuous_const) continuous_const
 
+/-- `∂̄f(x₀)` is the intersection over `v` of the sets `{ξ | ⟨ξ, v⟩ ≤ f°(x₀; v)}`. -/
 theorem clarkeSubdiff_eq_iInter :
     clarkeSubdiff f x₀ = ⋂ v, {ξ : StrongDual ℝ E | (ξ v : EReal) ≤ clarkeDeriv f x₀ v} := by
   ext ξ
@@ -179,6 +183,7 @@ theorem subdiff_subset_clarkeSubdiff :
   filter_upwards [hlow.eventually (eventually_gt_nhds (EReal.coe_lt_coe_iff.1 hbu))] with k hk
   exact EReal.coe_le_coe_iff.2 (hk.le.trans (hq k))
 
+/-- Regular subgradients are Clarke subgradients: `∂̂f(x₀) ⊆ ∂̄f(x₀)`. -/
 theorem regularSubdiff_subset_clarkeSubdiff :
     regularSubdiff (fun x ↦ (f x : EReal)) x₀ ⊆ clarkeSubdiff f x₀ :=
   regularSubdiff_subset_subdiff.trans subdiff_subset_clarkeSubdiff
@@ -245,11 +250,13 @@ theorem zero_mem_clarkeSubdiff_of_isLocalMax (h : IsLocalMax f x₀) :
   have := zero_mem_clarkeSubdiff_of_isLocalMin (f := fun x ↦ -f x) h.neg
   rwa [clarkeSubdiff_neg, Set.mem_neg, neg_zero] at this
 
+/-- Clarke's directional derivative vanishes in the zero direction: `f°(x₀; 0) = 0`. -/
 theorem clarkeDeriv_zero : clarkeDeriv f x₀ 0 = 0 := by
   simp only [clarkeDeriv, smul_zero, add_zero, sub_self, zero_div, EReal.coe_zero]
   exact limsup_const 0
 
 omit [NormedSpace ℝ E] in
+/-- If `f` is Lipschitz on `U` with constant `K`, then so is `-f`. -/
 theorem lipschitzOnWith_neg {U : Set E} {K : ℝ≥0} (hf : LipschitzOnWith K f U) :
     LipschitzOnWith K (fun x ↦ -f x) U :=
   LipschitzOnWith.of_dist_le_mul fun x hx y hy ↦ by

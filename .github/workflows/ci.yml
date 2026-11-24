@@ -40,7 +40,7 @@ jobs:
             exit 1
           fi
 
-      - name: Definitions have docstrings
+      - name: Every declaration has a docstring
         run: lake env lean scripts/LintDocs.lean
 
       - name: Axiom audit

@@ -71,6 +71,7 @@ theorem regularSubdiff_add_subset :
     _ ≤ φ₁ x + φ₂ x := add_le_add hx₁ hx₂
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- If `φ₁(x₀) = r₁` and `φ₂(x₀) = r₂` are finite, then `(φ₁ + φ₂)(x₀) = r₁ + r₂`. -/
 theorem add_apply_eq_coe (hr₁ : φ₁ x₀ = r₁) (hr₂ : φ₂ x₀ = r₂) :
     (fun x ↦ φ₁ x + φ₂ x) x₀ = ((r₁ + r₂ : ℝ) : EReal) := by
   simp only [hr₁, hr₂, EReal.coe_add]
@@ -114,6 +115,7 @@ noncomputable def swapLast : ((E × ℝ) × ℝ) ≃L[ℝ] ((E × ℝ) × ℝ) :
       (ContinuousLinearEquiv.prodAssoc ℝ E ℝ ℝ).symm)
 
 omit [NormedSpace ℝ F] in
+/-- The isomorphism `swapLast` maps `((x, a), b)` to `((x, b), a)`. -/
 @[simp] theorem swapLast_apply (x : E) (a b : ℝ) : swapLast ((x, a), b) = ((x, b), a) := rfl
 
 /-- The linear map `((x, a), b) ↦ (x, a + b)` from `(E × ℝ) × ℝ` to `E × ℝ`. -/
@@ -123,6 +125,7 @@ noncomputable def sumLift : ((E × ℝ) × ℝ) →L[ℝ] E × ℝ :=
       ContinuousLinearMap.snd ℝ (E × ℝ) ℝ)
 
 omit [NormedSpace ℝ F] in
+/-- The map `sumLift` sends `((x, a), b)` to `(x, a + b)`. -/
 @[simp] theorem sumLift_apply (x : E) (a b : ℝ) : sumLift ((x, a), b) = (x, a + b) := rfl
 
 omit [NormedSpace ℝ F] in
@@ -133,6 +136,7 @@ theorem dual_prod_prod_apply (m : StrongDual ℝ ((E × ℝ) × ℝ)) (x : E) (a
     simp, map_add, map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul]
 
 omit [NormedSpace ℝ F] in
+/-- A point `((x, a), b)` lies in the image of `S × ℝ` under `swapLast` iff `(x, b) ∈ S`. -/
 theorem mem_image_swapLast_prod_univ_iff {S : Set (E × ℝ)} {p : (E × ℝ) × ℝ} :
     p ∈ swapLast '' (S ×ˢ univ) ↔ (p.1.1, p.2) ∈ S := by
   constructor
@@ -398,6 +402,7 @@ section FiniteSum
 variable {ι : Type*} {φ : ι → E → EReal} {r : ι → ℝ}
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- If `φᵢ(x₀) = rᵢ` is finite for every `i ∈ s`, then `∑ i ∈ s, φᵢ(x₀) = ∑ i ∈ s, rᵢ`. -/
 theorem sum_apply_eq_coe (s : Finset ι) (hr : ∀ i ∈ s, φ i x₀ = r i) :
     ∑ i ∈ s, φ i x₀ = ((∑ i ∈ s, r i : ℝ) : EReal) := by
   classical

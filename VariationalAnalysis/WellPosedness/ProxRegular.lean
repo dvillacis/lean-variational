@@ -87,6 +87,7 @@ of an amenable representation can be chosen of class `C²`. -/
 def StronglyAmenableAt (φ : E → EReal) (x₀ : E) : Prop := AmenableAtOfClass 2 φ x₀
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] in
+/-- Amenability with inner mapping of class `Cⁿ` implies amenability of class `Cᵐ` for `m ≤ n`. -/
 theorem AmenableAtOfClass.mono {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {φ : E → EReal} {x₀ : E} {m n : WithTop ℕ∞} (h : AmenableAtOfClass n φ x₀) (hmn : m ≤ n) :
     AmenableAtOfClass m φ x₀ := by
@@ -142,6 +143,8 @@ def ContinuouslyProxRegularAt (φ : E → EReal) (x₀ : E) : Prop :=
 
 variable {φ : E → EReal} {x₀ : E} {v₀ : StrongDual ℝ E}
 
+/-- A function continuously prox-regular at `x₀` is continuously prox-regular at `x₀` for every
+`v₀ ∈ ∂φ(x₀)`. -/
 theorem ContinuouslyProxRegularAt.continuouslyProxRegularFor (h : ContinuouslyProxRegularAt φ x₀)
     (hv₀ : v₀ ∈ subdiff φ x₀) : ContinuouslyProxRegularFor φ x₀ v₀ :=
   ⟨h.1 v₀ hv₀, h.2 v₀ hv₀⟩

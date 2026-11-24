@@ -106,17 +106,22 @@ theorem globallyMonotone_iff_isHypomonotoneOn {T : E → Set (StrongDual ℝ E)}
     GloballyMonotone T ↔ IsHypomonotoneOn 0 T univ := by
   simp [GloballyMonotone, IsHypomonotoneOn]
 
+/-- Hypomonotonicity with modulus `ρ` passes to a mapping with smaller values, `T' x ⊆ T x`, and
+to a smaller set `U' ⊆ U`. -/
 theorem IsHypomonotoneOn.mono {ρ : ℝ} {T T' : E → Set (StrongDual ℝ E)} {U U' : Set E}
     (h : IsHypomonotoneOn ρ T U) (hT : ∀ x, T' x ⊆ T x) (hU : U' ⊆ U) :
     IsHypomonotoneOn ρ T' U' :=
   fun x₁ hx₁ x₂ hx₂ v₁ hv₁ v₂ hv₂ ↦ h x₁ (hU hx₁) x₂ (hU hx₂) v₁ (hT _ hv₁) v₂ (hT _ hv₂)
 
+/-- Hypomonotonicity on `U` with modulus `ρ` implies hypomonotonicity with any modulus `ρ' ≥ ρ`. -/
 theorem IsHypomonotoneOn.mono_modulus {ρ ρ' : ℝ} {T : E → Set (StrongDual ℝ E)} {U : Set E}
     (h : IsHypomonotoneOn ρ T U) (hρ : ρ ≤ ρ') : IsHypomonotoneOn ρ' T U := by
   intro x₁ hx₁ x₂ hx₂ v₁ hv₁ v₂ hv₂
   have := h x₁ hx₁ x₂ hx₂ v₁ hv₁ v₂ hv₂
   nlinarith [sq_nonneg ‖x₁ - x₂‖]
 
+/-- The `φ`-attentive `ε`-localization is monotone in the mapping: if `T x ⊆ T' x` for all `x`, then
+the localization of `T` around `(x₀, v₀)` is contained in that of `T'`. -/
 theorem attentiveLocalization_subset {T T' : E → Set (StrongDual ℝ E)} (hT : ∀ x, T x ⊆ T' x)
     {ε : ℝ} (x : E) :
     attentiveLocalization T φ x₀ v₀ ε x ⊆ attentiveLocalization T' φ x₀ v₀ ε x :=

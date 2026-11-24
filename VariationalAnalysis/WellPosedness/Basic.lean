@@ -181,8 +181,10 @@ section Basic
 variable {E F : Type*} [MetricSpace E] [MetricSpace F]
 variable {S : E → Set F} {x₀ : E} {y₀ : F} {κ μ ℓ : ℝ≥0}
 
+/-- A covering modulus is positive. -/
 theorem HasCoveringWith.pos (h : HasCoveringWith κ S x₀ y₀) : 0 < κ := h.1
 
+/-- A metric regularity modulus is positive. -/
 theorem MetricallyRegularWith.pos (h : MetricallyRegularWith μ S x₀ y₀) : 0 < μ := h.1
 
 /-- Elementwise form of metric regularity [Mordukhovich 2018, Def. 3.1(b)]: for `x`, `y` near
@@ -257,13 +259,17 @@ theorem LipschitzLikeWith.eventually (h : LipschitzLikeWith ℓ S x₀ y₀) :
 
 /-! ### Moduli and exact bounds -/
 
+/-- Covering with a modulus `κ` around `(x₀, y₀)` gives the covering property there. -/
 theorem HasCoveringWith.hasCoveringAt (h : HasCoveringWith κ S x₀ y₀) : HasCoveringAt S x₀ y₀ :=
   ⟨κ, h⟩
 
+/-- Metric regularity with a modulus `μ` around `(x₀, y₀)` gives metric regularity there. -/
 theorem MetricallyRegularWith.metricallyRegularAt (h : MetricallyRegularWith μ S x₀ y₀) :
     MetricallyRegularAt S x₀ y₀ :=
   ⟨μ, h⟩
 
+/-- The Lipschitz-like property with a modulus `ℓ` around `(x₀, y₀)` gives the Lipschitz-like
+property there. -/
 theorem LipschitzLikeWith.lipschitzLikeAt (h : LipschitzLikeWith ℓ S x₀ y₀) :
     LipschitzLikeAt S x₀ y₀ :=
   ⟨ℓ, h⟩
@@ -283,14 +289,17 @@ theorem LipschitzLikeWith.lipBound_le (h : LipschitzLikeWith ℓ S x₀ y₀) :
     lipBound S x₀ y₀ ≤ ℓ :=
   iInf₂_le (f := fun (ℓ : ℝ≥0) (_ : LipschitzLikeWith ℓ S x₀ y₀) ↦ (ℓ : ℝ≥0∞)) ℓ h
 
+/-- The exact covering bound is at most every upper bound `c` of the covering moduli. -/
 theorem covBound_le {c : ℝ≥0∞} (h : ∀ κ, HasCoveringWith κ S x₀ y₀ → (κ : ℝ≥0∞) ≤ c) :
     covBound S x₀ y₀ ≤ c :=
   iSup₂_le h
 
+/-- Every lower bound `c` of the metric regularity moduli is at most the exact regularity bound. -/
 theorem le_regBound {c : ℝ≥0∞} (h : ∀ μ, MetricallyRegularWith μ S x₀ y₀ → c ≤ μ) :
     c ≤ regBound S x₀ y₀ :=
   le_iInf₂ h
 
+/-- Every lower bound `c` of the Lipschitz-like moduli is at most the exact Lipschitzian bound. -/
 theorem le_lipBound {c : ℝ≥0∞} (h : ∀ ℓ, LipschitzLikeWith ℓ S x₀ y₀ → c ≤ ℓ) :
     c ≤ lipBound S x₀ y₀ :=
   le_iInf₂ h
@@ -332,18 +341,21 @@ theorem le_covBound_of_forall_lt {c : ℝ≥0∞}
   obtain ⟨κ, hdκ, hκc⟩ := ENNReal.lt_iff_exists_nnreal_btwn.1 hd
   exact hdκ.trans_le (h κ (by exact_mod_cast (zero_le (a := d)).trans_lt hdκ) hκc).le_covBound
 
+/-- `S` has the covering property around `(x₀, y₀)` iff `cov S (x₀, y₀) > 0`. -/
 theorem hasCoveringAt_iff_covBound_pos : HasCoveringAt S x₀ y₀ ↔ 0 < covBound S x₀ y₀ := by
   refine ⟨fun ⟨κ, h⟩ ↦ (by exact_mod_cast h.pos : (0 : ℝ≥0∞) < κ).trans_le h.le_covBound,
     fun h ↦ ?_⟩
   obtain ⟨κ, hκ, -⟩ := exists_hasCoveringWith_of_lt_covBound h
   exact ⟨κ, hκ⟩
 
+/-- `S` is metrically regular around `(x₀, y₀)` iff `reg S (x₀, y₀) < ∞`. -/
 theorem metricallyRegularAt_iff_regBound_lt_top :
     MetricallyRegularAt S x₀ y₀ ↔ regBound S x₀ y₀ < ∞ := by
   refine ⟨fun ⟨μ, h⟩ ↦ h.regBound_le.trans_lt ENNReal.coe_lt_top, fun h ↦ ?_⟩
   obtain ⟨μ, hμ, -⟩ := exists_metricallyRegularWith_of_regBound_lt h
   exact ⟨μ, hμ⟩
 
+/-- `S` is Lipschitz-like around `(x₀, y₀)` iff `lip S (x₀, y₀) < ∞`. -/
 theorem lipschitzLikeAt_iff_lipBound_lt_top :
     LipschitzLikeAt S x₀ y₀ ↔ lipBound S x₀ y₀ < ∞ := by
   refine ⟨fun ⟨ℓ, h⟩ ↦ h.lipBound_le.trans_lt ENNReal.coe_lt_top, fun h ↦ ?_⟩
@@ -532,6 +544,8 @@ theorem regBound_eq_lipBound_invMap (h₀ : y₀ ∈ S x₀) :
     regBound S x₀ y₀ = lipBound (invMap S) y₀ x₀ :=
   (lipBound_eq_regBound_invMap (S := invMap S) h₀).symm
 
+/-- Thm. 3.2(ii) of [Mordukhovich 2018] for `S⁻¹`: for `(x₀, y₀) ∈ gph S`, `S` is metrically
+regular around `(x₀, y₀)` iff `S⁻¹` is Lipschitz-like around `(y₀, x₀)`. -/
 theorem metricallyRegularAt_iff_lipschitzLikeAt_invMap (h₀ : y₀ ∈ S x₀) :
     MetricallyRegularAt S x₀ y₀ ↔ LipschitzLikeAt (invMap S) y₀ x₀ :=
   (lipschitzLikeAt_iff_metricallyRegularAt_invMap (S := invMap S) h₀).symm

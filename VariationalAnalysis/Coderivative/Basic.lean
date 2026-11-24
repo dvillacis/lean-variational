@@ -55,6 +55,8 @@ def coderiv (S : E → Set F) (x₀ : E) (y₀ : F) (v : StrongDual ℝ F) : Set
 
 variable {S : E → Set F} {x₀ : E} {y₀ : F} {u : StrongDual ℝ E} {v : StrongDual ℝ F}
 
+/-- The regular coderivative is contained in the limiting one:
+`D̂*S(x₀, y₀)(v) ⊆ D*S(x₀, y₀)(v)`. -/
 theorem regularCoderiv_subset_coderiv : regularCoderiv S x₀ y₀ v ⊆ coderiv S x₀ y₀ v :=
   fun _ hu ↦ regularNormalCone_subset_normalCone hu
 

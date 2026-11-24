@@ -59,6 +59,7 @@ def projNormalCone (Ω : Set H) (x₀ : H) : Set H :=
   {v | x₀ ∈ Ω ∧
     v ∈ outerLimit (𝓝 x₀) (fun x ↦ {u | ∃ α : ℝ, 0 ≤ α ∧ ∃ w ∈ euclideanProj Ω x, u = α • (x - w)})}
 
+/-- The Riesz map `toDual ℝ H` commutes with multiplication by real scalars. -/
 theorem toDual_smul (t : ℝ) (y : H) [CompleteSpace H] : toDual ℝ H (t • y) = t • toDual ℝ H y := by
   simp
 
@@ -109,6 +110,7 @@ theorem sq_norm_proj_sub_le (hx : x ∈ Ω) {v : H} {l : ℝ}
   simp only [conj_trivial] at h2
   linarith
 
+/-- If `x ∈ Ω`, `λ ≥ 0` and `w ∈ Π(x + λ v; Ω)`, then `‖w - x‖ ≤ 2 λ ‖v‖`. -/
 theorem norm_proj_sub_le_of_smul (hx : x ∈ Ω) {v : H} {l : ℝ} (hl : 0 ≤ l)
     (hw : w ∈ euclideanProj Ω (x + l • v)) : ‖w - x‖ ≤ 2 * l * ‖v‖ := by
   have h := sq_norm_proj_sub_le hx hw

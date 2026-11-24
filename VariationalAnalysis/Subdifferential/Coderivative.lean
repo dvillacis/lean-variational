@@ -35,6 +35,7 @@ section RealValued
 variable {f : E → ℝ}
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] in
+/-- The graph of a real-valued function is contained in its epigraph. -/
 theorem graph_subset_epi :
     graph (fun x ↦ ({f x} : Set ℝ)) ⊆ (fun x ↦ (f x : EReal)).Epi univ := by
   rintro ⟨x, y⟩ h
@@ -42,6 +43,8 @@ theorem graph_subset_epi :
   exact ⟨mem_univ _, by rw [this]⟩
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] in
+/-- `(x, α)` belongs to the graph of a real-valued `f`, as a single-valued mapping, if and only
+if `α = f x`. -/
 theorem mem_graph_fun_iff {p : E × ℝ} : p ∈ graph (fun x ↦ ({f x} : Set ℝ)) ↔ p.2 = f p.1 :=
   Iff.rfl
 
