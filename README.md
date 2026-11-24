@@ -16,7 +16,8 @@ conditions, SCD mappings and second-order theory. It follows the monographs of M
 - **Documented.** Every definition and theorem has a docstring; see the
   [API documentation](https://david.villacis.net/lean-variational/docs/VariationalAnalysis.html).
 - **Traceable.** [`ROADMAP.md`](ROADMAP.md) lists the statements of the sources one by one, with
-  their Lean names or status, and records where a statement had to be corrected.
+  their Lean names or status, and [`ERRATA.md`](ERRATA.md) collects the places where a statement
+  or a proof had to be corrected.
 
 It builds on [`ConvexAnalysis`](https://github.com/dvillacis/lean-convex) (convex analysis,
 subgradients and the port of OptLib).
@@ -66,7 +67,7 @@ Add the library to the `lakefile.toml` of a project that uses the same Lean tool
 [[require]]
 name = "variationalanalysis"
 git = "https://github.com/dvillacis/lean-variational"
-rev = "v0.1.0"
+rev = "v0.2.0"
 ```
 
 and run
@@ -78,7 +79,7 @@ lake build
 ```
 
 At a tagged `rev`, Lake downloads the compiled library from the GitHub release instead of
-compiling it (Linux x86_64 and, from the next release on, macOS arm64; on other platforms it is
+compiling it (Linux x86_64 and macOS arm64; on other platforms it is
 compiled locally). Mathlib and `ConvexAnalysis` come as transitive dependencies.
 
 ## Contents
@@ -237,8 +238,36 @@ Every pull request is checked by CI (`.github/workflows/ci.yml`), which runs
 
 Mathlib's standard set of style linters is enabled in `lakefile.toml`.
 
-A release is made by pushing a tag `vX.Y.Z`; `.github/workflows/release.yml` then builds the
-library and attaches it to the GitHub release.
+## Versions and compatibility
+
+- **Lean and Mathlib.** Each release is built against one Lean toolchain and one Mathlib version,
+  listed in [`CHANGELOG.md`](CHANGELOG.md). A project that depends on this library must use the
+  same toolchain, and gets Mathlib and `ConvexAnalysis` at the pinned versions.
+- **Version numbers.** While the version is `0.y.z`, a new `y` may rename declarations or change
+  statements, and the changelog marks these changes as breaking. A new `z` only adds
+  declarations or fixes documentation.
+- **Updating Mathlib.** `ConvexAnalysis` is updated and tagged first; then this library moves
+  to the same Mathlib version and to the new `ConvexAnalysis` tag in one change, released as a
+  new `y`.
+
+To make a release: update `version` in `lakefile.toml`, `version` and `date-released` in
+`CITATION.cff`, and `CHANGELOG.md`; merge; then push a tag `vX.Y.Z`.
+`.github/workflows/release.yml` creates the GitHub release and attaches the compiled library.
+
+## Citing
+
+Use "Cite this repository" on GitHub, which reads [`CITATION.cff`](CITATION.cff), or:
+
+```bibtex
+@software{villacis_variationalanalysis,
+  author  = {Villac{\'i}s, David},
+  title   = {{VariationalAnalysis}: variational analysis and generalized differentiation in
+             {L}ean 4},
+  year    = {2026},
+  version = {0.2.0},
+  url     = {https://github.com/dvillacis/lean-variational}
+}
+```
 
 ## References
 
