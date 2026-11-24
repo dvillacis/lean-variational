@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Topology.Semicontinuity.Basic
 import VariationalAnalysis.Coderivative.Basic
@@ -176,7 +176,7 @@ theorem singularSubdiff_subset_coderiv_zero (hcont : ∀ᶠ x in 𝓝 x₀, Cont
   obtain ⟨-, p, ℓ, hp, hℓ, hmem⟩ := hv
   have hp' := tendsto_nhdsWithin_iff.1 hp
   have hgr : ((x₀, f x₀) : E × ℝ) ∈ graph fun x ↦ ({f x} : Set ℝ) := mem_singleton _
-  show v.coprod (-(0 : StrongDual ℝ ℝ)) ∈
+  change v.coprod (-(0 : StrongDual ℝ ℝ)) ∈
     normalCone (graph fun x ↦ ({f x} : Set ℝ)) (x₀, f x₀)
   rw [neg_zero]
   by_cases hfr : ∃ᶠ k in atTop, (p k).2 = f (p k).1

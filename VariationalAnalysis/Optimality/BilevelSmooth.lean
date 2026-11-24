@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Calculus.ContDiff.RCLike
 import VariationalAnalysis.Optimality.Bilevel
@@ -246,7 +246,8 @@ theorem regularSubdiff_subset_of_eventually_le (hr₁ : φ₁ x₀ = r₁) (hr�
       linarith
 
 /-- Lemma 6.22 of [Mordukhovich 2018], first inclusion in (6.62): if `φ₂` is finite at `x̄`
-(the book also assumes `φ₁` finite at `x̄`), then `u + v ∈ ∂̂φ₁(x̄)` for all `u ∈ ∂̂(φ₁ - φ₂)(x̄)` and `v ∈ ∂̂φ₂(x̄)`. -/
+(the book also assumes `φ₁` finite at `x̄`), then `u + v ∈ ∂̂φ₁(x̄)` for all
+`u ∈ ∂̂(φ₁ - φ₂)(x̄)` and `v ∈ ∂̂φ₂(x̄)`. -/
 theorem add_mem_regularSubdiff_of_mem_regularSubdiff_sub (hr₂ : φ₂ x₀ = r₂)
     {u v : StrongDual ℝ E} (hu : u ∈ regularSubdiff (fun x ↦ φ₁ x - φ₂ x) x₀)
     (hv : v ∈ regularSubdiff φ₂ x₀) : u + v ∈ regularSubdiff φ₁ x₀ := by
@@ -320,10 +321,11 @@ theorem normalCone_graph_lowerFeasible_subset (hg : ∀ i, ContDiffAt ℝ 1 (g i
   have := congrArg (fun T : StrongDual ℝ (E × F) ↦ T (0, y)) hsum
   simpa using this
 
-omit [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] in
-theorem locallyClosed_graph_lowerFeasible (hg : ∀ i, ContDiffAt ℝ 1 (g i) (x₀, y₀)) :
-    ∃ ρ > 0, IsClosed (graph (lowerFeasible g) ∩ closedBall (x₀, y₀) ρ) :=
-  locallyClosed_le_zero fun i ↦ exists_continuousOn_of_contDiffAt (hg i)
+omit [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [Fintype ι] in
+theorem locallyClosed_graph_lowerFeasible [Finite ι] (hg : ∀ i, ContDiffAt ℝ 1 (g i) (x₀, y₀)) :
+    ∃ ρ > 0, IsClosed (graph (lowerFeasible g) ∩ closedBall (x₀, y₀) ρ) := by
+  have := Fintype.ofFinite ι
+  exact locallyClosed_le_zero fun i ↦ exists_continuousOn_of_contDiffAt (hg i)
 
 omit [NormedSpace ℝ E] [NormedSpace ℝ F] [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] in
 /-- The set of vectors `B₀ + ∑ λᵢ Bᵢ` with multipliers `λᵢ ≥ 0`, `λᵢ cᵢ = 0` and
@@ -588,7 +590,7 @@ theorem exists_multipliers_smooth_bilevel_upper (hy₀ : y₀ ∈ lowerSolution 
     filter_upwards [hpen, nhdsWithin_le_nhds hUp] with p hp hpU
     rw [penalizedObjective_of_mem_valueFeasible hp₀F, penalizedObjective_of_eq (hμeq p.1 hpU),
       EReal.coe_le_coe_iff] at hp
-    show f p₀ + κ * φ p₀ - κ * μ' p₀.1 ≤ f p + κ * φ p - κ * μ' p.1
+    change f p₀ + κ * φ p₀ - κ * μ' p₀.1 ≤ f p + κ * φ p - κ * μ' p.1
     rw [show p₀.1 = x₀ from rfl, hμ₀]
     linarith
   -- common Lipschitz data

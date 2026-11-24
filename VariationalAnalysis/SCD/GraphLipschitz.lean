@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Topology.MetricSpace.Sequences
 import VariationalAnalysis.SCD.Calculus
@@ -487,7 +487,8 @@ omit [FiniteDimensional ℝ E] in
 theorem map_symm_addSwapEquiv_graph (M B : E →L[ℝ] E) :
     (B : E →ₗ[ℝ] E).graph.map
         (((addSwapEquiv M).symm : (E × E) →L[ℝ] (E × E)) : (E × E) →ₗ[ℝ] (E × E)) =
-      LinearMap.range ((B : E →ₗ[ℝ] E).prod (LinearMap.id - (M : E →ₗ[ℝ] E) ∘ₗ (B : E →ₗ[ℝ] E))) := by
+      LinearMap.range
+        ((B : E →ₗ[ℝ] E).prod (LinearMap.id - (M : E →ₗ[ℝ] E) ∘ₗ (B : E →ₗ[ℝ] E))) := by
   rw [LinearMap.graph_eq_range_prod, ← LinearMap.range_comp]
   congr 1
   refine LinearMap.ext fun w ↦ ?_
@@ -496,11 +497,14 @@ theorem map_symm_addSwapEquiv_graph (M B : E →L[ℝ] E) :
 /-- `rge(B, I - M B)* = rge(Bᵀ, I - Mᵀ Bᵀ)` [Gfrerer–Outrata 2022, (25b)]. -/
 theorem adjointSubspace_range_prod (M B : E →L[ℝ] E) :
     adjointSubspace
-        (LinearMap.range ((B : E →ₗ[ℝ] E).prod (LinearMap.id - (M : E →ₗ[ℝ] E) ∘ₗ (B : E →ₗ[ℝ] E)))) =
+        (LinearMap.range
+          ((B : E →ₗ[ℝ] E).prod (LinearMap.id - (M : E →ₗ[ℝ] E) ∘ₗ (B : E →ₗ[ℝ] E)))) =
       LinearMap.range ((ContinuousLinearMap.adjoint B : E →ₗ[ℝ] E).prod (LinearMap.id -
-        (ContinuousLinearMap.adjoint M : E →ₗ[ℝ] E) ∘ₗ (ContinuousLinearMap.adjoint B : E →ₗ[ℝ] E))) := by
+        (ContinuousLinearMap.adjoint M : E →ₗ[ℝ] E) ∘ₗ
+          (ContinuousLinearMap.adjoint B : E →ₗ[ℝ] E))) := by
   have hinj : ∀ C N : E →L[ℝ] E,
-      Function.Injective ((C : E →ₗ[ℝ] E).prod (LinearMap.id - (N : E →ₗ[ℝ] E) ∘ₗ (C : E →ₗ[ℝ] E))) := by
+      Function.Injective
+        ((C : E →ₗ[ℝ] E).prod (LinearMap.id - (N : E →ₗ[ℝ] E) ∘ₗ (C : E →ₗ[ℝ] E))) := by
     intro C N z z' hzz'
     have h1 : C z = C z' := by simpa using congrArg Prod.fst hzz'
     have h2 : z - N (C z) = z' - N (C z') := by simpa using congrArg Prod.snd hzz'
@@ -511,7 +515,7 @@ theorem adjointSubspace_range_prod (M B : E →L[ℝ] E) :
   · rintro _ ⟨z, rfl⟩
     rw [mem_adjointSubspace_iff]
     rintro _ ⟨w, rfl⟩
-    show ⟪z - ContinuousLinearMap.adjoint M (ContinuousLinearMap.adjoint B z), B w⟫_ℝ =
+    change ⟪z - ContinuousLinearMap.adjoint M (ContinuousLinearMap.adjoint B z), B w⟫_ℝ =
       ⟪ContinuousLinearMap.adjoint B z, w - M (B w)⟫_ℝ
     rw [inner_sub_left, inner_sub_right, ContinuousLinearMap.adjoint_inner_left,
       ContinuousLinearMap.adjoint_inner_left, ContinuousLinearMap.adjoint_inner_left]
@@ -553,7 +557,7 @@ theorem isGraphLipschitzTransform_of_add (hp : y₀ ∈ F x₀) (hV : IsOpen V) 
     ⟨hW, hU', fun q hq ↦ hasStrictFDerivAt_addSwap (hh q.1 hq.1.1.2),
     continuous_addSwapEquiv.comp_continuousOn (hDh.comp continuousOn_fst fun q hq ↦ hq.1.1.2),
     fun q _ ↦ ⟨_, rfl⟩, ?_, hg.mono fun y hy ↦ interior_subset hy.1, ?_⟩⟩
-  · show g (y₀ + h x₀) ∈ X'
+  · change g (y₀ + h x₀) ∈ X'
     rw [hgy₀]
     exact ⟨mem_interior_iff_mem_nhds.2 hX, hxV⟩
   · intro z _ z' _ hzz'
@@ -576,9 +580,9 @@ theorem isGraphLipschitzTransform_of_add (hp : y₀ ∈ F x₀) (hV : IsOpen V) 
       obtain ⟨y, hy, hyu⟩ := hgu.1
       replace hyu : y + h (g u) = u := hyu
       refine ⟨(g u, y), ⟨hy, ⟨hu.2, trivial⟩, ?_⟩, ?_⟩
-      · show y + h (g u) ∈ U' ∧ g u ∈ univ
+      · change y + h (g u) ∈ U' ∧ g u ∈ univ
         rw [hyu]; exact ⟨hu, trivial⟩
-      · show (y + h (g u), g u) = (u, v)
+      · change (y + h (g u), g u) = (u, v)
         rw [hyu, hv']
 
 /-- Cor. 3.19, (25a), of [Gfrerer–Outrata 2022]: under the assumptions of

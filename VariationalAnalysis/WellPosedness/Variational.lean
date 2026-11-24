@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Normed.Ring.Units
 import VariationalAnalysis.Coderivative.Variational
@@ -210,7 +210,7 @@ theorem locallyClosed_graph_subdiff_comp [FiniteDimensional ℝ F] [FiniteDimens
     have h1 := Ring.mul_inverse_cancel (M y) hy.2.2.2
     rw [mul_def] at h1
     have h2 : (Dg y).comp (R.comp (Ring.inverse (M y))) = 1 := by rw [← comp_assoc]; exact h1
-    show (v.comp (Dg y)).comp (R.comp (Ring.inverse (M y))) = v
+    change (v.comp (Dg y)).comp (R.comp (Ring.inverse (M y))) = v
     rw [comp_assoc, h2, one_def, comp_id]
   have hsurj : ∀ y ∈ N, Function.Surjective (Dg y) := by
     intro y hy w
@@ -221,7 +221,7 @@ theorem locallyClosed_graph_subdiff_comp [FiniteDimensional ℝ F] [FiniteDimens
       (p ∈ graph (fun y ↦ subdiff (fun y ↦ ψ (g y)) y) ↔
         Φ p ∈ subdiff ψ (g p.1) ∧ p.2 = (Φ p).comp (Dg p.1)) := by
     rintro ⟨y, q⟩ hy
-    show q ∈ subdiff (fun y ↦ ψ (g y)) y ↔ _
+    change q ∈ subdiff (fun y ↦ ψ (g y)) y ↔ _
     rw [subdiff_comp_of_surjective hy.1 hy.2.1 (hsurj y hy)]
     constructor
     · rintro ⟨v, hv, hvq⟩

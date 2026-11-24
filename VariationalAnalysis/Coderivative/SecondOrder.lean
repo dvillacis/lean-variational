@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
@@ -99,7 +99,7 @@ theorem coderiv_congr {S T : E → Set F} {x₀ : E} (h : ∀ᶠ x in 𝓝 x₀,
     (v : StrongDual ℝ F) : coderiv S x₀ y₀ v = coderiv T x₀ y₀ v := by
   have hg : graph S =ᶠ[𝓝 (x₀, y₀)] graph T := by
     filter_upwards [(continuous_fst.tendsto (x₀, y₀)).eventually h] with p hp
-    show (p.2 ∈ S p.1) = (p.2 ∈ T p.1)
+    change (p.2 ∈ S p.1) = (p.2 ∈ T p.1)
     rw [hp]
   simp only [coderiv, normalCone_congr hg]
 

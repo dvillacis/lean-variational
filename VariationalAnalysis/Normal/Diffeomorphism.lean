@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
@@ -115,7 +115,7 @@ theorem comp_mem_regularNormalCone_preimage_iff {Θ : E → F} {x : E} {D : E �
     have hTS : ∀ᶠ y in 𝓝[Ω] (Θ x), g y ∈ Θ ⁻¹' Ω := by
       filter_upwards [nhdsWithin_le_nhds hΘ.eventually_right_inverse, self_mem_nhdsWithin]
         with y hy hyΩ
-      show Θ (g y) ∈ Ω
+      change Θ (g y) ∈ Ω
       rw [hy]; exact hyΩ
     have h' : v.comp (D : E →L[ℝ] F) ∈ regularNormalCone (Θ ⁻¹' Ω) (g (Θ x)) := by
       rwa [hgx]
@@ -217,7 +217,7 @@ theorem comp_mem_normalCone_preimage_iff {Θ : E → F} {x₀ : E} {D : E → E 
       have := hgc.tendsto.comp hy'.1; rwa [hgx] at this
     have hinv : ∀ᶠ k in atTop, Θ (g (y k)) = y k := hy'.1.eventually hΘ0.eventually_right_inverse
     have hmemΩ : ∀ᶠ k in atTop, g (y k) ∈ Θ ⁻¹' Ω :=
-      hinv.mono fun k hk ↦ by show Θ (g (y k)) ∈ Ω; rw [hk]; exact (hmem k).1
+      hinv.mono fun k hk ↦ by change Θ (g (y k)) ∈ Ω; rw [hk]; exact (hmem k).1
     refine ⟨show Θ x₀ ∈ Ω from hx, mem_outerLimit_of_eventually (fun k ↦ g (y k))
       (fun k ↦ (ℓ k).comp (D (g (y k)))) (tendsto_nhdsWithin_iff.2 ⟨ha, hmemΩ⟩) ?_ ?_⟩
     · have := tendsto_dual_comp hℓ (hDc.tendsto.comp ha)

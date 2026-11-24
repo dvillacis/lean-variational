@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import VariationalAnalysis.Principle.Variational
 import VariationalAnalysis.Subdifferential.Bridge
@@ -151,7 +151,7 @@ theorem exists_mem_coderiv_of_tendsto (h₀ : y₀ ∈ S x₀) {p : ℕ → E ×
     (continuous_snd.tendsto _).comp hlim
   refine ⟨q.2, by simpa using hq.2, q.1, ?_, le_of_tendsto_of_tendsto' h1.norm (hc.comp hφ')
     fun k ↦ hu (φ k)⟩
-  show q.1.coprod (-q.2) ∈ normalCone (graph S) (x₀, y₀)
+  change q.1.coprod (-q.2) ∈ normalCone (graph S) (x₀, y₀)
   rw [normalCone_eq_outerLimit_normalCone (show (x₀, y₀) ∈ graph S from h₀)]
   exact ⟨fun k ↦ p (φ k), fun k ↦ (u (φ k)).coprod (-v (φ k)),
     tendsto_nhdsWithin_iff.2 ⟨hp.comp hφ', Eventually.of_forall fun k ↦ hpS _⟩,
@@ -175,7 +175,8 @@ theorem posHomLowerNorm_coderiv_pos (h₀ : y₀ ∈ S x₀) (hker : coderivKer 
   have key : ∀ k : ℕ, ∃ v : StrongDual ℝ F, ‖v‖ = 1 ∧ ∃ u ∈ coderiv S x₀ y₀ v,
       ‖u‖ ≤ 1 / ((k : ℝ) + 1) := fun k ↦ by
     obtain ⟨v, hv, u, hu, hlt⟩ := exists_of_posHomLowerNorm_lt (H := coderiv S x₀ y₀)
-      (c := ENNReal.ofReal (1 / ((k : ℝ) + 1))) (by rw [hle]; simp; positivity)
+      (c := ENNReal.ofReal (1 / ((k : ℝ) + 1)))
+      (by rw [hle]; simp only [one_div, ENNReal.ofReal_pos, inv_pos]; positivity)
     refine ⟨v, hv, u, hu, ?_⟩
     rw [← ENNReal.ofReal_coe_nnreal, coe_nnnorm] at hlt
     exact (ENNReal.ofReal_lt_ofReal_iff (by positivity)).1 hlt |>.le
@@ -376,7 +377,7 @@ theorem metricallyRegularWith_of_forall_mul_norm_le
       rw [hφz, hcoef] at h1
       simp only [hφ_def, convex_indicator_of_mem hqΩ] at h1
       rw [← EReal.coe_add, ← EReal.coe_add, EReal.coe_le_coe_iff] at h1
-      show (graph S).convex_indicator z + ((f z : ℝ) : EReal) ≤
+      change (graph S).convex_indicator z + ((f z : ℝ) : EReal) ≤
         (graph S).convex_indicator q + ((f q : ℝ) : EReal)
       rw [convex_indicator_of_mem hzΩ.1, convex_indicator_of_mem hqS, ← EReal.coe_add,
         ← EReal.coe_add, EReal.coe_le_coe_iff, hfz]
@@ -428,7 +429,7 @@ theorem metricallyRegularWith_of_forall_mul_norm_le
   set a := w'.comp (ContinuousLinearMap.inl ℝ E F) with ha_def
   set b := w'.comp (ContinuousLinearMap.inr ℝ E F) with hb_def
   have hcod : -a ∈ coderiv S z.1 z.2 b := by
-    show (-a).coprod (-b) ∈ normalCone (graph S) (z.1, z.2)
+    change (-a).coprod (-b) ∈ normalCone (graph S) (z.1, z.2)
     have : (-a).coprod (-b) = n := by
       rw [eq_neg_of_add_eq_zero_left hsum]
       ext <;> simp [ha_def, hb_def]

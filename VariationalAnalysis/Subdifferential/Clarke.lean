@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Convex.Continuous
 import VariationalAnalysis.Subdifferential.NegConvexHull
@@ -99,8 +99,8 @@ section Normed
 theorem convex_setOf_coe_apply_le (v : E) (c : EReal) :
     Convex ℝ {ξ : StrongDual ℝ E | (ξ v : EReal) ≤ c} := by
   induction c with
-  | bot => simp; exact convex_empty
-  | top => simp; exact convex_univ
+  | bot => simp only [le_bot_iff, EReal.coe_ne_bot, ofPred_false]; exact convex_empty
+  | top => simp only [le_top, ofPred_true]; exact convex_univ
   | coe c =>
     intro a ha b hb s t hs ht hst
     simp only [mem_ofPred_eq, EReal.coe_le_coe_iff, add_apply, smul_apply, smul_eq_mul] at ha hb ⊢
@@ -219,7 +219,7 @@ theorem clarkeDeriv_neg (v : E) : clarkeDeriv (fun x ↦ -f x) x₀ v = clarkeDe
 theorem clarkeSubdiff_neg : clarkeSubdiff (fun x ↦ -f x) x₀ = -clarkeSubdiff f x₀ := by
   ext ξ
   rw [Set.mem_neg]
-  show (∀ v, (ξ v : EReal) ≤ clarkeDeriv (fun x ↦ -f x) x₀ v) ↔
+  change (∀ v, (ξ v : EReal) ≤ clarkeDeriv (fun x ↦ -f x) x₀ v) ↔
     ∀ v, ((-ξ) v : EReal) ≤ clarkeDeriv f x₀ v
   simp only [clarkeDeriv_neg, neg_apply]
   refine ⟨fun h v ↦ ?_, fun h v ↦ ?_⟩

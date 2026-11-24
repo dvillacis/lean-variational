@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Calculus.MeanValue
 import VariationalAnalysis.Subdifferential.Marginal
@@ -217,7 +217,7 @@ theorem generalComp_qc_of_comp {ψ : F → EReal} (hU : U ∈ 𝓝 x₀) (hg : L
   rw [singularSubdiff_comp_snd] at hw
   obtain ⟨v, hv, rfl⟩ := hw
   have h0 : (0 : StrongDual ℝ E) ∈ coderiv (fun x ↦ ({g x} : Set F)) x₀ (g x₀) v := by
-    show _ ∈ normalCone _ _
+    change _ ∈ normalCone _ _
     convert hN using 1
     ext <;> simp
   rw [← subdiff_comp_eq_coderiv hU hg] at h0
@@ -374,7 +374,7 @@ theorem comp_epiEmbed_mem_normalCone (hU : U ∈ 𝓝 x₀) (hg : LipschitzOnWit
     exact EReal.coe_ne_top _ (top_le_iff.1 h)
   set p : ℕ → E × ℝ := fun k ↦ ((q k).1.1, (q k).2) with hpdef
   have hqk : ∀ k, q k = (((p k).1, g (p k).1), (p k).2) := fun k ↦ by
-    show q k = (((q k).1.1, g (q k).1.1), (q k).2)
+    change q k = (((q k).1.1, g (q k).1.1), (q k).2)
     rw [← hgraph k]
   have hpt : Tendsto p atTop (𝓝 (x₀, r)) :=
     (((continuous_fst.comp continuous_fst).prodMk continuous_snd).tendsto _).comp hq'
@@ -505,7 +505,7 @@ theorem normallyRegularAt_graph_of_hasFDerivAt {g' : E → E →L[ℝ] F}
   have hℓeq : ℓ = u.coprod (-v) := by
     simp only [u, v, neg_neg, ContinuousLinearMap.coprod_comp_inl_inr]
   have hu : u ∈ coderiv (fun x ↦ ({g x} : Set F)) x₀ (g x₀) v := by
-    show u.coprod (-v) ∈ normalCone _ _
+    change u.coprod (-v) ∈ normalCone _ _
     rwa [← hℓeq]
   rw [coderiv_of_hasFDerivAt_of_continuousAt hgd hgc] at hu
   have hu' : u ∈ regularCoderiv (fun x ↦ ({g x} : Set F)) x₀ (g x₀) v := by

@@ -149,7 +149,8 @@ theorem norm_le_of_proxObjective_le {r : ℝ} (hl : 0 < l) (hlr : l * r < 1) (h�
   rw [mul_add, mul_add, ← mul_assoc, ← mul_assoc, h2lk, one_mul, one_mul,
     norm_sub_sq_real] at hmul
   have hin := real_inner_le_norm x u
-  have hmr : 2 * l * (-(r / 2) * ‖x‖ ^ 2) ≤ 2 * l * s := mul_le_mul_of_nonneg_left hsr (by positivity)
+  have hmr : 2 * l * (-(r / 2) * ‖x‖ ^ 2) ≤ 2 * l * s :=
+    mul_le_mul_of_nonneg_left hsr (by positivity)
   set μ := (1 - l * r)⁻¹ with hμ
   have hμpos : 0 < μ := inv_pos.2 (by linarith)
   have hμ1 : μ * (1 - l * r) = 1 := inv_mul_cancel₀ (by linarith)
@@ -564,7 +565,8 @@ theorem ProxRegularFor.exists_moreauEnvelope {g : E} (hφ : ProxRegularFor φ x�
     rw [hs, EReal.toReal_coe]
   set k := (2 * l)⁻¹ with hk
   have hkpos : 0 < k := by positivity
-  have henv : ∀ u ∈ U, moreauEnvelope φ l u = (((φ (p u)).toReal + k * ‖p u - u‖ ^ 2 : ℝ) : EReal) :=
+  have henv : ∀ u ∈ U,
+      moreauEnvelope φ l u = (((φ (p u)).toReal + k * ‖p u - u‖ ^ 2 : ℝ) : EReal) :=
     fun u hu ↦ by
       rw [moreauEnvelope_eq_of_mem_proximalMap (hpmem u hu), proxObjective, EReal.coe_add,
         ← hfin u hu]
@@ -627,7 +629,8 @@ theorem ProxRegularFor.exists_moreauEnvelope {g : E} (hφ : ProxRegularFor φ x�
 /-- [Mordukhovich 2024, Cor. 1.72]: if `φ` is continuously prox-regular at `x̄` for
 `v̄ = ⟨g, ·⟩`, then the subgradient mapping `∂φ` is graphically Lipschitzian of dimension
 `n = dim E` around `(x̄, v̄)`. The transformation is `(x, v) ↦ (x + λv, v)` and the Lipschitz
-mapping is `λ⁻¹(I - P_λφ̃)`, where `φ̃` is `φ` plus the indicator function of a small closed ball. -/
+mapping is `λ⁻¹(I - P_λφ̃)`, where `φ̃` is `φ` plus the indicator function of a small closed
+ball. -/
 theorem ContinuouslyProxRegularFor.graphicallyLipschitzianAt {g : E}
     (hφ : ContinuouslyProxRegularFor φ x₀ (toDual ℝ E g)) :
     GraphicallyLipschitzianAt (subdiffMap φ) (x₀, g) := by
@@ -768,7 +771,7 @@ theorem ContinuouslyProxRegularFor.graphicallyLipschitzianAt {g : E}
           s, by rw [hψball x hxρ, hs], ?_⟩
         rwa [hψball x₀ (mem_ball_self hρ), hr₀, EReal.toReal_coe]
       refine ⟨?_, hx3', mem_univ _⟩
-      show y' ∈ ({f (x + l • y')} : Set E)
+      change y' ∈ ({f (x + l • y')} : Set E)
       rw [mem_singleton_iff, hf]
       dsimp only
       rw [← hxe, add_sub_cancel_left, smul_smul, inv_mul_cancel₀ hl.ne', one_smul]
@@ -792,15 +795,15 @@ theorem ContinuouslyProxRegularFor.graphicallyLipschitzianAt {g : E}
       refine ⟨(p u, f u), ⟨mem_subdiffMap_iff.2 ?_, ?_, ?_, ?_⟩, ?_⟩
       · have := (hloc u huδ).1
         rwa [hψS (p u) hpuρ] at this
-      · show dist (p u) x₀ < τ
+      · change dist (p u) x₀ < τ
         rwa [dist_eq_norm]
-      · show dist (f u) g < τ
+      · change dist (f u) g < τ
         rw [dist_eq_norm, hfu, add_sub_cancel_right, norm_smul,
           Real.norm_of_nonneg (inv_nonneg.2 hl.le), inv_mul_lt_iff₀ hl]
         calc ‖(u - (x₀ + l • g)) - (p u - x₀)‖ ≤ ‖u - (x₀ + l • g)‖ + ‖p u - x₀‖ :=
               norm_sub_le _ _
           _ < l * τ := by linarith
-      · show dist (p u + l • f u) (x₀ + l • g) < δ'
+      · change dist (p u + l • f u) (x₀ + l • g) < δ'
         rw [hpf, dist_eq_norm]; exact hu'
       · rw [hA]; dsimp only; rw [hpf]
 

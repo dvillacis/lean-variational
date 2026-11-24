@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import ConvexAnalysis.Extended.AffineMinorantExistence
 import ConvexAnalysis.Extended.Epigraph
@@ -148,7 +148,7 @@ theorem globallyMaximalMonotone_subdiff_of_convex (hconv : Convex ℝ (φ.Epi un
   set r := (φ ys).toReal
   have hr : φ ys = r := (EReal.coe_toReal hφys (hbot ys)).symm
   have hψr : ψ ys = ((r + h ys : ℝ) : EReal) := by
-    show φ ys + ((h ys : ℝ) : EReal) = _
+    change φ ys + ((h ys : ℝ) : EReal) = _
     rw [hr, ← EReal.coe_add]
   -- the Fermat rule
   have h0 := zero_mem_regularSubdiff_of_isLocalMin

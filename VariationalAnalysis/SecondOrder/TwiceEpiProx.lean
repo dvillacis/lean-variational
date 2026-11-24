@@ -477,7 +477,7 @@ theorem ProxRegularFor.exists_proxObjective_growth {g : E}
   rw [toDual_apply_apply, real_inner_smul_left] at key
   have key' := add_le_add key (le_refl (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal))
   rw [← EReal.coe_add] at key'
-  show φ (p u) + (((2 * l)⁻¹ * ‖p u - u‖ ^ 2 : ℝ) : EReal) +
+  change φ (p u) + (((2 * l)⁻¹ * ‖p u - u‖ ^ 2 : ℝ) : EReal) +
     ((((2 * l)⁻¹ - η / 2) * ‖x - p u‖ ^ 2 : ℝ) : EReal) ≤
     φ x + (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal)
   rw [hs, ← EReal.coe_add, ← EReal.coe_add]

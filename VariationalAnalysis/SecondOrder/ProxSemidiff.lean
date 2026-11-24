@@ -97,7 +97,7 @@ theorem isSemiderivative_singleton_of_tendsto {S : X → Set Y} {f : X → Y} {x
       (fun q : ℝ × X ↦ (fun y ↦ q.1⁻¹ • (y - f x)) '' S (x + q.1 • q.2)) := by
     rintro y rfl a ha
     exact ⟨_, hlim a ha, (eventually_image_eq_singleton hS ha).mono fun k hk ↦ by
-      show _ ∈ (fun y ↦ (a k).1⁻¹ • (y - f x)) '' S (x + (a k).1 • (a k).2)
+      change _ ∈ (fun y ↦ (a k).1⁻¹ • (y - f x)) '' S (x + (a k).1 • (a k).2)
       rw [hk]; exact mem_singleton _⟩
   have houter : outerLimit (𝓝[>] (0 : ℝ) ×ˢ 𝓝 w₀)
       (fun q : ℝ × X ↦ (fun y ↦ q.1⁻¹ • (y - f x)) '' S (x + q.1 • q.2)) ⊆ {d} := by
@@ -204,7 +204,7 @@ theorem ContinuouslyProxRegularFor.exists_twiceEpiDifferentiableAt_iff_proximalM
       graph fun u ↦ ({p u} : Set E) := by
     refine eventuallyEq_set.2 ?_
     filter_upwards [(continuous_fst.tendsto (x₀ + l • g, x₀)).eventually hball] with q hq
-    show q.2 ∈ proximalMap φ l q.1 ↔ q.2 ∈ ({p q.1} : Set E)
+    change q.2 ∈ proximalMap φ l q.1 ↔ q.2 ∈ ({p q.1} : Set E)
     rw [hpU _ hq]
   -- twice epi-differentiability is geometric derivability of the graph of `p`
   have h1 : TwiceEpiDifferentiableAt φ x₀ (toDual ℝ E g) ↔

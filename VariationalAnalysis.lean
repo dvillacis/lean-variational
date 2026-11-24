@@ -1,4 +1,3 @@
--- Root of the VariationalAnalysis library (see README.md, ROADMAP.md)
 import VariationalAnalysis.Analysis.ConvexMajorant
 import VariationalAnalysis.Analysis.Farkas
 import VariationalAnalysis.Analysis.Motzkin
@@ -20,11 +19,10 @@ import VariationalAnalysis.Normal.Product
 import VariationalAnalysis.Normal.Projection
 import VariationalAnalysis.Normal.Regular
 import VariationalAnalysis.Normal.Transport
-import VariationalAnalysis.Subdifferential.NegConvexHull
-import VariationalAnalysis.Optimality.GeometricConstraints
-import VariationalAnalysis.Optimality.Programming
 import VariationalAnalysis.Optimality.Bilevel
 import VariationalAnalysis.Optimality.BilevelSmooth
+import VariationalAnalysis.Optimality.GeometricConstraints
+import VariationalAnalysis.Optimality.Programming
 import VariationalAnalysis.Principle.AlmostStationary
 import VariationalAnalysis.Principle.Variational
 import VariationalAnalysis.SCD.Adjoint
@@ -34,8 +32,8 @@ import VariationalAnalysis.SCD.Derivable
 import VariationalAnalysis.SCD.GraphLipschitz
 import VariationalAnalysis.SCD.Grassmannian
 import VariationalAnalysis.SCD.LocalMonotone
-import VariationalAnalysis.SCD.Monotone
 import VariationalAnalysis.SCD.Minty
+import VariationalAnalysis.SCD.Monotone
 import VariationalAnalysis.SCD.Product
 import VariationalAnalysis.SCD.ProxRegular
 import VariationalAnalysis.SCD.Regularity
@@ -55,9 +53,9 @@ import VariationalAnalysis.SecondOrder.GraphicalDerivative
 import VariationalAnalysis.SecondOrder.Moreau
 import VariationalAnalysis.SecondOrder.PLQ
 import VariationalAnalysis.SecondOrder.ProtoDiff
+import VariationalAnalysis.SecondOrder.ProtoTwiceEpi
 import VariationalAnalysis.SecondOrder.ProxRegular
 import VariationalAnalysis.SecondOrder.ProxSemidiff
-import VariationalAnalysis.SecondOrder.ProtoTwiceEpi
 import VariationalAnalysis.SecondOrder.SecondSubderiv
 import VariationalAnalysis.SecondOrder.TwiceEpiProto
 import VariationalAnalysis.SecondOrder.TwiceEpiProx
@@ -80,6 +78,7 @@ import VariationalAnalysis.Subdifferential.MeanValue
 import VariationalAnalysis.Subdifferential.MeanValueIneq
 import VariationalAnalysis.Subdifferential.MinMax
 import VariationalAnalysis.Subdifferential.MonotoneConvex
+import VariationalAnalysis.Subdifferential.NegConvexHull
 import VariationalAnalysis.Subdifferential.ProductRule
 import VariationalAnalysis.Subdifferential.Regular
 import VariationalAnalysis.Subdifferential.RightSided

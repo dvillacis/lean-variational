@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import VariationalAnalysis.Optimality.GeometricConstraints
 import VariationalAnalysis.Subdifferential.ProductRule
@@ -303,10 +303,11 @@ theorem locallyClosed_epi_add_convex_indicator {f : E → ℝ} {U : Set E} {x₀
   exact locallyClosed_inter (locallyClosed_epi_of_continuousOn hU hf α)
     (locallyClosed_prod hΩ ⟨1, one_pos, isClosed_univ.inter isClosed_closedBall⟩)
 
+omit [Fintype K] in
 theorem tendsto_multipliers {w : ℕ → StrongDual ℝ (E × (K → ℝ))} {ℓ : StrongDual ℝ (E × (K → ℝ))}
     (hw : Tendsto w atTop (𝓝 ℓ)) (k : K) :
     Tendsto (fun n ↦ multipliers (w n) k) atTop (𝓝 (multipliers ℓ k)) :=
-  (((ContinuousLinearMap.apply ℝ ℝ ((0 : E), (Pi.single k 1 : K → ℝ))).continuous.tendsto ℓ).comp
+  (((continuous_eval_const ((0 : E), (Pi.single k 1 : K → ℝ))).tendsto ℓ).comp
     hw).neg
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [DecidableEq K] in
@@ -407,7 +408,8 @@ theorem locallyClosed_constraintGraph {U : Set E} {p : E × (K → ℝ)} (hU : U
     refine ContinuousOn.prodMk (continuousOn_pi.2 fun k ↦ ?_) continuous_snd.continuousOn
     refine ((hc k).mono fun x hx ↦ hsub ?_).comp continuous_fst.continuousOn fun z hz ↦ hz.1.1.2
     exact closedBall_subset_closedBall (min_le_right _ _) hx
-  have hT : IsClosed {w : (K → ℝ) × (K → ℝ) | (∀ k ∉ Q, w.1 k ≤ w.2 k) ∧ ∀ k ∈ Q, w.1 k = w.2 k} := by
+  have hT :
+      IsClosed {w : (K → ℝ) × (K → ℝ) | (∀ k ∉ Q, w.1 k ≤ w.2 k) ∧ ∀ k ∈ Q, w.1 k = w.2 k} := by
     simp only [ofPred_and, ofPred_forall]
     exact (isClosed_iInter fun k ↦ isClosed_iInter fun _ ↦ isClosed_le (by fun_prop)
       (by fun_prop)).inter (isClosed_iInter fun k ↦ isClosed_iInter fun _ ↦ isClosed_eq
@@ -426,6 +428,7 @@ theorem locallyClosed_constraintGraph {U : Set E} {p : E × (K → ℝ)} (hU : U
 
 variable [FiniteDimensional ℝ E]
 
+omit [DecidableEq K] in
 /-- Thm. 6.10 of [Mordukhovich 2018] (condensed lower subdifferential optimality conditions),
 first inclusion in (6.23): let `x₀` be a local minimizer of `φ_{k₀}` over the feasible set of
 (6.11), with all `φₖ` Lipschitz around `x₀` and `Ω` locally closed around `x₀`. Then there are
@@ -439,6 +442,7 @@ theorem exists_multipliers_zero_mem_subdiff_lagrangian (hk₀ : k₀ ∉ Q)
       (∀ k, k ≠ k₀ → k ∉ Q → lam k * φ k x₀ = 0) ∧
       (0 : StrongDual ℝ E) ∈
         subdiff (fun x ↦ (lagrangian φ lam x : EReal) + Ω.convex_indicator x) x₀ := by
+  classical
   set c := φ k₀ x₀
   set αb : K → ℝ := Pi.single k₀ c
   set pb : E × (K → ℝ) := (x₀, αb)
@@ -517,6 +521,7 @@ theorem exists_multipliers_zero_mem_subdiff_lagrangian (hk₀ : k₀ ∉ Q)
     · rw [hzero k hkQ (by simpa [pb, hαb_ne k hk] using hlt), zero_mul]
     · rw [heq, mul_zero]
 
+omit [DecidableEq K] in
 /-- Thm. 6.10 of [Mordukhovich 2018], both inclusions in (6.23):
 `0 ∈ ∂_x 𝓛_Ω(x₀, λ) ⊆ ∂_x 𝓛(x₀, λ) + N(x₀; Ω)`. -/
 theorem exists_multipliers_zero_mem_subdiff_lagrangian_add_normalCone (hk₀ : k₀ ∉ Q)
@@ -527,7 +532,9 @@ theorem exists_multipliers_zero_mem_subdiff_lagrangian_add_normalCone (hk₀ : k
       (∀ k, k ≠ k₀ → k ∉ Q → lam k * φ k x₀ = 0) ∧
       (0 : StrongDual ℝ E) ∈
         subdiff (fun x ↦ (lagrangian φ lam x : EReal) + Ω.convex_indicator x) x₀ ∧
-      (0 : StrongDual ℝ E) ∈ subdiff (fun x ↦ (lagrangian φ lam x : EReal)) x₀ + normalCone Ω x₀ := by
+      (0 : StrongDual ℝ E) ∈
+        subdiff (fun x ↦ (lagrangian φ lam x : EReal)) x₀ + normalCone Ω x₀ := by
+  classical
   obtain ⟨lam, hne, hnn, hcs, h0⟩ :=
     exists_multipliers_zero_mem_subdiff_lagrangian hk₀ hx hmin hU hL hΩ
   refine ⟨lam, hne, hnn, hcs, h0, ?_⟩
@@ -598,6 +605,7 @@ def separateSubdiff (k : K) : Set (StrongDual ℝ E) :=
   {v | v ∈ subdiff (fun x ↦ (φ k x : EReal)) x₀ ∨
     (k ∈ Q ∧ v ∈ subdiff (fun x ↦ ((-φ k x : ℝ) : EReal)) x₀)}
 
+omit [DecidableEq K] in
 /-- Thm. 6.5(ii) of [Mordukhovich 2018], (6.17)–(6.18): let `x₀` be a local minimizer of
 `φ_{k₀}` over the feasible set of (6.11), with all `φₖ` Lipschitz around `x₀` and `Ω` locally
 closed around `x₀`. Then there are nonnegative multipliers `λ ≠ 0` satisfying the complementary
@@ -609,11 +617,12 @@ theorem exists_multipliers_zero_mem_sum_separateSubdiff (hk₀ : k₀ ∉ Q)
     (hΩ : ∃ ρ > 0, IsClosed (Ω ∩ closedBall x₀ ρ)) :
     ∃ lam : K → ℝ, lam ≠ 0 ∧ (∀ k, 0 ≤ lam k) ∧ (∀ k, k ≠ k₀ → k ∉ Q → lam k * φ k x₀ = 0) ∧
       (0 : StrongDual ℝ E) ∈ ∑ k, lam k • separateSubdiff φ Q x₀ k + normalCone Ω x₀ := by
+  classical
   obtain ⟨mu, hne, hnn, hcs, -, h0⟩ :=
     exists_multipliers_zero_mem_subdiff_lagrangian_add_normalCone hk₀ hx hmin hU hL hΩ
   refine ⟨fun k ↦ |mu k|, fun h ↦ hne (funext fun k ↦ abs_eq_zero.1 (congrFun h k)),
     fun k ↦ abs_nonneg _, fun k hk hkQ ↦ by
-      show |mu k| * φ k x₀ = 0
+      change |mu k| * φ k x₀ = 0
       rw [abs_of_nonneg (hnn k hkQ)]; exact hcs k hk hkQ, ?_⟩
   -- the sum rule for the Lagrangian
   have hsum : subdiff (fun x ↦ (lagrangian φ mu x : EReal)) x₀ ⊆
@@ -652,6 +661,7 @@ theorem symmSeparateSubdiff_of_mem {k : K} (hk : k ∈ Q) :
     symmSeparateSubdiff φ Q x₀ k = symmSubdiff (fun x ↦ (φ k x : EReal)) x₀ := by
   ext v; simp [symmSeparateSubdiff, symmSubdiff, hk]
 
+omit [DecidableEq K] in
 /-- Cor. 6.6 of [Mordukhovich 2018] (equality constraints via symmetric subgradients), (6.19):
 under the assumptions of Thm. 6.5(ii) there are multipliers `λ ≠ 0` with `λₖ ≥ 0` for `k ∉ Q`,
 the complementary slackness conditions, and
@@ -662,6 +672,7 @@ theorem exists_multipliers_zero_mem_sum_symmSeparateSubdiff (hk₀ : k₀ ∉ Q)
     (hΩ : ∃ ρ > 0, IsClosed (Ω ∩ closedBall x₀ ρ)) :
     ∃ mu : K → ℝ, mu ≠ 0 ∧ (∀ k ∉ Q, 0 ≤ mu k) ∧ (∀ k, k ≠ k₀ → k ∉ Q → mu k * φ k x₀ = 0) ∧
       (0 : StrongDual ℝ E) ∈ ∑ k, mu k • symmSeparateSubdiff φ Q x₀ k + normalCone Ω x₀ := by
+  classical
   classical
   obtain ⟨lam, hne, hnn, hcs, a, ha, n, hn, han⟩ :=
     exists_multipliers_zero_mem_sum_separateSubdiff hk₀ hx hmin hU hL hΩ
@@ -689,6 +700,7 @@ theorem exists_multipliers_zero_mem_sum_symmSeparateSubdiff (hk₀ : k₀ ∉ Q)
       · simp only [hk, if_true]; exact hgw k
       · simp only [hk, if_false, neg_smul_neg]; exact hgw k
 
+omit [DecidableEq K] in
 /-- Cor. 6.11 of [Mordukhovich 2018] (abstract maximum principle in nondifferentiable
 programming): if moreover `Ω` is convex, there are multipliers `λ ≠ 0` as in Thm. 6.10 and
 `v ∈ -∂_x 𝓛(x₀, λ)` with `⟨v, x₀⟩ = max_{x ∈ Ω} ⟨v, x⟩`. -/
@@ -699,6 +711,7 @@ theorem exists_multipliers_abstract_maximum_principle (hk₀ : k₀ ∉ Q) (hΩc
     ∃ lam : K → ℝ, lam ≠ 0 ∧ (∀ k ∉ Q, 0 ≤ lam k) ∧
       (∀ k, k ≠ k₀ → k ∉ Q → lam k * φ k x₀ = 0) ∧
       ∃ v ∈ -subdiff (fun x ↦ (lagrangian φ lam x : EReal)) x₀, ∀ x ∈ Ω, v x ≤ v x₀ := by
+  classical
   obtain ⟨lam, hne, hnn, hcs, -, w, hw, n, hn, hwn⟩ :=
     exists_multipliers_zero_mem_subdiff_lagrangian_add_normalCone hk₀ hx hmin hU hL hΩ
   have hnw : n = -w := eq_neg_of_add_eq_zero_right hwn
@@ -759,6 +772,7 @@ theorem exists_contDiff_upper_support {f : H → ℝ} {x₀ : H} {v : StrongDual
 variable [FiniteDimensional ℝ H] {φ : K → H → ℝ} {Q : Set K} [DecidablePred (· ∈ Q)] {k₀ : K}
   {Ω : Set H} {x₀ : H}
 
+omit [DecidableEq K] in
 /-- Thm. 6.12 of [Mordukhovich 2018] (upper subdifferential optimality conditions in
 nondifferentiable programming), (6.26): let `x₀` be a local minimizer of `φ_{k₀}` over the
 feasible set of (6.11), with the equality data `φₖ`, `k ∈ Q`, Lipschitz around `x₀` and `Ω`
@@ -775,6 +789,7 @@ theorem exists_multipliers_upperRegularSubdiff (hk₀ : k₀ ∉ Q)
       -(∑ k ∈ Finset.univ.filter (· ∉ Q), lam k • v k) ∈
         subdiff (fun x ↦ ((∑ k ∈ Finset.univ.filter (· ∈ Q), lam k * φ k x : ℝ) : EReal)) x₀ +
           normalCone Ω x₀ := by
+  classical
   -- `C¹` upper supports `ψₖ` of the cost and inequality data
   have hex : ∀ k, ∃ ψ : H → ℝ, (k ∈ Q → ψ = φ k) ∧ (k ∉ Q → ContDiff ℝ 1 ψ ∧
       HasFDerivAt ψ (v k) x₀ ∧ ψ x₀ = φ k x₀ ∧ ∀ᶠ x in 𝓝 x₀, φ k x ≤ ψ x) := by
@@ -864,9 +879,9 @@ def coordProj (k : K) : (E × (K → ℝ)) →L[ℝ] E × ℝ :=
 omit [Fintype K] [DecidableEq K] in
 @[simp] theorem coordProj_apply (k : K) (p : E × (K → ℝ)) : coordProj K k p = (p.1, p.2 k) := rfl
 
-omit [Fintype K] in
-theorem coordProj_surjective (k : K) : Function.Surjective (coordProj (E := E) K k) :=
-  fun q ↦ ⟨(q.1, Pi.single k q.2), by simp⟩
+omit [Fintype K] [DecidableEq K] in
+theorem coordProj_surjective (k : K) : Function.Surjective (coordProj (E := E) K k) := by
+  classical exact fun q ↦ ⟨(q.1, Pi.single k q.2), by simp⟩
 
 omit [Fintype K] [DecidableEq K] in
 /-- Preimages of locally closed sets under continuous linear maps are locally closed. -/
@@ -915,6 +930,7 @@ theorem locallyClosed_ereal_graph_of_continuousOn {f : E → EReal} {U : Set E} 
 
 variable [FiniteDimensional ℝ E] {Q : Set K} {k₀ : K} {Ω : Set E} {x₀ : E}
 
+omit [DecidableEq K] in
 /-- Thm. 6.5(i) of [Mordukhovich 2018] (lower subdifferential conditions via normals to the
 separate constraints), (6.12)–(6.16): let `x₀` be a local minimizer of `φ_{k₀}` over the feasible
 set of (6.11), where `φₖ : E → EReal`, `φ_{k₀}(x₀) = c` is finite, the cost and inequality data
@@ -937,6 +953,7 @@ theorem exists_mem_normalCone_epi_graph (hk₀ : k₀ ∉ Q) {φ : K → E → E
       (∀ k ∉ Q, m k (0, 1) ≤ 0) ∧
       v + ∑ k, (m k).comp (ContinuousLinearMap.inl ℝ E ℝ) = 0 ∧
       (∀ k, k ≠ k₀ → k ∉ Q → UpperSemicontinuousAt (φ k) x₀ → φ k x₀ < 0 → m k = 0) := by
+  classical
   classical
   set αb : K → ℝ := Pi.single k₀ c
   set zb : E × (K → ℝ) := (x₀, αb)
@@ -1012,7 +1029,7 @@ theorem exists_mem_normalCone_epi_graph (hk₀ : k₀ ∉ Q) {φ : K → E → E
     | some k =>
       refine locallyClosed_preimage_continuousLinearMap (F := E × (K → ℝ)) (G := E × ℝ)
         (coordProj (E := E) K k) ?_
-      show ∃ ρ > 0, IsClosed (S k ∩ closedBall (x₀, αb k) ρ)
+      change ∃ ρ > 0, IsClosed (S k ∩ closedBall (x₀, αb k) ρ)
       by_cases hkQ : k ∈ Q
       · obtain ⟨U, hU, hf⟩ := hcont k hkQ
         rw [hSgr k hkQ]

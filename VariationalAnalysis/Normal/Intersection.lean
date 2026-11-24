@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 import VariationalAnalysis.Extremal.Basic
@@ -341,7 +341,7 @@ theorem normalCone_inter_subset (hloc₁ : ∃ r > 0, IsClosed (Ω₁ ∩ closed
   have hμ : 0 < μ := neg_pos.2 hlamneg
   refine ⟨μ⁻¹ • u₀, smul_mem_normalCone hu₀ (inv_nonneg.2 hμ.le), μ⁻¹ • (-u₀ - lam₀ • v),
     smul_mem_normalCone hz₀ (inv_nonneg.2 hμ.le), ?_⟩
-  show μ⁻¹ • u₀ + μ⁻¹ • (-u₀ - lam₀ • v) = v
+  change μ⁻¹ • u₀ + μ⁻¹ • (-u₀ - lam₀ • v) = v
   ext y
   simp only [add_apply, smul_apply, sub_apply, neg_apply, smul_eq_mul, μ]
   have hl0 : lam₀ ≠ 0 := hlamneg.ne

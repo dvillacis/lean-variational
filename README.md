@@ -1,5 +1,9 @@
 # VariationalAnalysis
 
+[![CI](https://github.com/dvillacis/lean-variational/actions/workflows/ci.yml/badge.svg)](https://github.com/dvillacis/lean-variational/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/dvillacis/lean-variational)](https://github.com/dvillacis/lean-variational/releases)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+
 Variational analysis and generalized differentiation for Lean 4 / Mathlib (v4.33.1), following
 
 - B. S. Mordukhovich, *Variational Analysis and Applications*, Springer Monographs in
@@ -147,14 +151,66 @@ metric regularity, tilt stability) is not started.
   adjoint subspace is the orthogonal complement for `ω((u, v), (y*, x*)) = ⟪v, y*⟫ - ⟪u, x*⟫`, and
   `𝒮*F` is defined as `{L* | L ∈ 𝒮F}` ([Gfrerer–Outrata 2022, Remark 3.5]).
 
-## Build
+## Installation
+
+Add the library to the `lakefile.toml` of a project that uses the same Lean toolchain
+(`leanprover/lean4:v4.33.1`):
+
+```toml
+[[require]]
+name = "variationalanalysis"
+git = "https://github.com/dvillacis/lean-variational"
+rev = "v0.1.0"
+```
+
+and run
+
+```
+lake update variationalanalysis
+lake exe cache get
+lake build
+```
+
+At a tagged `rev`, Lake downloads the compiled library from the GitHub release instead of
+compiling it (Linux x86_64 and, from the next release on, macOS arm64; on other platforms it is
+compiled locally). Mathlib and `ConvexAnalysis` come as transitive dependencies.
+
+Everything lives in the namespace `VariationalAnalysis`:
+
+```lean
+import VariationalAnalysis
+
+open VariationalAnalysis
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+
+/-- The generalized Fermat rule: `0 ∈ ∂φ(x₀)` at a local minimizer where `φ` is finite. -/
+example {φ : E → EReal} {x₀ : E} {r : ℝ} (hmin : IsLocalMin φ x₀) (hr : φ x₀ = r) :
+    (0 : StrongDual ℝ E) ∈ subdiff φ x₀ :=
+  zero_mem_subdiff_of_isLocalMin hmin hr
+```
+
+## Development
 
 ```
 lake exe cache get && lake build
 ```
 
+Every pull request is checked by CI (`.github/workflows/ci.yml`), which runs
+
+| Check | Command |
+|---|---|
+| Build, with no warnings from this package | `lake build` |
+| The root file imports every module | `lake exe mk_all --check` (`lake exe mk_all` to fix) |
+| Environment linters of Batteries | `lake lint` |
+| No axiom beyond `propext`, `Classical.choice`, `Quot.sound` | `lake env lean scripts/AuditAxioms.lean` |
+
+Mathlib's standard set of style linters is enabled in `lakefile.toml`.
+
+A release is made by pushing a tag `vX.Y.Z`; `.github/workflows/release.yml` then builds the
+library and attaches it to the GitHub release.
+
 ## Status
 
-All 89 files compile against Mathlib v4.33.1 with no `sorry`.
-`lake env lean scripts/AuditAxioms.lean` checks that no declaration depends on an axiom beyond
-`propext`, `Classical.choice`, `Quot.sound` (2109 declarations checked).
+The library compiles against Mathlib v4.33.1 with no `sorry`, and no declaration depends on an
+axiom beyond `propext`, `Classical.choice`, `Quot.sound`; CI checks both on every change.

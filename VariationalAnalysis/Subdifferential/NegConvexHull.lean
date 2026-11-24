@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Convex.Caratheodory
 import Mathlib.Analysis.LocallyConvex.Separation
@@ -54,7 +54,8 @@ theorem isCompact_convexHull_of_isCompact {s : Set V} (hs : IsCompact s) :
   · simp
   set n := Module.finrank ℝ V + 1
   set T : Set ((Fin n → ℝ) × (Fin n → V)) := stdSimplex ℝ (Fin n) ×ˢ Set.univ.pi fun _ ↦ s
-  have hT : IsCompact T := IsCompact.prod (isCompact_stdSimplex ℝ (Fin n)) (isCompact_univ_pi fun _ ↦ hs)
+  have hT : IsCompact T :=
+    IsCompact.prod (isCompact_stdSimplex ℝ (Fin n)) (isCompact_univ_pi fun _ ↦ hs)
   have hc : Continuous fun q : (Fin n → ℝ) × (Fin n → V) ↦ ∑ i, q.1 i • q.2 i := by fun_prop
   convert hT.image hc using 1
   ext x

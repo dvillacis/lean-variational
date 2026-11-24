@@ -343,7 +343,7 @@ theorem eq_add_subderiv_add (hw : ‖w‖ < r) (hfin : φ (x₀ + w) ≠ ⊤) :
 /-! #### The second subderivative `d²φ(x̄, v)` -/
 
 theorem mem_criticalCone_iff : w ∈ criticalCone φ x₀ v ↔ ∃ j, w ∈ T j ∧ g j w = v w := by
-  show subderiv φ x₀ w = _ ↔ _
+  change subderiv φ x₀ w = _ ↔ _
   by_cases hw : ∃ j, w ∈ T j
   · obtain ⟨j, hj⟩ := hw
     rw [h.subderiv_of_mem hj, EReal.coe_eq_coe_iff]
@@ -533,7 +533,7 @@ theorem IsPolyhedral.exists_cone (h : IsPolyhedral Ω) (x₀ : E) :
       rw [map_smul, smul_eq_mul]
       nlinarith
     · have hw' := hball (y := w) (by rwa [dist_zero_right])
-      show (∀ i, b i (x₀ + w) ≤ β i) ↔ ∀ i, (if b i x₀ = β i then b i else 0) w ≤ 0
+      change (∀ i, b i (x₀ + w) ≤ β i) ↔ ∀ i, (if b i x₀ = β i then b i else 0) w ≤ 0
       constructor
       · intro hall i
         split_ifs with hi
@@ -743,7 +743,7 @@ theorem IsPLQ.exists_criticalCone_eq (hφ : IsPLQ φ) (hconv : Convex ℝ (φ.Ep
   refine ⟨s, fun j ↦ T j ∩ {w | (g j - v) w ≤ 0}, fun j ↦ (hT j).inter_halfspace _ _,
     fun j c w hc hw ↦ ⟨h.smul_mem j c w hc hw.1, ?_⟩, ?_⟩
   · have : (g j - v) w ≤ 0 := hw.2
-    show (g j - v) (c • w) ≤ 0
+    change (g j - v) (c • w) ≤ 0
     rw [map_smul, smul_eq_mul]
     nlinarith
   · ext w

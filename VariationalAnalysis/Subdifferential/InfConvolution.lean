@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import VariationalAnalysis.Subdifferential.Marginal
 
@@ -211,7 +211,7 @@ theorem convCost_qc {p₀ : E × E} (hp₀ : p₀ ∈ convConstraint x₀) :
     singularSubdiff_comp_snd (E := E) (fun p : E × E ↦ φ₁ p.1 + φ₂ p.2) (x₀, p₀)] at hw
   obtain ⟨t, -, rfl⟩ := hw
   have h0 : (0 : StrongDual ℝ E) ∈ coderiv convConstraint x₀ p₀ t := by
-    show _ ∈ normalCone _ _
+    change _ ∈ normalCone _ _
     convert hN using 1
     ext <;> simp
   obtain ⟨h1, h2⟩ := eq_of_mem_coderiv_convConstraint hp₀ h0

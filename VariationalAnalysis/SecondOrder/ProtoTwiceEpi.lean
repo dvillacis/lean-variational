@@ -47,10 +47,10 @@ noncomputable def coeMulOrderIso (c : ℝ) (hc : 0 < c) : EReal ≃o EReal where
   toFun a := (c : EReal) * a
   invFun a := ((c⁻¹ : ℝ) : EReal) * a
   left_inv a := by
-    show ((c⁻¹ : ℝ) : EReal) * ((c : EReal) * a) = a
+    change ((c⁻¹ : ℝ) : EReal) * ((c : EReal) * a) = a
     rw [← mul_assoc, ← EReal.coe_mul, inv_mul_cancel₀ hc.ne', EReal.coe_one, one_mul]
   right_inv a := by
-    show (c : EReal) * (((c⁻¹ : ℝ) : EReal) * a) = a
+    change (c : EReal) * (((c⁻¹ : ℝ) : EReal) * a) = a
     rw [← mul_assoc, ← EReal.coe_mul, mul_inv_cancel₀ hc.ne', EReal.coe_one, one_mul]
   map_rel_iff' := coe_mul_le_coe_mul_iff hc
 
@@ -164,7 +164,7 @@ theorem twiceEpiDifferentiableAt_zero_of_moreauEnvelope {ψ : E → EReal} {r : 
       intro t ht
       refine ((continuous_coe_real_ereal.tendsto (Q u)).comp (hQ t ht u)).congr' ?_
       filter_upwards [(tendsto_nhdsWithin_iff.1 ht).2, hball t ht] with k hk hkb
-      show ((((t k) ^ 2)⁻¹ * (moreauEnvelope ψ l (t k • u)).toReal : ℝ) : EReal) =
+      change ((((t k) ^ 2)⁻¹ * (moreauEnvelope ψ l (t k • u)).toReal : ℝ) : EReal) =
         moreauEnvelope (f (t k)) l u
       rw [hf _ hk, moreauEnvelope_scale ψ hk, ← hfin _ hkb, ← EReal.coe_mul, inv_pow,
         EReal.toReal_coe]
@@ -206,10 +206,10 @@ theorem twiceEpiDifferentiableAt_zero_of_moreauEnvelope {ψ : E → EReal} {r : 
         have h4 := add_le_add h3 (le_refl ((b : ℝ) : EReal))
         rw [← EReal.coe_add, sub_add_cancel] at h4
         refine le_trans (moreauEnvelope_le u (D u)) ?_
-        show φ₀ (D u) + (((2 * l)⁻¹ * ‖D u - u‖ ^ 2 : ℝ) : EReal) ≤ _
+        change φ₀ (D u) + (((2 * l)⁻¹ * ‖D u - u‖ ^ 2 : ℝ) : EReal) ≤ _
         rw [← hb]
         exact h4
-      · show ((Q u : ℝ) : EReal) ≤ φ₀ x + (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal)
+      · change ((Q u : ℝ) : EReal) ≤ φ₀ x + (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal)
         refine ereal_le_of_forall_real_gt fun c hc ↦ ?_
         have hc' : φ₀ x < ((c - (2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal) := by
           by_contra hn
@@ -229,7 +229,7 @@ theorem twiceEpiDifferentiableAt_zero_of_moreauEnvelope {ψ : E → EReal} {r : 
         rw [sub_add_cancel] at hR
         refine le_of_tendsto_of_tendsto' (hE _ ht) hR fun k ↦ ?_
         refine (moreauEnvelope_le u (q k).2).trans ?_
-        show f (q k).1 (q k).2 + (((2 * l)⁻¹ * ‖(q k).2 - u‖ ^ 2 : ℝ) : EReal) ≤ _
+        change f (q k).1 (q k).2 + (((2 * l)⁻¹ * ‖(q k).2 - u‖ ^ 2 : ℝ) : EReal) ≤ _
         rw [EReal.coe_add]
         exact add_le_add (hlt k).le le_rfl
     rw [hid]
@@ -293,7 +293,7 @@ theorem ContinuouslyProxRegularFor.twiceEpiDifferentiableAt_of_lsc {g : E}
       exact mem_ball_zero_iff.1 hu
     have henv : ∀ u, moreauEnvelope ψ l u = moreauEnvelope φ l (x₀ + l • g + u) +
         ((-((φ x₀).toReal + ⟪g, u⟫_ℝ + l / 2 * ‖g‖ ^ 2) : ℝ) : EReal) := fun u ↦ by
-      show (⨅ x, proxObjective ψ l u x) = (⨅ y, proxObjective φ l (x₀ + l • g + u) y) + _
+      change (⨅ x, proxObjective ψ l u x) = (⨅ y, proxObjective φ l (x₀ + l • g + u) y) + _
       simp only [hobj, hcomm]
       rw [iInf_add_coe]
       congr 1
@@ -316,7 +316,7 @@ theorem ContinuouslyProxRegularFor.twiceEpiDifferentiableAt_of_lsc {g : E}
       have h1 : (0 : E) ∈ proximalMap ψ l 0 := by
         rw [hp'U 0 h0mem, hp'0]; exact mem_singleton _
       rw [moreauEnvelope_eq_of_mem_proximalMap h1]
-      show ψ 0 + (((2 * l)⁻¹ * ‖(0 : E) - 0‖ ^ 2 : ℝ) : EReal) = 0
+      change ψ 0 + (((2 * l)⁻¹ * ‖(0 : E) - 0‖ ^ 2 : ℝ) : EReal) = 0
       simp [hψ0]
     have hEū : (moreauEnvelope φ l (x₀ + l • g)).toReal = (φ x₀).toReal + l / 2 * ‖g‖ ^ 2 := by
       have := htoReal 0 h0mem
@@ -357,7 +357,7 @@ theorem ContinuouslyProxRegularFor.twiceEpiDifferentiableAt_of_protoDifferentiab
     refine GeometricallyDerivableAt.congr hproto (eventuallyEq_set.2 ?_) hψ.1.1
     filter_upwards [(continuous_fst.tendsto (x₀, toDual ℝ E g)).eventually
       (ball_mem_nhds x₀ hρ)] with q hq
-    show q.2 ∈ subdiff φ q.1 ↔ q.2 ∈ subdiff ψ q.1
+    change q.2 ∈ subdiff φ q.1 ↔ q.2 ∈ subdiff ψ q.1
     rw [hS q.1 hq]
   exact (hψ.twiceEpiDifferentiableAt_of_lsc hprotoψ hψlsc hψbd).congr
     (hev.mono fun x hx ↦ hx.symm)

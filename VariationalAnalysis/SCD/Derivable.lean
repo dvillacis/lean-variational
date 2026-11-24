@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import VariationalAnalysis.SCD.Product
@@ -106,7 +106,7 @@ theorem geometricallyDerivableAt_of_seq {Ω : Set X} {x : X}
   · filter_upwards [hpos] with k hk
     exact div_nonneg Metric.infDist_nonneg hk.le
   · filter_upwards [hpos, haΩ] with k hk hak
-    show Metric.infDist (x + t k • u) Ω / t k ≤ _
+    change Metric.infDist (x + t k • u) Ω / t k ≤ _
     rw [div_le_iff₀ hk]
     calc Metric.infDist (x + t k • u) Ω ≤ dist (x + t k • u) (a k) :=
           Metric.infDist_le_dist_of_mem hak
@@ -144,7 +144,7 @@ theorem GeometricallyDerivableAt.of_inter_eq_preimage {Ω W : Set X} {Ω' : Set 
   · filter_upwards [hb0.eventually hΦ.eventually_right_inverse, hψc.eventually hW]
       with k hk hkW
     have : hΦ.localInverse Φ e x (b k) ∈ Φ ⁻¹' Ω' ∩ W :=
-      ⟨by show Φ (hΦ.localInverse Φ e x (b k)) ∈ Ω'; rw [hk]; exact hb k, hkW⟩
+      ⟨by change Φ (hΦ.localInverse Φ e x (b k)) ∈ Ω'; rw [hk]; exact hb k, hkW⟩
     rw [← hloc] at this
     exact this.1
   · have := tendsto_smul_sub_apply_of_hasFDerivAt hΦ.to_localInverse.hasFDerivAt hb0 hblim

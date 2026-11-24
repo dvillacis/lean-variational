@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Topology.MetricSpace.HausdorffDistance
@@ -154,7 +154,7 @@ theorem toDual_mem_normalCone_of_mem_projNormalCone [CompleteSpace H] {v : H}
     have := (tendsto_iff_norm_sub_tendsto_zero.1 hx).const_mul 2
     rw [mul_zero] at this
     exact squeeze_zero (fun _ ↦ norm_nonneg _) (fun k ↦ norm_proj_sub_le (hw k) hx₀) this
-  · show toDual ℝ H (y k) ∈ _
+  · change toDual ℝ H (y k) ∈ _
     rw [hyα, toDual_smul]
     exact smul_mem_regularNormalCone (toDual_sub_mem_regularNormalCone (hw k)) (hα k)
 

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Calculus.Rademacher
 import Mathlib.Topology.MetricSpace.Sequences
@@ -342,7 +342,7 @@ theorem mem_closure_differentiableAt {s : Set E} {K : ℝ≥0} (hf : LipschitzOn
   have h0 : (Measure.addHaar : Measure E) (t ∩ interior s) = 0 := by
     refine measure_mono_null ?_ (ae_iff.1 hae)
     rintro z ⟨hzt, hzs⟩
-    show ¬(z ∈ s → _)
+    change ¬(z ∈ s → _)
     intro h
     exact hne ⟨z, hzt, (h (interior_subset hzs)).differentiableAt
       (mem_interior_iff_mem_nhds.1 hzs)⟩

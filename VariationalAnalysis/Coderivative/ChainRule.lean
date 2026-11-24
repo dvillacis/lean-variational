@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import VariationalAnalysis.Coderivative.SumRule
 import VariationalAnalysis.Coderivative.Smooth
@@ -297,7 +297,7 @@ theorem coderiv_chainGraphMap_subset
       have hℓ₁ : ℓ₁ = (0 : StrongDual ℝ X).coprod (-ℓ₂.comp (inl ℝ Y Z)) := by
         ext x <;> simp [eq_neg_of_add_eq_zero_left (e1 _ _), Prod.mk_zero_zero, map_zero]
       have hker : ℓ₂.comp (inl ℝ Y Z) ∈ coderivKer G x₀ y₀ := by
-        show _ ∈ normalCone _ _
+        change _ ∈ normalCone _ _
         rw [← hℓ₁]
         exact h₁
       rw [hℓ₁, hqc _ hw hker]
@@ -325,7 +325,7 @@ theorem mem_iUnion_coderiv_of_coprod_zero_mem
   have : x'.coprod (-w) = n := by
     rw [eq_sub_of_add_eq' heq]
     ext <;> simp
-  show _ ∈ normalCone _ _
+  change _ ∈ normalCone _ _
   rwa [this]
 
 omit [FiniteDimensional ℝ X] [FiniteDimensional ℝ Y] [FiniteDimensional ℝ Z] in
@@ -557,7 +557,7 @@ theorem coprod_zero_mem_coderiv_chainGraphMap_iff {g : X → Y} {F : Y → Set Z
   constructor
   · rintro ⟨hp₀, a, w, ha, hw, hmem⟩
     have hx₀ : (x₀, z₀) ∈ graph fun x ↦ F (g x) := hp₀.2
-    show x'.coprod (-z') ∈ normalCone _ _
+    change x'.coprod (-z') ∈ normalCone _ _
     rw [normalCone_eq_outerLimit_epsNormalCone hx₀ hloc]
     have ha' := tendsto_nhdsWithin_iff.1 ha
     have hax : Tendsto (fun k ↦ (a k).1.1) atTop (𝓝 x₀) :=

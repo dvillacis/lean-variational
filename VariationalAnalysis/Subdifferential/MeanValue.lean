@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Normed.Module.HahnBanach
 import VariationalAnalysis.Principle.AlmostStationary
@@ -603,7 +603,7 @@ theorem exists_seq_approx_mean_value_of_isMinOn (hab : a ≠ b) (hτ0 : 0 ≤ τ
     have := (tendsto_one_div_add_atTop_nhds_zero_nat (𝕜 := ℝ)).const_mul δ₀
     rw [mul_zero] at this
     refine this.congr fun k ↦ ?_
-    show δ₀ * (1 / ((k : ℝ) + 1)) = δ₀ / ((k : ℝ) + 1)
+    change δ₀ * (1 / ((k : ℝ) + 1)) = δ₀ / ((k : ℝ) + 1)
     ring
   choose x v hv h1 h2 h3 h4 h5 using fun k ↦ exists_approx_mean_value_step hab hτ0 hτ1 hc hγ
     hmin hr hΩ hκ hκτ hκτ' (hδk k).1 (hδk k).2.1 (hδk k).2.2.1 (hδk k).2.2.2

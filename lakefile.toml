@@ -1,6 +1,11 @@
 name = "variationalanalysis"
 version = "0.1.0"
+description = "Variational analysis and generalized differentiation: normal cones, subdifferentials, coderivatives, well-posedness, SCD mappings and second-order theory."
+keywords = ["math", "analysis", "optimization", "variational-analysis", "nonsmooth-analysis"]
+license = "Apache-2.0"
 defaultTargets = ["VariationalAnalysis"]
+lintDriver = "batteries/runLinter"
+lintDriverArgs = ["VariationalAnalysis"]
 # Dependents download the compiled library from the GitHub release of the pinned tag.
 preferReleaseBuild = true
 
@@ -8,6 +13,8 @@ preferReleaseBuild = true
 pp.unicode.fun = true
 autoImplicit = false
 relaxedAutoImplicit = false
+# Mathlib's style and hygiene linters.
+weak.linter.mathlibStandardSet = true
 
 [[require]]
 name = "mathlib"

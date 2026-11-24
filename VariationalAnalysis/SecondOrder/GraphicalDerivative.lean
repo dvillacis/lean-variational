@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Convex.Deriv
 import VariationalAnalysis.SecondOrder.Basic
@@ -133,7 +133,7 @@ theorem graphDeriv_congr {S T : E → Set F} {x₀ : E} (h : ∀ᶠ x in 𝓝 x�
     (u : E) : graphDeriv S x₀ y₀ u = graphDeriv T x₀ y₀ u := by
   have hg : graph S =ᶠ[𝓝 (x₀, y₀)] graph T := by
     filter_upwards [(continuous_fst.tendsto (x₀, y₀)).eventually h] with p hp
-    show (p.2 ∈ S p.1) = (p.2 ∈ T p.1)
+    change (p.2 ∈ S p.1) = (p.2 ∈ T p.1)
     rw [hp]
   simp only [graphDeriv, contingentCone_congr hg]
 
@@ -193,7 +193,7 @@ theorem graphDeriv_add {F₁ : E → F} {A : E →L[ℝ] F} {F₂ : E → Set F}
   have hΘmaps : ∀ p ∈ graph (fun x ↦ (fun y ↦ F₁ x + y) '' F₂ x), Θ p ∈ graph F₂ := by
     rintro ⟨x, y⟩ ⟨z, hz, hzy⟩
     simp only at hz hzy
-    show y - F₁ x ∈ F₂ x
+    change y - F₁ x ∈ F₂ x
     rw [← hzy, add_sub_cancel_left]
     exact hz
   ext v

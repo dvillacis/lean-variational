@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Basic
 import VariationalAnalysis.Normal.Limiting
@@ -76,7 +76,7 @@ theorem coderiv_eq_outerLimit (h : (x₀, y₀) ∈ graph S) (v : StrongDual ℝ
       fun k ↦ (ℓ k).comp (ContinuousLinearMap.inl ℝ E F), hp.prodMk ?_, ?_, fun k ↦ ?_⟩
     · simpa using (tendsto_comp_inr hℓ).neg
     · simpa using tendsto_comp_inl hℓ
-    · show _ ∈ regularNormalCone _ _
+    · change _ ∈ regularNormalCone _ _
       rw [neg_neg, ContinuousLinearMap.coprod_comp_inl_inr]
       exact hmem k
   · rintro ⟨q, w, hq, hw, hmem⟩
@@ -211,7 +211,7 @@ theorem regularCoderiv_of_hasFDerivAt {f' : E →L[ℝ] F} (hf : HasFDerivAt f f
         _ ≤ 1 * (ε / 2 * ‖h‖) := by gcongr
         _ = ε / 2 * ‖h‖ := one_mul _
     have e1 : v (f x - f x₀ - f' h) = v (f x - f x₀) - v (f' h) := map_sub _ _ _
-    show u h - v (f' h) ≤ ε * ‖h‖
+    change u h - v (f' h) ≤ ε * ‖h‖
     linarith
   · rintro _ rfl
     refine ⟨hgr, fun ε hε ↦ ?_⟩
@@ -258,7 +258,7 @@ theorem coderiv_of_hasFDerivAt_of_continuousAt {f' : E → E →L[ℝ] F}
       have hpk : p k = ((p k).1, f (p k).1) := Prod.ext rfl (mem_singleton_iff.1 hkg)
       have hℓk : ((ℓ k).comp (ContinuousLinearMap.inl ℝ E F)) ∈
           regularCoderiv (fun x ↦ {f x}) (p k).1 (f (p k).1) (w k) := by
-        show _ ∈ regularNormalCone _ _
+        change _ ∈ regularNormalCone _ _
         have : ((ℓ k).comp (ContinuousLinearMap.inl ℝ E F)).coprod (-w k) = ℓ k := by
           simp [w]
         rw [this, ← hpk]

@@ -65,7 +65,7 @@ theorem exists_seq_extend_of_strictMono {X : Type*} [TopologicalSpace X] {ψ : �
   · refine tendsto_nhds.2 fun U hU hy ↦ ?_
     obtain ⟨J, hJ⟩ := eventually_atTop.1 (hv.eventually_mem (hU.mem_nhds hy))
     filter_upwards [eventually_ge_atTop (ψ J)] with k hk
-    show (if h : ∃ j, ψ j = k then v h.choose else y) ∈ U
+    change (if h : ∃ j, ψ j = k then v h.choose else y) ∈ U
     split_ifs with h
     · have h1 : ψ h.choose = k := h.choose_spec
       exact hJ _ (hψ.le_iff_le.1 (by rw [h1]; exact hk))
@@ -344,7 +344,7 @@ theorem tendsto_moreauEnvelope_nhdsGT_zero (hφ : ∀ x, 0 ≤ φ x)
     (Iio_mem_nhds (show (0 : ℝ) < δ ^ 2 / (2 * (|c'| + 1)) by positivity))] with l hl hlt
   have hl : 0 < l := hl
   refine hc1.trans_le (le_iInf fun x ↦ ?_)
-  show (c' : EReal) ≤ φ x + (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal)
+  change (c' : EReal) ≤ φ x + (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal)
   by_cases hx : dist x u < δ
   · exact (hball hx).le.trans (le_add_of_nonneg_right (EReal.coe_nonneg.2 (by positivity)))
   · refine le_trans (EReal.coe_le_coe_iff.2 ?_) (le_add_of_nonneg_left (hφ x))
@@ -372,7 +372,7 @@ theorem tendsto_moreauEnvelope_nhdsGT_zero_of_ge {r : ℝ} (hr : 0 ≤ r)
     nhdsWithin_le_nhds (Iio_mem_nhds (div_pos one_pos hB))] with l hl hlt hlr
   have hl : 0 < l := hl
   refine hc1.trans_le (le_iInf fun x ↦ ?_)
-  show (c' : EReal) ≤ φ x + (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal)
+  change (c' : EReal) ≤ φ x + (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal)
   by_cases hx : dist x u < δ
   · exact (hball hx).le.trans (le_add_of_nonneg_right (EReal.coe_nonneg.2 (by positivity)))
   · have hsum := add_le_add (hφ x) (le_refl (((2 * l)⁻¹ * ‖x - u‖ ^ 2 : ℝ) : EReal))
@@ -518,7 +518,7 @@ theorem tendsto_moreauEnvelope_of_seq [ProperSpace E] {φ : ℕ → E → EReal}
       refine hlim.trans (liminf_le_of_frequently_le' (Eventually.frequently ?_))
       filter_upwards [hr.eventually_const_lt (show c - d < (2 * m)⁻¹ * ‖x₀ - u₀‖ ^ 2 by
         linarith)] with j hj
-      show φ (ψ (θ j)) (x (θ j)) ≤ (d : EReal)
+      change φ (ψ (θ j)) (x (θ j)) ≤ (d : EReal)
       rw [hs (θ j)]
       exact EReal.coe_le_coe_iff.2 (by linarith [hsc (θ j)])
     have hfin : moreauEnvelope φ₀ m u₀ ≤ c := by
@@ -750,7 +750,7 @@ theorem EpiTendsto.outerLimit_graph_proximalMap_subset [ProperSpace E]
       exact lt_asymm h1 hk1
     have := add_le_add hφq (le_refl (((2 * m)⁻¹ * ‖q - u₀‖ ^ 2 : ℝ) : EReal))
     rwa [← EReal.coe_add, sub_add_cancel] at this
-  show q ∈ proximalMap φ₀ m u₀
+  change q ∈ proximalMap φ₀ m u₀
   exact fun y ↦ hle.trans (moreauEnvelope_le u₀ y)
 
 /-- **Convergence of proximal points** [Mordukhovich 2024, Ex. 1.135(ii)]: if the functions

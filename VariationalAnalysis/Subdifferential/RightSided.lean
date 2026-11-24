@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Topology.Order.IntermediateValue
 import VariationalAnalysis.Subdifferential.Distance
@@ -193,7 +193,7 @@ theorem regularSubdiff_distFun_eq_of_pos (hne : Ω.Nonempty) (hd : 0 < infDist x
         have hy'u : ‖σ • u‖ ≤ σ := by
           rw [norm_smul, Real.norm_of_nonneg hσ0]; nlinarith
         have hy'Ω : y' ∈ enlargement Ω ρ := by
-          show infDist y' Ω ≤ ρ
+          change infDist y' Ω ≤ ρ
           have := infDist_le_infDist_add_dist (x := y') (y := x) (s := Ω)
           rw [dist_eq_norm, show y' - x = σ • u by simp only [y']; abel] at this
           simp only [σ] at hy'u

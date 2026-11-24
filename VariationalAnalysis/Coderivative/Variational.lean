@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import VariationalAnalysis.Coderivative.SecondOrder
 import VariationalAnalysis.WellPosedness.Coderivative
@@ -64,7 +64,7 @@ omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSp
 theorem mem_pvsSolutionMap_iff {f : E × F → G} {Q : F → Set G} {x : E} {y : F} :
     y ∈ pvsSolutionMap f Q x ↔ ∃ z ∈ Q y, f (x, y) + z = 0 := by
   refine ⟨fun h ↦ ⟨_, h, add_neg_cancel _⟩, fun ⟨z, hz, h⟩ ↦ ?_⟩
-  show -f (x, y) ∈ Q y
+  change -f (x, y) ∈ Q y
   rwa [show -f (x, y) = z from (neg_eq_of_add_eq_zero_right h)]
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]

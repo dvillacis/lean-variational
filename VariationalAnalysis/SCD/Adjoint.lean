@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
@@ -107,7 +107,7 @@ variable [FiniteDimensional ℝ E]
 
 theorem adjointSubspace_adjointSubspace (L : Submodule ℝ (E × E)) :
     adjointSubspace (adjointSubspace L) = L := by
-  show graphPairing.orthogonal (graphPairing.orthogonal L) = L
+  change graphPairing.orthogonal (graphPairing.orthogonal L) = L
   exact LinearMap.BilinForm.orthogonal_orthogonal graphPairing_nondegenerate
     graphPairing_isRefl' L
 
