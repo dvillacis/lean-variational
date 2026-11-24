@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Normed.Operator.Prod
 import VariationalAnalysis.Coderivative.Basic
@@ -218,7 +218,7 @@ theorem coprod_mem_image_comp_prodMap_iff {A : E →L[ℝ] F} {N : Set (StrongDu
       have := congrArg (fun f : StrongDual ℝ (E × G) ↦ f (0, z)) heq
       simpa using this
     refine ⟨ℓ.comp (inl ℝ F G), ?_, h1.symm⟩
-    show _ ∈ N
+    change _ ∈ N
     rw [← h2, coprod_comp_inl_inr]
     exact hℓ
   · rintro ⟨u, hu, rfl⟩

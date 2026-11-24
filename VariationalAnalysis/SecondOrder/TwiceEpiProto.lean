@@ -83,7 +83,7 @@ theorem geometricallyDerivableAt_graph_of_tendsto {f : X → Y} {x : X} {U : Set
       simpa [Function.comp_def] using (continuous_fst.tendsto (w, z)).comp hlim
     have h2 : Tendsto (fun k ↦ α k • (f (a k).1 - f x)) atTop (𝓝 z) := by
       simpa [Function.comp_def, haf] using (continuous_snd.tendsto (w, z)).comp hlim
-    show z = D w
+    change z = D w
     by_cases hw : w = 0
     · rw [hw, hD0]
       rw [hw] at h1
@@ -194,7 +194,7 @@ theorem SubdiffContinuousFor.congr (h : SubdiffContinuousFor φ x₀ v₀)
       · rw [if_neg hk, if_neg hk]; exact h.1)
   rw [hUsub x₀ hx₀U]
   refine h1.congr' (hev.mono fun k hk ↦ ?_)
-  show φ (if x k ∈ U then x k else x₀) = ψ (x k)
+  change φ (if x k ∈ U then x k else x₀) = ψ (x k)
   rw [if_pos hk, hUsub _ hk]
 
 /-- A prox-regular function agrees near `x̄` with an l.s.c. and prox-bounded function, namely `φ`
@@ -299,7 +299,7 @@ theorem ContinuouslyProxRegularFor.eventually_mem_subdiff_iff {g : E}
   have hu : x + l • y ∈ ball (x₀ + l • g) δ := hx3
   have hxy : l⁻¹ • (x + l • y - x) = y := by
     rw [add_sub_cancel_left, smul_smul, inv_mul_cancel₀ hl.ne', one_smul]
-  show toDual ℝ E y ∈ subdiff φ x ↔ x = p (x + l • y)
+  change toDual ℝ E y ∈ subdiff φ x ↔ x = p (x + l • y)
   constructor
   · intro hgr
     refine huniq _ hu x ?_
@@ -329,11 +329,11 @@ noncomputable def proxGraphEquiv (l : ℝ) (hl : l ≠ 0) : (E × StrongDual ℝ
       cont := continuous_snd.prodMk ((toDual ℝ E).continuous.comp
         ((continuous_fst.sub continuous_snd).const_smul l⁻¹)) }
     (fun q ↦ Prod.ext rfl (by
-      show toDual ℝ E (l⁻¹ • (q.1 + l • (toDual ℝ E).symm q.2 - q.1)) = q.2
+      change toDual ℝ E (l⁻¹ • (q.1 + l • (toDual ℝ E).symm q.2 - q.1)) = q.2
       rw [add_sub_cancel_left, smul_smul, inv_mul_cancel₀ hl, one_smul,
         LinearIsometryEquiv.apply_symm_apply]))
     (fun q ↦ Prod.ext (by
-      show q.2 + l • (toDual ℝ E).symm (toDual ℝ E (l⁻¹ • (q.1 - q.2))) = q.1
+      change q.2 + l • (toDual ℝ E).symm (toDual ℝ E (l⁻¹ • (q.1 - q.2))) = q.1
       rw [LinearIsometryEquiv.symm_apply_apply, smul_smul, mul_inv_cancel₀ hl, one_smul,
         add_sub_cancel]) rfl)
 
@@ -454,7 +454,7 @@ theorem ContinuouslyProxRegularFor.protoDifferentiableAt_subdiff {g : E}
   refine GeometricallyDerivableAt.congr hG (eventuallyEq_set.2 ?_) hφ.1.1
   filter_upwards [(continuous_fst.tendsto (x₀, toDual ℝ E g)).eventually
     (ball_mem_nhds x₀ hρ)] with q hq
-  show q.2 ∈ subdiff ψ q.1 ↔ q.2 ∈ subdiff φ q.1
+  change q.2 ∈ subdiff ψ q.1 ↔ q.2 ∈ subdiff φ q.1
   rw [hS q.1 hq]
 
 end Main

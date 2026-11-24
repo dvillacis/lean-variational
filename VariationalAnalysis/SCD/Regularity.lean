@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Normed.Operator.Basic
 import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -297,7 +297,8 @@ theorem IsRegularSubspace.subspaceBound_eq (hL : IsRegularSubspace L) :
     subspaceBound L = ‖regularSubspaceOp L‖₊ := by
   refine le_antisymm (subspaceBound_le_iff.2 fun w hw hw2 ↦ ?_) ?_
   · rw [hL.mem_iff'.1 hw, ENNReal.coe_le_coe, ← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
-    calc ‖regularSubspaceOp L w.2‖ ≤ ‖regularSubspaceOp L‖ * ‖w.2‖ := (regularSubspaceOp L).le_opNorm _
+    calc ‖regularSubspaceOp L w.2‖ ≤ ‖regularSubspaceOp L‖ * ‖w.2‖ :=
+        (regularSubspaceOp L).le_opNorm _
       _ ≤ ‖regularSubspaceOp L‖ * 1 := by gcongr
       _ = _ := mul_one _
   · rcases eq_top_or_lt_top (subspaceBound L) with htop | hlt
@@ -409,7 +410,8 @@ theorem exists_mem_scCoderiv_of_bounded {q : ℕ → E × E} (hq : Tendsto q atT
     (fun k ↦ hL _) hconv, w₀, hconv.mem_of_tendsto (fun k ↦ hw _) hw₀, φ₁ ∘ φ₂,
     hφ₁.comp hφ₂, hw₀⟩
 
-theorem coe_nnnorm_eq_ofReal {G : Type*} [SeminormedAddCommGroup G] (x : G) : (‖x‖₊ : ℝ≥0∞) = ENNReal.ofReal ‖x‖ := by
+theorem coe_nnnorm_eq_ofReal {G : Type*} [SeminormedAddCommGroup G] (x : G) :
+    (‖x‖₊ : ℝ≥0∞) = ENNReal.ofReal ‖x‖ := by
   rw [← ENNReal.ofReal_coe_nnreal, coe_nnnorm]
 
 /-- Lemma 4.7 of [Gfrerer–Outrata 2022]: if `F` is SCD regular around `p`, then

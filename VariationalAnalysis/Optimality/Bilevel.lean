@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import VariationalAnalysis.Subdifferential.Marginal
 import VariationalAnalysis.SetValued.Basic
@@ -50,7 +50,8 @@ The data are `f φ : E × F → ℝ`, `g : ι → E × F → ℝ` and `Ω : Set 
   `S̃(x) = {y ∈ S(x) | f(x, y) = f_opt(x)}`.
 * In Prop. 6.13(ii), inner semicontinuity of `S̃` is relative to `dom S̃` (Exercise 2.46), and
   the book's proof picks `yₖ ∈ S̃(xₖ)`; we assume that the infimum in `f_opt` is attained near
-  `x̄` wherever `f_opt` is finite (as in Thm. 4.1, `subdiff_marginal_subset_of_innerSemicontinuousAt`).
+  `x̄` wherever `f_opt` is finite (as in Thm. 4.1,
+  `subdiff_marginal_subset_of_innerSemicontinuousAt`).
 * In Def. 6.14 the perturbed constraint `φ(x, y) - μ(x) + ϑ = 0` of (6.38) is written
   `μ(x) = φ(x, y) + ϑ`, which also excludes `μ(x) = -∞`. The objective of (6.40) is
   `f + κ φ - κ μ`, equal to `+∞` where `μ = -∞`.
@@ -316,7 +317,7 @@ theorem partiallyCalm_of_uniform_weakSharp (hmin : IsLocalMinOn f (valueFeasible
           rw [lt_div_iff₀ hα]; nlinarith)
       exact ⟨v, hv, hvd.le⟩
     · refine ⟨y, ⟨hyG, ?_⟩, by simp⟩
-      show (φ (x, y) : EReal) = lowerValue φ g x
+      change (φ (x, y) : EReal) = lowerValue φ g x
       rw [hμ, add_zero]
   have hϑr : -2 * ϑ / α < r / 4 := by
     rw [div_lt_iff₀ hα]; rw [abs_lt] at hϑ; nlinarith

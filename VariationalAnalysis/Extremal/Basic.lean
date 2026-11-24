@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Analysis.InnerProductSpace.Calculus
@@ -229,9 +229,10 @@ def AreSeparated [Fintype ι] (Ω : ι → Set E) : Prop :=
 
 /-- Prop. 2.2(i) of [Mordukhovich 2018], global form: separated sets can be pushed apart by
 arbitrarily small translations, with `U` in Def. 2.1 the whole space. -/
-theorem AreSeparated.exists_forall_notMem [Fintype ι] [DecidableEq ι] (h : AreSeparated Ω) :
+theorem AreSeparated.exists_forall_notMem [Fintype ι] (h : AreSeparated Ω) :
     ∃ a : ι → ℕ → E, (∀ i, Tendsto (a i) atTop (𝓝 0)) ∧
       ∀ k, ∀ x, ∃ i, x + a i k ∉ Ω i := by
+  classical
   obtain ⟨v, α, ⟨j, hj⟩, hsep, hv, hα⟩ := h
   obtain ⟨e, he⟩ : ∃ e, v j e ≠ 0 := by
     by_contra h

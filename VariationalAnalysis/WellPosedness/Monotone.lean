@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import VariationalAnalysis.WellPosedness.Basic
 

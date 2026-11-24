@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Topology.MetricSpace.Lipschitz
 import VariationalAnalysis.Subdifferential.Limiting
@@ -240,7 +240,7 @@ theorem mem_epsNormalCone_epi_of_add_lipschitz {g : E → ℝ} {L : ℝ≥0} (hg
     · have := (hTc.tendsto (x, α - g x)).mono_left (nhdsWithin_le_nhds (s := φ.Epi univ))
       simpa [T] using this
     · refine ⟨mem_univ _, ?_⟩
-      show φ q.1 + g q.1 ≤ ((q.2 + g q.1 : ℝ) : EReal)
+      change φ q.1 + g q.1 ≤ ((q.2 + g q.1 : ℝ) : EReal)
       rw [add_coe_le_coe_iff, add_sub_cancel_right]
       exact hq.2
   have hδ : 0 < ε / (1 + L) := div_pos hε (by positivity)

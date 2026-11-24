@@ -35,12 +35,12 @@ differentiability of single-valued mappings (Def. 1.77) and the inclusion
 
 We do not follow the book's proof via Lemma 1.81, which works with projections onto subsets of
 `ℝⁿ × ℝⁿ`. Write `f = ∇φ` and `g = f'(x̄; ·)`. By Prop. 1.50, `∂²φ(x̄)(u) = ∂⟨f(·), u⟩(x̄)`, and
-`∂²_D φ(x̄)(u) ⊆ {g(u)}`. The blow-ups `gₜ(z) = (f(x̄ + tz) - f(x̄))/t` are gradients and converge to
-`g`, which is therefore the gradient of `ψ(z) = ⟨g(z), z⟩/2`; `g` is Lipschitz and positively
-homogeneous. At a point `w` of differentiability of `g` (Rademacher), `A = ∇g(w)` is symmetric
-and `Aw = g(w)` (Euler's identity), so the gradient `Au` of `⟨g(·), u⟩` at `w` is close to `g(u)`
-when `w` is close to `u`. Finally, gradients of the limit `⟨g(·), u⟩` are approximated by regular
-subgradients of the blow-ups `⟨gₜ(·), u⟩`, via a smooth support, and these are regular
+`∂²_D φ(x̄)(u) ⊆ {g(u)}`. The blow-ups `gₜ(z) = (f(x̄ + tz) - f(x̄))/t` are gradients and
+converge to `g`, which is therefore the gradient of `ψ(z) = ⟨g(z), z⟩/2`; `g` is Lipschitz and
+positively homogeneous. At a point `w` of differentiability of `g` (Rademacher), `A = ∇g(w)` is
+symmetric and `Aw = g(w)` (Euler's identity), so the gradient `Au` of `⟨g(·), u⟩` at `w` is close
+to `g(u)` when `w` is close to `u`. Finally, gradients of the limit `⟨g(·), u⟩` are approximated
+by regular subgradients of the blow-ups `⟨gₜ(·), u⟩`, via a smooth support, and these are regular
 subgradients of `⟨f(·), u⟩` at points `x̄ + tz → x̄`.
 -/
 
@@ -103,7 +103,7 @@ theorem graphDeriv_subset_of_hasDirDerivAt {U : Set E} {L : ℝ≥0} (hU : U ∈
     simpa [Function.comp_def] using (continuous_fst.tendsto _).comp hpt
   have hxU : ∀ᶠ k in atTop, (p k).1 ∈ U := hx.eventually hU
   have hx₀U : x₀ ∈ U := mem_of_mem_nhds hU
-  show v' = v
+  change v' = v
   by_cases hu : u = 0
   · subst hu
     rw [hv.unique (hasDirDerivAt_zero f x₀)]
@@ -181,7 +181,7 @@ theorem dirDeriv_smul (hg : ∀ u, HasDirDerivAt f x₀ u (g u)) {s : ℝ} (hs :
       (nhdsWithin_le_nhds (s := Ioi 0))
   refine ((hg u).comp hmul).const_smul s |>.congr' ?_
   filter_upwards [self_mem_nhdsWithin] with t (ht : 0 < t)
-  show s • ((t * s)⁻¹ • (f (x₀ + (t * s) • u) - f x₀)) = t⁻¹ • (f (x₀ + t • s • u) - f x₀)
+  change s • ((t * s)⁻¹ • (f (x₀ + (t * s) • u) - f x₀)) = t⁻¹ • (f (x₀ + t • s • u) - f x₀)
   rw [smul_smul, smul_smul, show s * (t * s)⁻¹ = t⁻¹ by field_simp]
 
 /-- The directional derivative of a mapping `L`-Lipschitz around `x₀` is `L`-Lipschitz. -/

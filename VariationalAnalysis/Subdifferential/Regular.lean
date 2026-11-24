@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Topology.Instances.EReal.Lemmas
 import ConvexAnalysis.Extended.ConvexIndicator
@@ -125,7 +125,8 @@ theorem zero_mem_regularSubdiff_of_isLocalMin (hmin : IsLocalMin φ x₀) (hr : 
   refine ⟨r, hr, fun ε hε ↦ ?_⟩
   filter_upwards [hmin] with x hx
   refine le_trans ?_ (hr ▸ hx)
-  exact EReal.coe_le_coe_iff.2 (by simp; positivity)
+  exact EReal.coe_le_coe_iff.2 (by
+    simp only [zero_apply, add_zero, tsub_le_iff_right, le_add_iff_nonneg_right]; positivity)
 
 /-- The regular subdifferential of the indicator function of `Ω` is the set of `ω`-normals
 [Mordukhovich 2018, p. 29]. -/

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Topology.MetricSpace.Sequences
 import VariationalAnalysis.SetValued.Basic
@@ -487,7 +487,7 @@ theorem exists_coprod_of_mem_add_normalCone_graph {A : Set (StrongDual ℝ (E ×
   refine ⟨a.comp (ContinuousLinearMap.inl ℝ E F), a.comp (ContinuousLinearMap.inr ℝ E F),
     by rwa [ContinuousLinearMap.coprod_comp_inl_inr], ?_⟩
   have hb' : b = x.coprod 0 - a := eq_sub_of_add_eq' hab
-  show _ ∈ normalCone _ _
+  change _ ∈ normalCone _ _
   convert hb using 1
   rw [hb']
   ext z <;> simp
@@ -738,7 +738,7 @@ theorem marginal_qc_of_metricallyRegularAt {ψ : F → EReal} (hy₀ : y₀ ∈ 
   rw [singularSubdiff_comp_snd] at hw
   obtain ⟨v, -, rfl⟩ := hw
   have hv : v ∈ coderivKer G x₀ y₀ := by
-    show _ ∈ normalCone _ _
+    change _ ∈ normalCone _ _
     convert hN using 1
     ext <;> simp
   rw [hG.coderivKer_eq hy₀] at hv

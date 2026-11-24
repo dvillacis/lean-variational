@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import VariationalAnalysis.Subdifferential.MeanValueIneq
 
@@ -104,7 +104,7 @@ theorem exists_nhds_forall_norm_le_of_forall_norm_le (hr : φ x₀ = r)
   have h1 : ∀ᶠ x in 𝓝 x₀, (∀ᶠ y in 𝓝 x, LowerSemicontinuousAt φ y) ∧
       ((r - η : ℝ) : EReal) < φ x :=
     hlsc.eventually_nhds.and (hlsc.self_of_nhds ((r - η : ℝ) : EReal) (by
-      show ((r - η : ℝ) : EReal) < φ x₀
+      change ((r - η : ℝ) : EReal) < φ x₀
       rw [hr]; exact EReal.coe_lt_coe_iff.2 (by linarith)))
   obtain ⟨ν, hν, hνsub⟩ := Metric.mem_nhds_iff.1 h1
   set θ := min ν (η / (ℓ + 1)) with hθdef
@@ -127,7 +127,7 @@ theorem exists_nhds_forall_norm_le_of_forall_norm_le (hr : φ x₀ = r)
       linarith
     set ψ : E → EReal := fun x ↦ min (φ x) ((r + η : ℝ) : EReal) with hψdef
     have hψx₀ : ψ x₀ = r := by
-      show min (φ x₀) _ = _
+      change min (φ x₀) _ = _
       rw [hr, min_eq_left (EReal.coe_le_coe_iff.2 (by linarith))]
     have hψb : ψ b = ((r + η : ℝ) : EReal) := min_eq_right hge
     have hseg : segment ℝ x₀ b ⊆ ball x₀ θ :=
@@ -201,7 +201,7 @@ theorem lipschitz_tfae (hr : φ x₀ = r) (hlsc : ∀ᶠ x in 𝓝 x₀, LowerSe
     exact ⟨η, hη, fun x hx _ _ v hv ↦ h x (hball (by rw [mem_ball, dist_eq_norm]; exact hx)) v hv⟩
   tfae_have 2 → 3 := fun ⟨U, hU, h⟩ ↦ by
     have hbot : ∀ᶠ x in 𝓝 x₀, ⊥ < φ x :=
-      hlsc.self_of_nhds ⊥ (by show ⊥ < φ x₀; rw [hr]; exact EReal.bot_lt_coe r)
+      hlsc.self_of_nhds ⊥ (by change ⊥ < φ x₀; rw [hr]; exact EReal.bot_lt_coe r)
     obtain ⟨ρ₃, hρ₃, hsub⟩ := Metric.mem_nhds_iff.1
       (((show ∀ᶠ x in 𝓝 x₀, x ∈ U from hU).and hlsc).and hbot)
     have h3 : 3 * (ρ₃ / 3) = ρ₃ := by ring

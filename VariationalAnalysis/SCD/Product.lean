@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.Topology.MetricSpace.HausdorffDistance
@@ -161,7 +161,7 @@ theorem contingentCone_prod_eq_of_derivable_left (ha : a ∈ Ω₁) (hb : b ∈ 
   refine ⟨t, fun k ↦ ((t k)⁻¹ • (z k - a), v k), ht, hzlim.prodMk_nhds hv, fun k ↦ ?_⟩
   obtain ⟨_, ⟨y, hy, rfl⟩, hyv⟩ := Set.mem_smul_set.1 (hmem k)
   refine Set.mem_smul_set.2 ⟨(z k - a, y - b), ⟨(z k, y), ⟨hz k, hy⟩, rfl⟩, ?_⟩
-  show _ = ((t k)⁻¹ • (z k - a), v k)
+  change _ = ((t k)⁻¹ • (z k - a), v k)
   rw [← hyv]; rfl
 
 theorem contingentCone_prod_eq_of_derivable_right (ha : a ∈ Ω₁) (hb : b ∈ Ω₂)

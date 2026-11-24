@@ -72,7 +72,7 @@ theorem moreauEnvelope_shiftTilt (φ : E → EReal) (x₀ g : E) {l : ℝ} (hl :
     moreauEnvelope (shiftTilt φ x₀ g) l u = moreauEnvelope φ l (x₀ + l • g + u) +
       ((-((φ x₀).toReal + ⟪g, u⟫_ℝ + l / 2 * ‖g‖ ^ 2) : ℝ) : EReal) := by
   have hcomm : x₀ + u + l • g = x₀ + l • g + u := by abel
-  show (⨅ x, proxObjective (shiftTilt φ x₀ g) l u x) =
+  change (⨅ x, proxObjective (shiftTilt φ x₀ g) l u x) =
     (⨅ y, proxObjective φ l (x₀ + l • g + u) y) + _
   simp only [proxObjective_shiftTilt φ x₀ g hl, hcomm]
   rw [iInf_add_coe]
@@ -133,7 +133,7 @@ theorem ProxRegularFor.exists_twiceEpiDifferentiableAt_moreauEnvelope {g : E}
     have hmem : x₀ ∈ proximalMap φ l (x₀ + l • g) := by
       rw [hpU _ (mem_ball_self hδ), hp0]; exact mem_singleton _
     rw [moreauEnvelope_eq_of_mem_proximalMap hmem]
-    show φ x₀ + (((2 * l)⁻¹ * ‖x₀ - (x₀ + l • g)‖ ^ 2 : ℝ) : EReal) = _
+    change φ x₀ + (((2 * l)⁻¹ * ‖x₀ - (x₀ + l • g)‖ ^ 2 : ℝ) : EReal) = _
     have h1 : x₀ - (x₀ + l • g) = -(l • g) := by abel
     rw [hr₀, ← EReal.coe_add, h1, norm_neg, norm_smul, Real.norm_of_nonneg hl.le]
     congr 2
@@ -148,7 +148,7 @@ theorem ProxRegularFor.exists_twiceEpiDifferentiableAt_moreauEnvelope {g : E}
   have hfmin : ∀ᶠ t in 𝓝[>] (0 : ℝ), ∀ w : E, ((-(R / 2) * ‖w‖ ^ 2 : ℝ) : EReal) ≤ f t w := by
     filter_upwards [self_mem_nhdsWithin] with t ht w
     rw [hf]
-    show _ ≤ ((1 / 2 : ℝ) : EReal) * secondDiffQuot φ x₀ (toDual ℝ E g) t w
+    change _ ≤ ((1 / 2 : ℝ) : EReal) * secondDiffQuot φ x₀ (toDual ℝ E g) t w
     rw [← secondDiffQuot_shiftTilt hr₀]
     exact half_secondDiffQuot_ge (shiftTilt_zero hr₀) hmin ht w
   have htwo : ∀ a : EReal, ((2 : ℝ) : EReal) * (((1 / 2 : ℝ) : EReal) * a) = a := fun a ↦ by
@@ -167,9 +167,9 @@ theorem ProxRegularFor.exists_twiceEpiDifferentiableAt_moreauEnvelope {g : E}
     filter_upwards [(tendsto_fst (f := 𝓝[>] (0 : ℝ)) (g := 𝓝 w)).eventually
       self_mem_nhdsWithin] with q hq
     have hq0 : 0 < q.1 := hq
-    show ((2 : ℝ) : EReal) * moreauEnvelope (f q.1) l q.2 = _
+    change ((2 : ℝ) : EReal) * moreauEnvelope (f q.1) l q.2 = _
     rw [hf]
-    show ((2 : ℝ) : EReal) * moreauEnvelope
+    change ((2 : ℝ) : EReal) * moreauEnvelope
       (fun w ↦ ((1 / 2 : ℝ) : EReal) * secondDiffQuot φ x₀ (toDual ℝ E g) q.1 w) l q.2 = _
     rw [moreauEnvelope_half_secondDiffQuot_shift hr₀ hl.ne' he hq0, htwo]
   obtain ⟨hT, hsub⟩ := twiceEpiDifferentiableAt_of_tendsto_secondDiffQuot ⟨_, he⟩ hlim
@@ -297,7 +297,7 @@ theorem ContinuouslyProxRegularFor.exists_twiceEpiDifferentiableAt_of_moreauEnve
         rw [hfū]; exact mem_singleton _)
     filter_upwards [(continuous_fst.tendsto (x₀ + l • g, toDual ℝ E g)).eventually hsub]
       with q hq
-    show q.2 ∈ subdiff (moreauEnvelope φ l) q.1 ↔
+    change q.2 ∈ subdiff (moreauEnvelope φ l) q.1 ↔
       q.2 ∈ ({toDual ℝ E (f q.1)} : Set (StrongDual ℝ E))
     rw [hq]
   -- the linear isomorphism `(u, x) ↦ (u, λ⁻¹(u - x))` between the graphs of `P_λφ` and `∇e_λφ`
@@ -313,11 +313,11 @@ theorem ContinuouslyProxRegularFor.exists_twiceEpiDifferentiableAt_of_moreauEnve
       cont := continuous_fst.prodMk (continuous_fst.sub
         (((toDual ℝ E).symm.continuous.comp continuous_snd).const_smul l)) }
     (fun q ↦ Prod.ext rfl (by
-      show q.1 - l • (toDual ℝ E).symm (toDual ℝ E (l⁻¹ • (q.1 - q.2))) = q.2
+      change q.1 - l • (toDual ℝ E).symm (toDual ℝ E (l⁻¹ • (q.1 - q.2))) = q.2
       rw [LinearIsometryEquiv.symm_apply_apply, smul_smul, mul_inv_cancel₀ hl.ne', one_smul,
         sub_sub_cancel]))
     (fun q ↦ Prod.ext rfl (by
-      show toDual ℝ E (l⁻¹ • (q.1 - (q.1 - l • (toDual ℝ E).symm q.2))) = q.2
+      change toDual ℝ E (l⁻¹ • (q.1 - (q.1 - l • (toDual ℝ E).symm q.2))) = q.2
       rw [sub_sub_cancel, smul_smul, inv_mul_cancel₀ hl.ne', one_smul,
         LinearIsometryEquiv.apply_symm_apply]))
   have hΨ : ∀ q : E × E, Ψ q = (q.1, toDual ℝ E (l⁻¹ • (q.1 - q.2))) := fun q ↦ rfl
@@ -330,7 +330,7 @@ theorem ContinuouslyProxRegularFor.exists_twiceEpiDifferentiableAt_of_moreauEnve
       (show x₀ ∈ ({p (x₀ + l • g)} : Set E) by rw [hp0]; exact mem_singleton _)
     ext q
     simp only [inter_univ]
-    show q.2 ∈ ({p q.1} : Set E) ↔
+    change q.2 ∈ ({p q.1} : Set E) ↔
       toDual ℝ E (l⁻¹ • (q.1 - q.2)) ∈ ({toDual ℝ E (f q.1)} : Set (StrongDual ℝ E))
     rw [mem_singleton_iff, mem_singleton_iff, (toDual ℝ E).injective.eq_iff, hfu]
     exact ⟨fun h ↦ by rw [h], fun h ↦
@@ -341,7 +341,7 @@ theorem ContinuouslyProxRegularFor.exists_twiceEpiDifferentiableAt_of_moreauEnve
     refine eventuallyEq_set.2 ?_
     filter_upwards [(continuous_fst.tendsto (x₀ + l • g, x₀)).eventually
       (ball_mem_nhds (x₀ + l • g) hδ₁)] with q hq
-    show q.2 ∈ ({p q.1} : Set E) ↔ q.2 ∈ proximalMap φ l q.1
+    change q.2 ∈ ({p q.1} : Set E) ↔ q.2 ∈ proximalMap φ l q.1
     rw [hpU _ hq]
   have hmemP : x₀ ∈ proximalMap φ l (x₀ + l • g) := by
     rw [hpU _ (mem_ball_self hδ₁), hp0]; exact mem_singleton _

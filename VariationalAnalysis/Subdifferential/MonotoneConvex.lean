@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import VariationalAnalysis.Subdifferential.MeanValueIneq
 
@@ -224,7 +224,7 @@ theorem le_convex_comb_of_zero_mem (hlsc : LowerSemicontinuous φ) (hbot : ∀ x
     push Not at hT
     set T := θ * α + (1 - θ) * β with hTdef
     have hev : ∀ᶠ y in 𝓝 w, (T : EReal) < φ y :=
-      hlsc w T (by show (T : EReal) < φ w; rw [hγ]; exact EReal.coe_lt_coe_iff.2 hT)
+      hlsc w T (by change (T : EReal) < φ w; rw [hγ]; exact EReal.coe_lt_coe_iff.2 hT)
     obtain ⟨ρ, hρ, hρsub⟩ := Metric.mem_nhds_iff.1 hev
     have hfreq : ∃ᶠ y in 𝓝 w, φ y < φ w := by
       rw [IsLocalMin, IsMinFilter, not_eventually] at hloc

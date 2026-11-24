@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import VariationalAnalysis.Normal.Intersection
 import VariationalAnalysis.Subdifferential.SumRule
@@ -192,7 +192,7 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddComm
 theorem comp_inl_mem_coderiv {S : E → Set F} {x : E} {y : F} {ℓ : StrongDual ℝ (E × F)}
     {v : StrongDual ℝ F} (hℓ : ℓ ∈ normalCone (graph S) (x, y))
     (hv : ℓ.comp (inr ℝ E F) = -v) : ℓ.comp (inl ℝ E F) ∈ coderiv S x y v := by
-  show _ ∈ normalCone _ _
+  change _ ∈ normalCone _ _
   rwa [← hv, coprod_comp_inl_inr]
 
 omit [NormedSpace ℝ E] [NormedSpace ℝ F] in

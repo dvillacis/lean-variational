@@ -328,12 +328,14 @@ theorem lowerSemicontinuous_rockafellarFun : LowerSemicontinuous (rockafellarFun
 theorem mem_subdiff_rockafellarFun (hT : CyclicallyMonotone T) (h₀ : v₀ ∈ T x₀) {x : E}
     {v : StrongDual ℝ E} (h : v ∈ T x) : v ∈ subdiff (rockafellarFun T x₀ v₀) x := by
   -- `rockafellarFun T x₀ v₀ y ≥ c.val x + v (y - x)` for every chain `c`
-  have hext : ∀ y, ∀ c : CMChain T x₀ v₀, ((c.val x + v (y - x) : ℝ) : EReal) ≤ rockafellarFun T x₀ v₀ y := by
+  have hext : ∀ y, ∀ c : CMChain T x₀ v₀,
+      ((c.val x + v (y - x) : ℝ) : EReal) ≤ rockafellarFun T x₀ v₀ y := by
     intro y c
     rw [← c.extend_val h]
     exact le_rockafellarFun _ y
   -- `rockafellarFun T x₀ v₀ x ≤ s - v (y - x)` whenever `rockafellarFun T x₀ v₀ y = s`
-  have hup : ∀ y (s : ℝ), rockafellarFun T x₀ v₀ y = s → rockafellarFun T x₀ v₀ x ≤ ((s - v (y - x) : ℝ) : EReal) := by
+  have hup : ∀ y (s : ℝ), rockafellarFun T x₀ v₀ y = s →
+      rockafellarFun T x₀ v₀ x ≤ ((s - v (y - x) : ℝ) : EReal) := by
     intro y s hs
     refine iSup_le fun c ↦ ?_
     have := hext y c
@@ -376,7 +378,7 @@ theorem maximalCyclicallyMonotone_iff :
         have hx : ∀ i ≤ m, x i = 0 := fun i hi ↦ by
           by_contra hxi
           have := hv i hi
-          simp [S] at this
+          simp only [mem_ite_empty_right, mem_singleton_iff, S] at this
           exact hxi this.1
         have hv0 : ∀ i ≤ m, v i = 0 := fun i hi ↦ by
           have := hv i hi
@@ -387,7 +389,8 @@ theorem maximalCyclicallyMonotone_iff :
       have h0 : (0 : StrongDual ℝ E) ∈ S 0 := by simp [S]
       rw [this] at h0
       exact hne 0 0 h0
-    have hsub : ∀ x, T x ⊆ subdiff (rockafellarFun T x₀ v₀) x := fun x v hv ↦ mem_subdiff_rockafellarFun hT h₀ hv
+    have hsub : ∀ x, T x ⊆ subdiff (rockafellarFun T x₀ v₀) x :=
+      fun x v hv ↦ mem_subdiff_rockafellarFun hT h₀ hv
     refine ⟨rockafellarFun T x₀ v₀, convex_epi_rockafellarFun, lowerSemicontinuous_rockafellarFun,
       rockafellarFun_ne_bot h₀, ⟨x₀, by rw [rockafellarFun_zero hT h₀]; exact EReal.zero_ne_top⟩,
       (hmax _ (cyclicallyMonotone_subdiff_of_convex convex_epi_rockafellarFun) hsub).symm⟩

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
@@ -176,7 +176,7 @@ theorem GrassTendsto.exists_tendsto (h : GrassTendsto L L₀) {w₀ : V} (hw₀ 
     ∃ w : ℕ → V, (∀ k, w k ∈ L k) ∧ Tendsto w atTop (𝓝 w₀) := by
   refine ⟨fun k ↦ toEuclidean.symm (grassProj (L k) (toEuclidean w₀)), fun k ↦ ?_, ?_⟩
   · obtain ⟨x, hx, hxe⟩ := mem_euclideanImage_iff.1 (grassProj_apply_mem (L k) (toEuclidean w₀))
-    show toEuclidean.symm (grassProj (L k) (toEuclidean w₀)) ∈ L k
+    change toEuclidean.symm (grassProj (L k) (toEuclidean w₀)) ∈ L k
     rw [← hxe]
     simpa using hx
   · have h1 : Tendsto (fun k ↦ grassProj (L k) (toEuclidean w₀)) atTop

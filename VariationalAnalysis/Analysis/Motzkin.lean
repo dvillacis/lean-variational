@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.LocallyConvex.Separation
 import VariationalAnalysis.Coderivative.SecondOrder
@@ -70,7 +70,8 @@ theorem exists_multipliers_of_not_exists_direction (η : I → StrongDual ℝ X)
     (isCompact_univ_pi fun _ ↦ isCompact_Icc).of_isClosed_subset hΔcl
       fun lam ⟨h0, _, h1⟩ i _ ↦
         ⟨h0 i, h1 ▸ Finset.single_le_sum (fun j _ ↦ h0 j) (Finset.mem_univ i)⟩
-  have hTc : Continuous T := continuous_finsetSum _ fun i _ ↦ (continuous_apply i).smul continuous_const
+  have hTc : Continuous T :=
+    continuous_finsetSum _ fun i _ ↦ (continuous_apply i).smul continuous_const
   have hTl : IsLinearMap ℝ T :=
     ⟨fun a b ↦ by simp [T, add_smul, Finset.sum_add_distrib],
       fun c a ↦ by simp [T, Finset.smul_sum, smul_smul]⟩

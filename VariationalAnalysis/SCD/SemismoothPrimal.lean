@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
@@ -91,10 +91,10 @@ theorem coderivGraph_smul {q w : E × E} (hw : w ∈ coderivGraph F q) {t : ℝ}
   simpa [coderivGraph] using h
 
 theorem zero_mem_coderivGraph {q : E × E} (hq : q ∈ graph F) : (0 : E × E) ∈ coderivGraph F q := by
-  show toDual ℝ E 0 ∈ coderiv F q.1 q.2 (toDual ℝ E 0)
+  change toDual ℝ E 0 ∈ coderiv F q.1 q.2 (toDual ℝ E 0)
   have h0 : ((0 : StrongDual ℝ E).coprod (-(0 : StrongDual ℝ E))) = 0 := by ext <;> simp
   simp only [map_zero]
-  show (0 : StrongDual ℝ E).coprod (-0) ∈ normalCone (graph F) (q.1, q.2)
+  change (0 : StrongDual ℝ E).coprod (-0) ∈ normalCone (graph F) (q.1, q.2)
   rw [h0]
   exact zero_mem_normalCone hq
 

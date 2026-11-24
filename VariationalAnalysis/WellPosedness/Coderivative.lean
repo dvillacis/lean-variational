@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import VariationalAnalysis.Normal.Transport
 import VariationalAnalysis.WellPosedness.Basic
@@ -200,7 +200,7 @@ theorem mem_coderivKer_iff : v ∈ coderivKer S x₀ y₀ ↔ (0 : StrongDual �
 /-- The coderivative at a point of the graph is positively homogeneous. -/
 theorem posHomogeneous_coderiv (h₀ : y₀ ∈ S x₀) : PosHomogeneous (coderiv S x₀ y₀) := by
   refine ⟨?_, fun t ht v u hu ↦ smul_mem_coderiv hu ht.le⟩
-  show (0 : StrongDual ℝ E).coprod (-0) ∈ normalCone (graph S) (x₀, y₀)
+  change (0 : StrongDual ℝ E).coprod (-0) ∈ normalCone (graph S) (x₀, y₀)
   have h0 : (0 : StrongDual ℝ E).coprod (-(0 : StrongDual ℝ F)) = 0 := by ext <;> simp
   rw [h0]
   exact zero_mem_normalCone (show (x₀, y₀) ∈ graph S from h₀)

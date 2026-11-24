@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import ConvexAnalysis.Extended.ProperFunction
 import VariationalAnalysis.Normal.Product
@@ -256,7 +256,7 @@ private theorem outerLimit_coprod_normalCone_subset (c : StrongDual ℝ ℝ) (hr
   choose s hs using hmem
   have hs' : Tendsto s atTop (𝓝 r) := tendsto_of_eq_coe hr (fun k ↦ (hs k).1) ha2
   have hmem₀ : ((x₀, r) : E × ℝ) ∈ φ.Epi univ := ⟨mem_univ _, hr.le⟩
-  show v.coprod c ∈ normalCone (φ.Epi univ) (x₀, r)
+  change v.coprod c ∈ normalCone (φ.Epi univ) (x₀, r)
   rw [normalCone_eq_outerLimit_normalCone hmem₀]
   exact ⟨fun k ↦ (a k, s k), fun k ↦ (w k).coprod c, tendsto_nhdsWithin_iff.2
     ⟨ha1.prodMk_nhds hs', Eventually.of_forall fun k ↦ ⟨mem_univ _, (hs k).1.le⟩⟩,

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import VariationalAnalysis.SCD.Basic
 import VariationalAnalysis.WellPosedness.Basic
@@ -155,7 +155,8 @@ theorem stronglyMetricallySubregularAt_iff_subregular_isolated (hp : (x₀, y₀
       (infEDist_le_edist_of_mem (show x₀ ∈ invMap S y₀ from hp)).trans (h x hx)⟩, U, hU, ?_⟩
     refine subset_antisymm (fun x ⟨hx, hxU⟩ ↦ ?_) (singleton_subset_iff.2 ⟨hp, mem_of_mem_nhds hU⟩)
     have h1 := h x hxU
-    rw [infEDist_zero_of_mem (show y₀ ∈ S x from hx), mul_zero, nonpos_iff_eq_zero, edist_eq_zero] at h1
+    rw [infEDist_zero_of_mem (show y₀ ∈ S x from hx), mul_zero, nonpos_iff_eq_zero,
+      edist_eq_zero] at h1
     exact h1
   · rintro ⟨⟨κ, U, hU, h⟩, U', hU', hiso⟩
     obtain ⟨r, hr, hrU'⟩ := Metric.mem_nhds_iff.1 hU'

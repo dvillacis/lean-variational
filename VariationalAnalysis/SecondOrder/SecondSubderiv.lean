@@ -377,7 +377,8 @@ theorem secondSubderiv_nonneg_of_convex (hconv : Convex ℝ (φ.Epi univ)) (hr :
   exact secondDiffQuot_nonneg hr (by simpa using hv (x₀ + p.1 • p.2))
 
 theorem secondDiffQuot_le_coe_iff (hr : φ x₀ = r) {t : ℝ} (ht : 0 < t) {u : E} {β : ℝ} :
-    secondDiffQuot φ x₀ v t u ≤ β ↔ φ (x₀ + t • u) ≤ ((r + t * v u + t ^ 2 / 2 * β : ℝ) : EReal) := by
+    secondDiffQuot φ x₀ v t u ≤ β ↔
+      φ (x₀ + t • u) ≤ ((r + t * v u + t ^ 2 / 2 * β : ℝ) : EReal) := by
   have hc : (0 : ℝ) < 2 / t ^ 2 := by positivity
   rw [secondDiffQuot, hr]
   by_cases htop : φ (x₀ + t • u) = ⊤
@@ -601,8 +602,8 @@ theorem mem_subdiff_coe_mul_iff {θ : E → EReal} {c : ℝ} (hc : 0 < c) {x₀ 
     have hr' : (fun x ↦ (c : EReal) * θ x) x₀ = ((c * r : ℝ) : EReal) := by
       simp only [hr, EReal.coe_mul]
     have hL : L (x₀, r) = (x₀, c * r) := scaleSnd_apply _ _ _
-    rw [mem_subdiff_iff (φ := fun x ↦ (c : EReal) * θ x) hr', mem_subdiff_iff hr, epi_coe_mul hc, ← hL,
-      mem_normalCone_image_iff L, hcomp]
+    rw [mem_subdiff_iff (φ := fun x ↦ (c : EReal) * θ x) hr', mem_subdiff_iff hr, epi_coe_mul hc,
+      ← hL, mem_normalCone_image_iff L, hcomp]
     refine ⟨fun h ↦ ?_, fun h ↦ smul_mem_normalCone h hc.le⟩
     have := smul_mem_normalCone h (inv_pos.2 hc).le
     rwa [smul_smul, inv_mul_cancel₀ hc.ne', one_smul] at this
@@ -659,8 +660,9 @@ theorem subdiff_half_secondDiffQuot {φ : E → EReal} {x₀ : E} {v : StrongDua
     refine ⟨z, hz, ?_⟩
     ext d
     have h1 := congrArg (fun f : StrongDual ℝ E ↦ f d) hzy
-    simp at h1
-    simp
+    simp only [ContinuousLinearMap.comp_smulₛₗ, RingHom.id_apply, ContinuousLinearMap.comp_id,
+      smul_apply, smul_eq_mul, inv_pow, inv_inv, add_apply] at h1
+    simp only [smul_apply, sub_apply, smul_eq_mul]
     have h2 : z d - v d = t * y d :=
       mul_left_cancel₀ ht.ne' (by linear_combination h1)
     rw [h2, ← mul_assoc, inv_mul_cancel₀ ht.ne', one_mul]

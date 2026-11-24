@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Calculus.ContDiff.RCLike
 import Mathlib.Analysis.Calculus.FDeriv.Prod
@@ -86,7 +86,7 @@ theorem mem_contingentCone_preimage_iff {Φ : X → Y} {e : X ≃L[ℝ] Y} {x : 
     have h := apply_mem_contingentCone_of_hasFDerivAt (Ω := Ω') (Ω' := Φ ⁻¹' Ω')
       hΦ.to_localInverse.hasFDerivAt
       (hΦ.eventually_right_inverse.mono fun y hy hyΩ ↦ by
-        show Φ _ ∈ Ω'
+        change Φ _ ∈ Ω'
         rw [hy]; exact hyΩ) hw
     rwa [hΦ.localInverse_apply_image, ContinuousLinearEquiv.coe_coe,
       ContinuousLinearEquiv.symm_apply_apply] at h

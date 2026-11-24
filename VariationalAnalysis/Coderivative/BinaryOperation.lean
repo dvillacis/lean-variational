@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import VariationalAnalysis.Coderivative.ChainRule
@@ -108,7 +108,8 @@ theorem coderiv_binaryComp_subset {h : Y₁ × Y₂ → Z} {F₁ : X → Set Y�
   intro x' hx
   have h1 := coderiv_setComp_subset_of_lipschitzLike_or_metricallyRegular
     (G := pairMap F₁ F₂) (F := fun y ↦ {h y}) (y₀ := (y₁, y₂)) hy hS
-    (locallyClosed_graph_pairMap hloc₁ hloc₂) (locallyClosed_graph_of_continuousOn hU hh.continuousOn)
+    (locallyClosed_graph_pairMap hloc₁ hloc₂)
+    (locallyClosed_graph_of_continuousOn hU hh.continuousOn)
     (Or.inl (lipschitzLikeAt_of_lipschitzOnWith hU hh)) z' hx
   obtain ⟨w, hw, hx'⟩ := mem_iUnion₂.1 h1
   exact mem_biUnion hw (coderiv_pairMap_subset hloc₁ hloc₂ hqc w hx')

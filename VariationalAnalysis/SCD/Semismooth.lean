@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import VariationalAnalysis.SCD.Regularity
@@ -330,7 +330,7 @@ theorem IsSCDSemismoothStarAt.exists_isSCDNewtonSeq (h : IsSCDSemismoothStarAt F
   have hc : 0 ∉ F (S^[k] x₀) ∧ (newtonApproxSet F xbar η κ (S^[k] x₀)).Nonempty :=
     ⟨hk, hG _ hlt hk⟩
   refine ⟨hc.2.some, hc.2.some_mem, ?_⟩
-  show S^[k + 1] x₀ = _
+  change S^[k + 1] x₀ = _
   rw [Function.iterate_succ_apply']
   simp only [S, dif_pos hc]
 
@@ -363,7 +363,8 @@ theorem IsSCDRegularAround.eventually_newtonApproxSet (h : IsSCDRegularAround F 
     (hκ : scdreg F (xbar, 0) < ENNReal.ofReal κ) :
     ∀ᶠ x in 𝓝 xbar, (newtonApproxSet F xbar η κ x).Nonempty ∧
       newtonApproxSet F xbar η κ x = newtonApproxSet' F xbar η x := by
-  obtain ⟨ρ, hρ, hball⟩ := Metric.eventually_nhds_iff.1 (eventually_isRegularSubspace_and_norm_le hκ)
+  obtain ⟨ρ, hρ, hball⟩ :=
+    Metric.eventually_nhds_iff.1 (eventually_isRegularSubspace_and_norm_le hκ)
   obtain ⟨U, hU, hscd⟩ := h.1
   obtain ⟨L, hL⟩ := hasSCDPropertyAt_iff_scCoderiv_nonempty.1 (hscd _ ⟨hp, mem_of_mem_nhds hU⟩)
   refine Metric.eventually_nhds_iff.2 ⟨ρ / η, by positivity, fun x hx ↦ ⟨?_, ?_⟩⟩

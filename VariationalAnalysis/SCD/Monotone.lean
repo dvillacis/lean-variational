@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import VariationalAnalysis.SCD.SingleValued
@@ -118,13 +118,13 @@ theorem map_graph_mintyMap_symm (B : E →L[ℝ] E) :
   · rintro ⟨q, hq, rfl⟩
     rw [LinearMap.mem_graph_iff] at hq
     refine ⟨q.1, ?_, ?_⟩
-    · show B q.1 = q.2
+    · change B q.1 = q.2
       exact hq.symm
-    · show q.1 - B q.1 = q.1 - q.2
+    · change q.1 - B q.1 = q.1 - q.2
       rw [← ContinuousLinearMap.coe_coe, ← hq]
   · rintro ⟨v, h1, h2⟩
     refine ⟨(v, B v), (LinearMap.mem_graph_iff _ _).2 rfl, ?_⟩
-    show (B v, v - B v) = w
+    change (B v, v - B v) = w
     exact Prod.ext h1 h2
 
 omit [FiniteDimensional ℝ E] in
@@ -317,7 +317,7 @@ theorem IsMonotoneOp.graph_eq_image_resolvent :
     have hz' : z = resolvent F u := hz
     simp only [mintyMap_symm_apply, Prod.mk.injEq] at hq
     obtain ⟨rfl, rfl⟩ := hq
-    show u - z ∈ F z
+    change u - z ∈ F z
     rw [hz']
     exact resolvent_spec (hs u)
 
@@ -515,7 +515,7 @@ theorem exists_sub_mem_subdiffMap (u : E) : ∃ x, u - x ∈ subdiffMap φ x := 
   set r := (φ ys).toReal
   have hr : φ ys = r := (EReal.coe_toReal hφys (hbot ys)).symm
   have hψr : ψ ys = ((r + h ys : ℝ) : EReal) := by
-    show φ ys + ((h ys : ℝ) : EReal) = _
+    change φ ys + ((h ys : ℝ) : EReal) = _
     rw [hr, ← EReal.coe_add]
   have h0 := zero_mem_regularSubdiff_of_isLocalMin
     (Eventually.of_forall hglob : IsLocalMin ψ ys) hψr
@@ -675,8 +675,8 @@ theorem graphicallySmoothAt_of_inter_eq (hW : IsOpen W) (h : graph F ∩ W = gra
   rw [tangentSubspace, tangentSubspace, hcone]
 
 /-- `𝒮F(p)` only depends on `gph F` near `p`. -/
-theorem scDeriv_subset_of_inter_eq_of_isOpen (hW : IsOpen W) (h : graph F ∩ W = graph G ∩ W) {p : E × E}
-    (hp : p ∈ W) : scDeriv F p ⊆ scDeriv G p := by
+theorem scDeriv_subset_of_inter_eq_of_isOpen (hW : IsOpen W) (h : graph F ∩ W = graph G ∩ W)
+    {p : E × E} (hp : p ∈ W) : scDeriv F p ⊆ scDeriv G p := by
   rintro L ⟨q, hq, hqlim, hT⟩
   have hev : ∀ᶠ k in atTop, q k ∈ W := hqlim.eventually (hW.mem_nhds hp)
   exact mem_scDeriv_of_eventually
@@ -685,7 +685,8 @@ theorem scDeriv_subset_of_inter_eq_of_isOpen (hW : IsOpen W) (h : graph F ∩ W 
 
 theorem scDeriv_eq_of_inter_eq (hW : IsOpen W) (h : graph F ∩ W = graph G ∩ W) {p : E × E}
     (hp : p ∈ W) : scDeriv F p = scDeriv G p :=
-  subset_antisymm (scDeriv_subset_of_inter_eq_of_isOpen hW h hp) (scDeriv_subset_of_inter_eq_of_isOpen hW h.symm hp)
+  subset_antisymm (scDeriv_subset_of_inter_eq_of_isOpen hW h hp)
+    (scDeriv_subset_of_inter_eq_of_isOpen hW h.symm hp)
 
 /-- The subspace `rge(B, I - c B) = {(B v, v - c B v) | v ∈ E}`. -/
 noncomputable def hypoMintySubspace (c : ℝ) (B : E →L[ℝ] E) : Submodule ℝ (E × E) :=
@@ -753,7 +754,7 @@ theorem mem_graph_add_smul_iff (γ : ℝ) {q : E × E} :
   constructor
   · rintro ⟨y, hy, hyq⟩
     have : y = q.2 := add_right_cancel hyq
-    show q.2 ∈ F q.1
+    change q.2 ∈ F q.1
     rw [← this]
     exact hy
   · intro hq

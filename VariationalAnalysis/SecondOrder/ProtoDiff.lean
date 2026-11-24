@@ -60,7 +60,8 @@ noncomputable def graphShear (B : F →L[ℝ] E) : (E × F) ≃L[ℝ] (E × F) :
       (ContinuousLinearMap.snd ℝ E F))
     (fun q ↦ by ext <;> simp) (fun q ↦ by ext <;> simp)
 
-@[simp] theorem graphShear_apply (B : F →L[ℝ] E) (q : E × F) : graphShear B q = (q.1 + B q.2, q.2) := rfl
+@[simp] theorem graphShear_apply (B : F →L[ℝ] E) (q : E × F) :
+    graphShear B q = (q.1 + B q.2, q.2) := rfl
 
 @[simp] theorem graphShear_symm_apply (B : F →L[ℝ] E) (q : E × F) :
     (graphShear B).symm q = (q.1 - B q.2, q.2) := rfl
@@ -79,7 +80,7 @@ with `L(x, y) = (x + B y, y)`, then `z ∈ DS(x₀, y₀)(u)` iff `z ∈ DT(x₀
 theorem graphDeriv_shear_iff
     (hloc : ∀ᶠ p in 𝓝 (x₀, y₀), p.2 ∈ S p.1 ↔ p.2 ∈ T (p.1 + B p.2)) {u : E} {z : F} :
     z ∈ graphDeriv S x₀ y₀ u ↔ z ∈ graphDeriv T (x₀ + B y₀) y₀ (u + B z) := by
-  show (u, z) ∈ contingentCone (graph S) (x₀, y₀) ↔
+  change (u, z) ∈ contingentCone (graph S) (x₀, y₀) ↔
     (u + B z, z) ∈ contingentCone (graph T) (x₀ + B y₀, y₀)
   rw [contingentCone_congr (graph_eventuallyEq_graphShear hloc),
     mem_contingentCone_preimage_iff (graphShear B).hasStrictFDerivAt]
@@ -92,7 +93,7 @@ theorem coderiv_shear_iff
     (hloc : ∀ᶠ p in 𝓝 (x₀, y₀), p.2 ∈ S p.1 ↔ p.2 ∈ T (p.1 + B p.2))
     {xs : StrongDual ℝ E} {ys : StrongDual ℝ F} :
     xs ∈ coderiv S x₀ y₀ ys ↔ xs ∈ coderiv T (x₀ + B y₀) y₀ (ys + xs.comp B) := by
-  show xs.coprod (-ys) ∈ normalCone (graph S) (x₀, y₀) ↔
+  change xs.coprod (-ys) ∈ normalCone (graph S) (x₀, y₀) ↔
     xs.coprod (-(ys + xs.comp B)) ∈ normalCone (graph T) (x₀ + B y₀, y₀)
   rw [normalCone_congr (graph_eventuallyEq_graphShear hloc),
     mem_normalCone_preimage_iff (D := fun _ ↦ ((graphShear B : (E × F) ≃L[ℝ] (E × F)) :
@@ -118,7 +119,8 @@ theorem ProtoDifferentiableAt.of_shear
     have := (graphShear B).symm.continuous.tendsto (x₀ + B y₀, y₀)
     rwa [hsx] at this
   refine GeometricallyDerivableAt.of_inter_eq_preimage (Φ := (graphShear B).symm)
-    (e := (graphShear B).symm) (by rw [hsx]; exact h) (hc hW) ?_ (graphShear B).symm.hasStrictFDerivAt ?_
+    (e := (graphShear B).symm) (by rw [hsx]; exact h) (hc hW) ?_
+    (graphShear B).symm.hasStrictFDerivAt ?_
   · ext p
     simp only [mem_inter_iff, mem_preimage]
     have := hWloc ((graphShear B).symm p)
@@ -449,7 +451,7 @@ theorem ContinuouslyProxRegularFor.subgradGraphDeriv_subset_secondOrderSubdiff {
   have hφ'L : LipschitzOnWith (1 * K) φ' (ball ū δ) :=
     (toDual ℝ E).lipschitz.comp_lipschitzOnWith hfL
   have hfū : f ū = g := ((hloc.self_of_nhds).1 hv₀mem).symm
-  have hφ'ū : φ' ū = v₀ := by show toDual ℝ E (f ū) = v₀; rw [hfū]
+  have hφ'ū : φ' ū = v₀ := by change toDual ℝ E (f ū) = v₀; rw [hfū]
   let B : StrongDual ℝ E →L[ℝ] E :=
     { toFun := fun v ↦ l • (toDual ℝ E).symm v
       map_add' := fun v w ↦ by simp [smul_add]
@@ -481,14 +483,15 @@ theorem ContinuouslyProxRegularFor.subgradGraphDeriv_subset_secondOrderSubdiff {
     rw [h1, LinearIsometryEquiv.symm_apply_eq, hB]
   -- `∇e` is directionally differentiable at `ū`
   have hprotoT : ProtoDifferentiableAt T ū v₀ := hx₀B ▸ hproto.of_shear hshear hv₀mem
-  have hdT : GeometricallyDerivableAt (graph fun u ↦ ({φ' u} : Set (StrongDual ℝ E))) (ū, φ' ū) := by
+  have hdT :
+      GeometricallyDerivableAt (graph fun u ↦ ({φ' u} : Set (StrongDual ℝ E))) (ū, φ' ū) := by
     rw [hφ'ū]
     refine GeometricallyDerivableAt.congr hprotoT ?_ ?_
     · have := (continuous_fst.tendsto (ū, v₀)).eventually hT
       exact eventuallyEq_set.2 (this.mono fun q hq ↦ by
-        show q.2 ∈ T q.1 ↔ q.2 ∈ ({φ' q.1} : Set _)
+        change q.2 ∈ T q.1 ↔ q.2 ∈ ({φ' q.1} : Set _)
         rw [hq])
-    · show v₀ ∈ ({φ' ū} : Set _)
+    · change v₀ ∈ ({φ' ū} : Set _)
       rw [hφ'ū]; exact mem_singleton _
   have hdir : DirDifferentiableAt φ' ū :=
     dirDifferentiableAt_of_geometricallyDerivableAt (ball_mem_nhds ū hδ) hφ'L hdT
@@ -502,12 +505,12 @@ theorem ContinuouslyProxRegularFor.subgradGraphDeriv_subset_secondOrderSubdiff {
   have hfv : toDual ℝ E (f ū) = v₀ := hφ'ū
   rw [hfv] at h184
   have hz2 : z ∈ coderiv T ū v₀ (NormedSpace.inclusionInDoubleDual ℝ E (u + B z)) := h184 hz'
-  show z ∈ coderiv (subdiff φ) x₀ v₀ (NormedSpace.inclusionInDoubleDual ℝ E u)
+  change z ∈ coderiv (subdiff φ) x₀ v₀ (NormedSpace.inclusionInDoubleDual ℝ E u)
   rw [coderiv_shear_iff hshear, hx₀B]
   have hι : NormedSpace.inclusionInDoubleDual ℝ E u + z.comp B =
       NormedSpace.inclusionInDoubleDual ℝ E (u + B z) := by
     refine ContinuousLinearMap.ext fun v ↦ ?_
-    show v u + z (B v) = v (u + B z)
+    change v u + z (B v) = v (u + B z)
     rw [hB, hB, map_add, map_smul, map_smul, smul_eq_mul, smul_eq_mul,
       ← toDual_symm_apply (x := (toDual ℝ E).symm v) (y := z),
       ← toDual_symm_apply (x := (toDual ℝ E).symm z) (y := v), real_inner_comm]

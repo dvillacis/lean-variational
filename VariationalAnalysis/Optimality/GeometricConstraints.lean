@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.Convex.Continuous
 import VariationalAnalysis.Subdifferential.SumRule
@@ -164,9 +164,10 @@ section Many
 
 variable {ι : Type*} [Fintype ι] {Ω : ι → Set E}
 
-omit [NormedSpace ℝ E] in
-theorem locallyClosed_iInter (hloc : ∀ i, ∃ ρ > 0, IsClosed (Ω i ∩ closedBall x₀ ρ)) :
+omit [NormedSpace ℝ E] [Fintype ι] in
+theorem locallyClosed_iInter [Finite ι] (hloc : ∀ i, ∃ ρ > 0, IsClosed (Ω i ∩ closedBall x₀ ρ)) :
     ∃ ρ > 0, IsClosed ((⋂ i, Ω i) ∩ closedBall x₀ ρ) := by
+  have := Fintype.ofFinite ι
   simpa using locallyClosed_biInter (Ω := Ω) (x₀ := x₀) Finset.univ fun i _ ↦ hloc i
 
 variable [FiniteDimensional ℝ E]

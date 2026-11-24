@@ -189,8 +189,8 @@ theorem ContinuouslyProxRegularFor.scd_symm {g : E}
         (hev.mono fun k hk ↦ isSymmetricOp_of_hasFDerivAt_gradient
           (eventually_of_mem (isOpen_ball.mem_nhds hk) he) (hd k).hasFDerivAt)
       intro v w
-      simp only [sub_apply, ContinuousLinearMap.id_apply, smul_apply, inner_sub_left, real_inner_smul_left, hCs v w,
-        real_inner_comm v w]
+      simp only [sub_apply, ContinuousLinearMap.id_apply, smul_apply, inner_sub_left,
+        real_inner_smul_left, hCs v w, real_inner_comm v w]
     · have hcont : Continuous fun A : E →L[ℝ] E ↦ ⟪v - l • A v, v⟫_ℝ := by fun_prop
       refine ge_of_tendsto ((hcont.tendsto C).comp hlim) (hev.mono fun k hk ↦ ?_)
       have hP : HasFDerivAt (fun u ↦ u - l • f u)

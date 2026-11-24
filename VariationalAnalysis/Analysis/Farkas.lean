@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 David Villacís. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: David Villacís
+Authors: David Villacís
 -/
 import Mathlib.Analysis.LocallyConvex.Separation
 import VariationalAnalysis.Coderivative.SecondOrder
@@ -23,8 +23,9 @@ Farkas' lemma in a finite-dimensional normed space: if `⟨c, v⟩ ≥ 0` whenev
 
 ## Implementation notes
 
-Mathlib has the geometric form of Farkas' lemma for closed cones (`ProperCone.hyperplane_separation`)
-but not the closedness of finitely generated cones. Here closedness follows from conic
+Mathlib has the geometric form of Farkas' lemma for closed cones
+(`ProperCone.hyperplane_separation`) but not the closedness of finitely generated cones. Here
+closedness follows from conic
 Carathéodory (a finitely generated cone is a finite union of images of orthants under injective
 linear maps), and Farkas' lemma from the separation theorem
 `geometric_hahn_banach_closed_point` together with the reflexivity of finite-dimensional spaces
@@ -157,7 +158,8 @@ theorem exists_nonneg_eq_sum_of_forall_nonneg {F : Type*} [NormedAddCommGroup F]
     ∃ μ : ι → ℝ, (∀ i, 0 ≤ μ i) ∧ c = ∑ i, μ i • a i := by
   classical
   by_contra hc
-  have hconv : Convex ℝ {w : StrongDual ℝ F | ∃ μ : ι → ℝ, (∀ i, 0 ≤ μ i) ∧ w = ∑ i, μ i • a i} := by
+  have hconv :
+      Convex ℝ {w : StrongDual ℝ F | ∃ μ : ι → ℝ, (∀ i, 0 ≤ μ i) ∧ w = ∑ i, μ i • a i} := by
     rintro _ ⟨μ, hμ, rfl⟩ _ ⟨ν, hν, rfl⟩ s t hs ht -
     refine ⟨fun i ↦ s * μ i + t * ν i, fun i ↦ by have := hμ i; have := hν i; positivity, ?_⟩
     simp only [add_smul, mul_smul, Finset.sum_add_distrib, Finset.smul_sum]
