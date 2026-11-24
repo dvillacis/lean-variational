@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this library, please cite it using the metadata below."
+type: software
+title: "VariationalAnalysis: variational analysis and generalized differentiation in Lean 4"
+abstract: >-
+  A Lean 4 / Mathlib library of variational analysis and generalized differentiation: normal
+  cones, subdifferentials, coderivatives, variational and extremal principles, well-posedness,
+  optimality conditions, SCD mappings and second-order theory.
+authors:
+  - family-names: Villacís
+    given-names: David
+version: 0.2.0
+date-released: 2026-11-24
+license: Apache-2.0
+repository-code: "https://github.com/dvillacis/lean-variational"
+url: "https://david.villacis.net/lean-variational/docs/"
+keywords:
+  - Lean 4
+  - Mathlib
+  - formalized mathematics
+  - variational analysis
+  - nonsmooth analysis
+  - generalized differentiation
+  - optimization
