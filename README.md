@@ -233,11 +233,14 @@ Every pull request is checked by CI (`.github/workflows/ci.yml`), which runs
 |---|---|
 | Build, with no warnings from this package | `lake build` |
 | The root file imports every module | `lake exe mk_all --check` (`lake exe mk_all` to fix) |
+| The statements of the main results and the README example are unchanged | `lake test`, `python3 scripts/check_readme.py` |
 | Environment linters of Batteries | `lake lint` |
 | Every definition and theorem has a docstring | `lake env lean scripts/LintDocs.lean` |
 | No axiom beyond `propext`, `Classical.choice`, `Quot.sound` | `lake env lean scripts/AuditAxioms.lean` |
 
-Mathlib's standard set of style linters is enabled in `lakefile.toml`.
+Mathlib's standard set of style linters is enabled in `lakefile.toml`. See
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for the conventions of the library and how to propose a
+change.
 
 ## Versions and compatibility
 

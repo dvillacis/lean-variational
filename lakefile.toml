@@ -4,6 +4,7 @@ description = "Variational analysis and generalized differentiation: normal cone
 keywords = ["math", "analysis", "optimization", "variational-analysis", "nonsmooth-analysis"]
 license = "Apache-2.0"
 defaultTargets = ["VariationalAnalysis"]
+testDriver = "VariationalAnalysisTest"
 lintDriver = "batteries/runLinter"
 lintDriverArgs = ["VariationalAnalysis"]
 # Dependents download the compiled library from the GitHub release of the pinned tag.
@@ -15,6 +16,9 @@ autoImplicit = false
 relaxedAutoImplicit = false
 # Mathlib's style and hygiene linters.
 weak.linter.mathlibStandardSet = true
+
+[[lean_lib]]
+name = "VariationalAnalysisTest"
 
 [[require]]
 name = "mathlib"

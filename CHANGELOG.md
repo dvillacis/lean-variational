@@ -9,6 +9,15 @@ All notable changes to this library are recorded here. The format follows
 | 0.2.0 | `v4.33.1` | `v4.33.1` | `v0.1.1` |
 | 0.1.0 | `v4.33.1` | `v4.33.1` | `v0.1.0` |
 
+## [Unreleased]
+
+### Added
+
+- `VariationalAnalysisTest`, a test library run by `lake test`: it restates the main results
+  with their hypotheses written out, so that a change to one of these statements is noticed,
+  and it compiles the example of the README.
+- `CONTRIBUTING.md`.
+
 ## [0.2.0] - 2026-11-24
 
 ### Added
