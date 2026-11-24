@@ -4,6 +4,7 @@
 [![Release](https://img.shields.io/github/v/release/dvillacis/lean-variational)](https://github.com/dvillacis/lean-variational/releases)
 [![Documentation](https://img.shields.io/badge/docs-API-blue)](https://david.villacis.net/lean-variational/docs/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24512822.svg)](https://doi.org/10.5281/zenodo.24512822)
 
 A Lean 4 / Mathlib library of variational analysis and generalized differentiation: normal cones,
 subdifferentials, coderivatives, variational and extremal principles, well-posedness, optimality
@@ -256,7 +257,10 @@ To make a release: update `version` in `lakefile.toml`, `version` and `date-rele
 
 ## Citing
 
-Use "Cite this repository" on GitHub, which reads [`CITATION.cff`](CITATION.cff), or:
+Each release is archived on Zenodo. The DOI
+[10.5281/zenodo.24512822](https://doi.org/10.5281/zenodo.24512822) always points to the latest
+version; the Zenodo page lists the DOI of each version. Use "Cite this repository" on GitHub,
+which reads [`CITATION.cff`](CITATION.cff), or:
 
 ```bibtex
 @software{villacis_variationalanalysis,
@@ -265,6 +269,7 @@ Use "Cite this repository" on GitHub, which reads [`CITATION.cff`](CITATION.cff)
              {L}ean 4},
   year    = {2026},
   version = {0.2.0},
+  doi     = {10.5281/zenodo.24512822},
   url     = {https://github.com/dvillacis/lean-variational}
 }
 ```
