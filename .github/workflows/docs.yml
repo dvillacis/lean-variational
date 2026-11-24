@@ -12,12 +12,10 @@ concurrency:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
-  docs:
-    name: Build and deploy
+  build:
+    name: Build
     runs-on: ubuntu-latest
     # The first build after a dependency update also documents Mathlib; later builds
     # take its documentation from the cache.
@@ -47,7 +45,29 @@ jobs:
           mkdir -p docs
           echo '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=docs/"><title>VariationalAnalysis</title><a href="docs/">Documentation</a>' > docs/index.html
 
-      # No tagged releases; pinned to a commit of main.
+      # No tagged releases; pinned to a commit of main. The action only builds: when it also
+      # deploys, the deployment sometimes does not find the artifact uploaded just before
+      # (actions/deploy-pages#451), which fails the job and loses the documentation cache.
       - uses: leanprover-community/docgen-action@dacc1acc2a3f532cc577266979ba9c36c7593f7c
         with:
           build-page: false
+          deploy: false
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: docs/
+
+  # A separate job, so that a failed deployment can be re-run without building again.
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
