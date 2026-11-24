@@ -60,9 +60,11 @@ noncomputable def graphShear (B : F →L[ℝ] E) : (E × F) ≃L[ℝ] (E × F) :
       (ContinuousLinearMap.snd ℝ E F))
     (fun q ↦ by ext <;> simp) (fun q ↦ by ext <;> simp)
 
+/-- The shear acts by `graphShear B (x, y) = (x + B y, y)`. -/
 @[simp] theorem graphShear_apply (B : F →L[ℝ] E) (q : E × F) :
     graphShear B q = (q.1 + B q.2, q.2) := rfl
 
+/-- The inverse shear acts by `(graphShear B).symm (x, y) = (x - B y, y)`. -/
 @[simp] theorem graphShear_symm_apply (B : F →L[ℝ] E) (q : E × F) :
     (graphShear B).symm q = (q.1 - B q.2, q.2) := rfl
 
@@ -70,6 +72,8 @@ variable [CompleteSpace E] [CompleteSpace F] {S T : E → Set F} {x₀ : E} {y�
   {B : F →L[ℝ] E}
 
 omit [CompleteSpace E] [CompleteSpace F] in
+/-- If `y ∈ S x ↔ y ∈ T (x + B y)` for all `(x, y)` near `(x₀, y₀)`, then `gph S` coincides near
+`(x₀, y₀)` with the preimage of `gph T` under the shear `(x, y) ↦ (x + B y, y)`. -/
 theorem graph_eventuallyEq_graphShear
     (hloc : ∀ᶠ p in 𝓝 (x₀, y₀), p.2 ∈ S p.1 ↔ p.2 ∈ T (p.1 + B p.2)) :
     graph S =ᶠ[𝓝 (x₀, y₀)] graphShear B ⁻¹' graph T :=

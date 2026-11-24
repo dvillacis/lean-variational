@@ -78,6 +78,7 @@ theorem contingentCone_prod_subset :
   fun _ hw ↦ ⟨map_mem_contingentCone (ContinuousLinearMap.fst ℝ X Y) (fun _ hx ↦ hx.1) hw,
     map_mem_contingentCone (ContinuousLinearMap.snd ℝ X Y) (fun _ hx ↦ hx.2) hw⟩
 
+/-- For `b ∈ Ω₂`, `(t, 0) ∈ T_{Ω₁ × Ω₂}(a, b)` iff `t ∈ T_{Ω₁}(a)`. -/
 theorem mk_zero_mem_contingentCone_prod_iff (hb : b ∈ Ω₂) {t : X} :
     (t, 0) ∈ contingentCone (Ω₁ ×ˢ Ω₂) (a, b) ↔ t ∈ contingentCone Ω₁ a := by
   refine ⟨fun h ↦ (contingentCone_prod_subset h).1, fun h ↦ ?_⟩
@@ -89,6 +90,7 @@ theorem mk_zero_mem_contingentCone_prod_iff (hb : b ∈ Ω₂) {t : X} :
   rw [this]
   exact hlim.prodMk_nhds tendsto_const_nhds
 
+/-- For `a ∈ Ω₁`, `(0, t) ∈ T_{Ω₁ × Ω₂}(a, b)` iff `t ∈ T_{Ω₂}(b)`. -/
 theorem zero_mk_mem_contingentCone_prod_iff (ha : a ∈ Ω₁) {t : Y} :
     (0, t) ∈ contingentCone (Ω₁ ×ˢ Ω₂) (a, b) ↔ t ∈ contingentCone Ω₂ b := by
   refine ⟨fun h ↦ (contingentCone_prod_subset h).2, fun h ↦ ?_⟩
@@ -149,6 +151,8 @@ theorem GeometricallyDerivableAt.exists_seq {Ω : Set X} {x u : X}
 
 variable {Ω₁ : Set X} {Ω₂ : Set Y} {a : X} {b : Y}
 
+/-- If `a ∈ Ω₁`, `b ∈ Ω₂` and `Ω₁` is geometrically derivable at `a`, then
+`T_{Ω₁ × Ω₂}(a, b) = T_{Ω₁}(a) × T_{Ω₂}(b)`. -/
 theorem contingentCone_prod_eq_of_derivable_left (ha : a ∈ Ω₁) (hb : b ∈ Ω₂)
     (h : GeometricallyDerivableAt Ω₁ a) :
     contingentCone (Ω₁ ×ˢ Ω₂) (a, b) = contingentCone Ω₁ a ×ˢ contingentCone Ω₂ b := by
@@ -164,6 +168,8 @@ theorem contingentCone_prod_eq_of_derivable_left (ha : a ∈ Ω₁) (hb : b ∈ 
   change _ = ((t k)⁻¹ • (z k - a), v k)
   rw [← hyv]; rfl
 
+/-- If `a ∈ Ω₁`, `b ∈ Ω₂` and `Ω₂` is geometrically derivable at `b`, then
+`T_{Ω₁ × Ω₂}(a, b) = T_{Ω₁}(a) × T_{Ω₂}(b)`. -/
 theorem contingentCone_prod_eq_of_derivable_right (ha : a ∈ Ω₁) (hb : b ∈ Ω₂)
     (h : GeometricallyDerivableAt Ω₂ b) :
     contingentCone (Ω₁ ×ˢ Ω₂) (a, b) = contingentCone Ω₁ a ×ˢ contingentCone Ω₂ b := by
@@ -227,10 +233,12 @@ noncomputable def graphShuffle : (𝔼 × 𝔼) ≃L[ℝ] (E₁ × E₁) × (E�
     (ContinuousLinearEquiv.prodProdProdComm ℝ E₁ E₂ E₁ E₂)
 
 omit [FiniteDimensional ℝ E₁] [FiniteDimensional ℝ E₂] in
+/-- The shuffle maps `((x₁, x₂), (y₁, y₂))` to `((x₁, y₁), (x₂, y₂))`. -/
 @[simp] theorem graphShuffle_apply (w : 𝔼 × 𝔼) :
     graphShuffle w = ((w.1.fst, w.2.fst), (w.1.snd, w.2.snd)) := rfl
 
 omit [FiniteDimensional ℝ E₁] [FiniteDimensional ℝ E₂] in
+/-- The inverse shuffle maps `((x₁, y₁), (x₂, y₂))` to `((x₁, x₂), (y₁, y₂))`. -/
 theorem graphShuffle_symm_apply (q : (E₁ × E₁) × (E₂ × E₂)) :
     graphShuffle.symm q = (WithLp.toLp 2 (q.1.1, q.2.1), WithLp.toLp 2 (q.1.2, q.2.2)) := by
   rw [ContinuousLinearEquiv.symm_apply_eq]; rfl
@@ -238,9 +246,12 @@ theorem graphShuffle_symm_apply (q : (E₁ × E₁) × (E₂ × E₂)) :
 variable {F₁ : E₁ → Set E₁} {F₂ : E₂ → Set E₂}
 
 omit [FiniteDimensional ℝ E₁] [FiniteDimensional ℝ E₂] in
+/-- The graph of the product mapping is the preimage of `gph F₁ × gph F₂` under the shuffle. -/
 theorem graph_prodMap : graph (prodMap F₁ F₂) = graphShuffle ⁻¹' (graph F₁ ×ˢ graph F₂) := rfl
 
 omit [FiniteDimensional ℝ E₁] [FiniteDimensional ℝ E₂] in
+/-- `((x₁, x₂), (y₁, y₂)) ∈ gph F` iff `(x₁, y₁) ∈ gph F₁` and `(x₂, y₂) ∈ gph F₂`, for the product
+mapping `F = prodMap F₁ F₂`. -/
 theorem mem_graph_prodMap_iff (p : 𝔼 × 𝔼) :
     p ∈ graph (prodMap F₁ F₂) ↔ (graphShuffle p).1 ∈ graph F₁ ∧ (graphShuffle p).2 ∈ graph F₂ :=
   Iff.rfl
@@ -262,13 +273,16 @@ noncomputable def prodSubspace (L₁ : Submodule ℝ (E₁ × E₁)) (L₂ : Sub
 variable {L₁ : Submodule ℝ (E₁ × E₁)} {L₂ : Submodule ℝ (E₂ × E₂)}
 
 omit [FiniteDimensional ℝ E₁] [FiniteDimensional ℝ E₂] in
+/-- `((u₁, u₂), (v₁, v₂)) ∈ prodSubspace L₁ L₂` iff `(u₁, v₁) ∈ L₁` and `(u₂, v₂) ∈ L₂`. -/
 theorem mem_prodSubspace_iff {w : 𝔼 × 𝔼} :
     w ∈ prodSubspace L₁ L₂ ↔ (w.1.fst, w.2.fst) ∈ L₁ ∧ (w.1.snd, w.2.snd) ∈ L₂ := Iff.rfl
 
 omit [FiniteDimensional ℝ E₁] [FiniteDimensional ℝ E₂] in
+/-- As a set, `prodSubspace L₁ L₂` is the preimage of `L₁ × L₂` under the shuffle. -/
 theorem coe_prodSubspace :
     (prodSubspace L₁ L₂ : Set (𝔼 × 𝔼)) = graphShuffle ⁻¹' ((L₁ : Set _) ×ˢ (L₂ : Set _)) := rfl
 
+/-- `dim (L₁ × L₂) = dim L₁ + dim L₂` for subspaces `L₁ ⊆ E₁ × E₁`, `L₂ ⊆ E₂ × E₂`. -/
 theorem finrank_submodule_prod (L₁ : Submodule ℝ (E₁ × E₁)) (L₂ : Submodule ℝ (E₂ × E₂)) :
     finrank ℝ (L₁.prod L₂) = finrank ℝ L₁ + finrank ℝ L₂ := by
   have h : LinearMap.range (L₁.subtype.prodMap L₂.subtype) = L₁.prod L₂ := by
@@ -277,11 +291,13 @@ theorem finrank_submodule_prod (L₁ : Submodule ℝ (E₁ × E₁)) (L₂ : Sub
   rw [LinearMap.coe_prodMap]
   exact Subtype.val_injective.prodMap Subtype.val_injective
 
+/-- `dim (prodSubspace L₁ L₂) = dim L₁ + dim L₂`. -/
 theorem finrank_prodSubspace (L₁ : Submodule ℝ (E₁ × E₁)) (L₂ : Submodule ℝ (E₂ × E₂)) :
     finrank ℝ (prodSubspace L₁ L₂) = finrank ℝ L₁ + finrank ℝ L₂ := by
   rw [prodSubspace, Submodule.comap_equiv_eq_map_symm, LinearEquiv.finrank_map_eq,
     finrank_submodule_prod]
 
+/-- The Euclidean product `WithLp 2 (E₁ × E₂)` has dimension `dim E₁ + dim E₂`. -/
 theorem finrank_withLp_prod : finrank ℝ 𝔼 = finrank ℝ E₁ + finrank ℝ E₂ := by
   rw [(WithLp.prodContinuousLinearEquiv 2 ℝ E₁ E₂).toLinearEquiv.finrank_eq, Module.finrank_prod]
 
@@ -329,6 +345,8 @@ theorem adjointSubspace_prodSubspace (L₁ : Submodule ℝ (E₁ × E₁))
 /-! ### Lemma 3.4: smooth points of the product -/
 
 omit [FiniteDimensional ℝ E₁] [FiniteDimensional ℝ E₂] in
+/-- At `p ∈ gph F`, `F = prodMap F₁ F₂`, a vector `t = (u₁, v₁)` is tangent to `gph F₁` at the first
+component of `p` iff `((u₁, 0), (v₁, 0))` is tangent to `gph F` at `p`. -/
 theorem shuffle_symm_mk_zero_mem_contingentCone_iff {p : 𝔼 × 𝔼}
     (hp : p ∈ graph (prodMap F₁ F₂)) {t : E₁ × E₁} :
     graphShuffle.symm (t, 0) ∈ contingentCone (graph (prodMap F₁ F₂)) p ↔
@@ -337,6 +355,8 @@ theorem shuffle_symm_mk_zero_mem_contingentCone_iff {p : 𝔼 × 𝔼}
   exact mk_zero_mem_contingentCone_prod_iff ((mem_graph_prodMap_iff p).1 hp).2
 
 omit [FiniteDimensional ℝ E₁] [FiniteDimensional ℝ E₂] in
+/-- At `p ∈ gph F`, `F = prodMap F₁ F₂`, a vector `t = (u₂, v₂)` is tangent to `gph F₂` at the
+second component of `p` iff `((0, u₂), (0, v₂))` is tangent to `gph F` at `p`. -/
 theorem shuffle_symm_zero_mk_mem_contingentCone_iff {p : 𝔼 × 𝔼}
     (hp : p ∈ graph (prodMap F₁ F₂)) {t : E₂ × E₂} :
     graphShuffle.symm (0, t) ∈ contingentCone (graph (prodMap F₁ F₂)) p ↔
@@ -428,6 +448,9 @@ theorem GraphicallySmoothAt.tangentSubspace_prodMap_eq {p : 𝔼 × 𝔼}
     exact add_mem h₁ h₂
 
 omit [FiniteDimensional ℝ E₁] [FiniteDimensional ℝ E₂] in
+/-- If the product mapping `F = prodMap F₁ F₂` is graphically smooth at `p` and `F₁`, `F₂` are
+graphically smooth at the components of `p`, then the tangent subspace of `F` at `p` is the
+product `prodSubspace` of the tangent subspaces of `F₁` and `F₂`. -/
 theorem GraphicallySmoothAt.tangentSubspace_prodMap {p : 𝔼 × 𝔼}
     (h : GraphicallySmoothAt (prodMap F₁ F₂) p)
     (h₁ : GraphicallySmoothAt F₁ (graphShuffle p).1)
@@ -505,6 +528,8 @@ theorem prodSubspace_mem_scCoderiv
   exact prodSubspace_mem_scDeriv hd (mem_scCoderiv_iff_adjoint_mem_scDeriv.1 h₁)
     (mem_scCoderiv_iff_adjoint_mem_scDeriv.1 h₂)
 
+/-- If `gph F₁` or `gph F₂` is geometrically derivable at its smooth points and `F₁`, `F₂` have the
+SCD property at the components of `p`, then `prodMap F₁ F₂` has the SCD property at `p`. -/
 theorem HasSCDPropertyAt.prodMap
     (hd : GraphDerivableAtSmoothPoints F₁ ∨ GraphDerivableAtSmoothPoints F₂) {p : 𝔼 × 𝔼}
     (h₁ : HasSCDPropertyAt F₁ (graphShuffle p).1) (h₂ : HasSCDPropertyAt F₂ (graphShuffle p).2) :

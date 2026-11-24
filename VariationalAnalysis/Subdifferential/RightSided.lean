@@ -36,10 +36,12 @@ variable {Ω : Set E} {x₀ : E} {v : StrongDual ℝ E}
 def enlargement (Ω : Set E) (ρ : ℝ) : Set E := {x | infDist x Ω ≤ ρ}
 
 omit [NormedSpace ℝ E] in
+/-- The `ρ`-enlargement `Ω(ρ)` is closed. -/
 theorem isClosed_enlargement (Ω : Set E) (ρ : ℝ) : IsClosed (enlargement Ω ρ) :=
   isClosed_le (continuous_infDist_pt Ω) continuous_const
 
 omit [NormedSpace ℝ E] in
+/-- For `ρ ≥ 0` the set is contained in its enlargement: `Ω ⊆ Ω(ρ)`. -/
 theorem subset_enlargement {ρ : ℝ} (hρ : 0 ≤ ρ) : Ω ⊆ enlargement Ω ρ := fun x hx ↦ by
   simp [enlargement, infDist_zero_of_mem hx, hρ]
 
@@ -224,6 +226,8 @@ def rightSubdiff (φ : E → EReal) (x₀ : E) : Set (StrongDual ℝ E) :=
   {v | ∃ r : ℝ, φ x₀ = r ∧
     v ∈ outerLimit (funNhds φ x₀ ⊓ 𝓟 {x | φ x₀ ≤ φ x}) (regularSubdiff φ)}
 
+/-- Membership in the right-sided subdifferential when `φ(x₀) = r` is finite: `v` belongs to it
+iff `v` is in the outer limit of `∂̂φ(x)` as `x → x₀` with `φ(x) → φ(x₀)` and `φ(x) ≥ φ(x₀)`. -/
 theorem mem_rightSubdiff_iff (hr : φ x₀ = r) :
     v ∈ rightSubdiff φ x₀ ↔
       v ∈ outerLimit (funNhds φ x₀ ⊓ 𝓟 {x | φ x₀ ≤ φ x}) (regularSubdiff φ) :=

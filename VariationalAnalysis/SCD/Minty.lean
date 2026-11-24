@@ -55,19 +55,25 @@ def fitzPiece (p z : E × E) : ℝ :=
 noncomputable def fitzpatrick (T : E → Set E) (z : E × E) : EReal :=
   ⨆ p : {p : E × E // p.2 ∈ T p.1}, (fitzPiece p.1 z : EReal)
 
+/-- With `p = (y, y*)` and `z = (x, x*)`,
+`fitzPiece p z = ⟨x, x*⟩ - ⟨x* - y*, x - y⟩`. -/
 theorem fitzPiece_eq (p z : E × E) :
     fitzPiece p z = ⟪z.1, z.2⟫_ℝ - ⟪z.2 - p.2, z.1 - p.1⟫_ℝ := by
   simp only [fitzPiece, inner_sub_left, inner_sub_right]
   rw [real_inner_comm z.1 z.2, real_inner_comm p.1 z.2]
   ring
 
+/-- On the diagonal, `fitzPiece z z = ⟨x, x*⟩` for `z = (x, x*)`. -/
 theorem fitzPiece_self (z : E × E) : fitzPiece z z = ⟪z.1, z.2⟫_ℝ := by
   rw [fitzPiece_eq]; simp
 
+/-- For monotone `T` and `p, z ∈ gph T` with `z = (x, x*)`, `fitzPiece p z ≤ ⟨x, x*⟩`. -/
 theorem fitzPiece_le_of_mem (hT : IsMonotoneOp T) {p z : E × E} (hp : p.2 ∈ T p.1)
     (hz : z.2 ∈ T z.1) : fitzPiece p z ≤ ⟪z.1, z.2⟫_ℝ := by
   rw [fitzPiece_eq]; linarith [hT z.1 p.1 z.2 hz p.2 hp]
 
+/-- `fitzPiece p` is affine along lines: for all real `s`,
+`fitzPiece p (z + s(w - z)) = fitzPiece p z + s (fitzPiece p w - fitzPiece p z)`. -/
 theorem fitzPiece_segment (p z w : E × E) (s : ℝ) :
     fitzPiece p (z + s • (w - z)) = fitzPiece p z + s * (fitzPiece p w - fitzPiece p z) := by
   simp only [fitzPiece, Prod.fst_add, Prod.snd_add, Prod.smul_fst, Prod.smul_snd, Prod.fst_sub,
@@ -75,10 +81,13 @@ theorem fitzPiece_segment (p z w : E × E) (s : ℝ) :
     inner_sub_left, inner_sub_right, RCLike.conj_to_real]
   ring
 
+/-- Each affine piece with `p ∈ gph T` minorizes the Fitzpatrick function:
+`fitzPiece p z ≤ F_T(z)`. -/
 theorem fitzPiece_le_fitzpatrick {p : E × E} (hp : p.2 ∈ T p.1) (z : E × E) :
     (fitzPiece p z : EReal) ≤ fitzpatrick T z :=
   le_iSup (fun p' : {p : E × E // p.2 ∈ T p.1} ↦ (fitzPiece p'.1 z : EReal)) ⟨p, hp⟩
 
+/-- For monotone `T`, `F_T(x, x*) ≤ ⟨x, x*⟩` on `gph T`. -/
 theorem fitzpatrick_le_of_mem (hT : IsMonotoneOp T) {z : E × E} (hz : z.2 ∈ T z.1) :
     fitzpatrick T z ≤ (⟪z.1, z.2⟫_ℝ : EReal) :=
   iSup_le fun p ↦ EReal.coe_le_coe_iff.2 (fitzPiece_le_of_mem hT p.2 hz)
@@ -94,6 +103,8 @@ theorem IsMaximalMonotoneOp.inner_le_fitzpatrick (hT : IsMaximalMonotoneOp T) (z
     linarith
   exact absurd (fitzPiece_le_fitzpatrick hz z) (by rw [fitzPiece_self]; exact not_le.2 hlt)
 
+/-- The Fitzpatrick function `F_T` is lower semicontinuous, as a supremum of continuous
+functions. -/
 theorem lowerSemicontinuous_fitzpatrick : LowerSemicontinuous (fitzpatrick T) := by
   refine lowerSemicontinuous_iSup fun p ↦ ?_
   refine (continuous_coe_real_ereal.comp ?_).lowerSemicontinuous
@@ -102,6 +113,7 @@ theorem lowerSemicontinuous_fitzpatrick : LowerSemicontinuous (fitzpatrick T) :=
 
 /-! ### Coercivity -/
 
+/-- For `a, β ≥ 0`, the bound `a²/2 - βa ≤ C` implies `a ≤ 2β + 2|C| + 2`. -/
 theorem le_of_half_sq_sub_le {a β C : ℝ} (ha : 0 ≤ a) (hβ : 0 ≤ β) (h : a ^ 2 / 2 - β * a ≤ C) :
     a ≤ 2 * β + 2 * |C| + 2 := by
   by_contra hlt
@@ -113,6 +125,7 @@ theorem le_of_half_sq_sub_le {a β C : ℝ} (ha : 0 ≤ a) (hβ : 0 ≤ β) (h :
   have h5 : a ^ 2 / 2 - β * a = a * (a / 2 - β) := by ring
   linarith [le_abs_self C]
 
+/-- For real `a` and `β`, `-β²/2 ≤ a²/2 - βa`. -/
 theorem neg_sq_le_half_sq_sub (a β : ℝ) : -(β ^ 2 / 2) ≤ a ^ 2 / 2 - β * a := by
   nlinarith [sq_nonneg (a - β)]
 
@@ -144,6 +157,7 @@ theorem exists_norm_le_of_fitzPiece_add_le (p₀ : E × E) (M : ℝ) :
 
 /-! ### Minty's theorem -/
 
+/-- Expansion of the square: `‖a + s d‖² = ‖a‖² + 2s⟨a, d⟩ + s²‖d‖²`. -/
 theorem norm_add_smul_sq (a d : E) (s : ℝ) :
     ‖a + s • d‖ ^ 2 = ‖a‖ ^ 2 + 2 * s * ⟪a, d⟫_ℝ + s ^ 2 * ‖d‖ ^ 2 := by
   rw [norm_add_sq_real, inner_smul_right, norm_smul, Real.norm_eq_abs, mul_pow, sq_abs]

@@ -36,6 +36,7 @@ section Pullback
 
 variable (A : E ≃L[ℝ] F)
 
+/-- A continuous linear equivalence `A` maps `x → x₀` within `Ω` to `A x → A x₀` within `A '' Ω`. -/
 theorem tendsto_image_nhdsWithin : Tendsto A (𝓝[Ω] x₀) (𝓝[A '' Ω] (A x₀)) :=
   tendsto_nhdsWithin_iff.2 ⟨(A.continuous.tendsto x₀).mono_left nhdsWithin_le_nhds,
     eventually_nhdsWithin_of_forall fun _ hx ↦ mem_image_of_mem _ hx⟩

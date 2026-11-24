@@ -93,8 +93,11 @@ def argminMap (φ : E × F → EReal) (G : E → Set F) (x : E) : Set F :=
 
 variable {φ : E × F → EReal} {G : E → Set F} {x : E} {y : F}
 
+/-- The marginal function is below the cost on the constraint set: `μ(x) ≤ φ(x, y)` for
+`y ∈ G x`. -/
 theorem marginal_le (hy : y ∈ G x) : marginal φ G x ≤ φ (x, y) := iInf₂_le y hy
 
+/-- Membership in the argminimum mapping: `y ∈ M(x)` iff `y ∈ G x` and `φ(x, y) = μ(x)`. -/
 theorem mem_argminMap_iff : y ∈ argminMap φ G x ↔ y ∈ G x ∧ φ (x, y) = marginal φ G x :=
   Iff.rfl
 
@@ -123,10 +126,12 @@ section Restrict
 variable {φ : E × F → EReal} {G : E → Set F} {x₀ : E} {y₀ : F} {r : ℝ}
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- On `gph G` the restriction `graphRestrict φ G` coincides with `φ`. -/
 theorem graphRestrict_of_mem {p : E × F} (hp : p ∈ graph G) : graphRestrict φ G p = φ p :=
   if_pos hp
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- Where `φ ≠ ⊥`, the restriction `graphRestrict φ G` agrees with `ϑ = φ + δ_{gph G}`. -/
 theorem graphRestrict_eq_marginalPenalty {p : E × F} (h : φ p ≠ ⊥) :
     graphRestrict φ G p = marginalPenalty φ G p := by
   by_cases hp : p ∈ graph G
@@ -144,6 +149,8 @@ theorem graphRestrict_eventuallyEq (hr : φ (x₀, y₀) = r)
   exact graphRestrict_eq_marginalPenalty hp.ne'
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- The marginal function is below the restricted cost: `μ(x) ≤ graphRestrict φ G (x, y)` for all
+`(x, y)`. -/
 theorem marginal_le_graphRestrict (p : E × F) : marginal φ G p.1 ≤ graphRestrict φ G p := by
   by_cases hp : p ∈ graph G
   · rw [graphRestrict_of_mem hp]
@@ -151,10 +158,13 @@ theorem marginal_le_graphRestrict (p : E × F) : marginal φ G p.1 ≤ graphRest
   · simp [graphRestrict, hp]
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- At a minimizer `y ∈ M(x)` the restricted cost equals the marginal function:
+`graphRestrict φ G (x, y) = μ(x)`. -/
 theorem graphRestrict_eq_marginal {x : E} {y : F} (hy : y ∈ argminMap φ G x) :
     graphRestrict φ G (x, y) = marginal φ G x := by
   rw [graphRestrict_of_mem (show (x, y) ∈ graph G from hy.1), hy.2]
 
+/-- The projection `epiProj` maps `((x, y), α)` to `(x, α)`. -/
 @[simp] theorem epiProj_apply (p : (E × F) × ℝ) : (epiProj p : E × ℝ) = (p.1.1, p.2) := rfl
 
 /-- `epiProj` maps `epi ϑ` into `epi μ`. -/
@@ -162,6 +172,8 @@ theorem mapsTo_epiProj : MapsTo (epiProj : (E × F) × ℝ → E × ℝ) ((graph
     ((marginal φ G).Epi univ) :=
   fun p hp ↦ ⟨mem_univ _, (marginal_le_graphRestrict p.1).trans hp.2⟩
 
+/-- Composing a dual element `(u, c)` of `E × ℝ` with `epiProj` gives the dual element
+`((u, 0), c)` of `(E × F) × ℝ`. -/
 theorem coprod_comp_epiProj (u : StrongDual ℝ E) (c : StrongDual ℝ ℝ) :
     (u.coprod c).comp (epiProj : (E × F) × ℝ →L[ℝ] E × ℝ) = (u.coprod 0).coprod c := by
   ext <;> simp [epiProj]
@@ -263,6 +275,7 @@ theorem comp_epiProj_mem_normalCone_epi (hr : marginal φ G x₀ = r)
     hy hyM
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- If `μ(x₀) = r` and `y₀ ∈ M(x₀)`, then `graphRestrict φ G (x₀, y₀) = r`. -/
 theorem graphRestrict_apply_eq (hr : marginal φ G x₀ = r) (hy₀ : y₀ ∈ argminMap φ G x₀) :
     graphRestrict φ G (x₀, y₀) = r :=
   (graphRestrict_eq_marginal hy₀).trans hr
@@ -701,11 +714,15 @@ theorem singularSubdiff_comp_fst (ψ : E → EReal) (p : E × F) :
     (fun x ↦ ⟨(x, 0), rfl⟩)
 
 omit [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] in
+/-- A functional `v` on `F` composed with the second projection of `E × F` is the dual element
+`(0, v)`. -/
 theorem comp_snd_eq_coprod (v : StrongDual ℝ F) :
     v.comp (ContinuousLinearMap.snd ℝ E F) = (0 : StrongDual ℝ E).coprod v := by
   ext <;> simp
 
 omit [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] in
+/-- A functional `v` on `E` composed with the first projection of `E × F` is the dual element
+`(v, 0)`. -/
 theorem comp_fst_eq_coprod (v : StrongDual ℝ E) :
     v.comp (ContinuousLinearMap.fst ℝ E F) = v.coprod (0 : StrongDual ℝ F) := by
   ext <;> simp

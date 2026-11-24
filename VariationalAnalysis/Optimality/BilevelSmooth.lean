@@ -64,23 +64,29 @@ section Smooth
 
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X] {f : X → ℝ} {x : X}
 
+/-- A function of class `C¹` at `x` is Fréchet differentiable at every point near `x`. -/
 theorem eventually_hasFDerivAt_of_contDiffAt (h : ContDiffAt ℝ 1 f x) :
     ∀ᶠ y in 𝓝 x, HasFDerivAt f (fderiv ℝ f y) y :=
   (h.eventually (by simp)).mono fun _ hy ↦ (hy.differentiableAt one_ne_zero).hasFDerivAt
 
+/-- A function of class `C¹` at `x` is strictly differentiable at every point near `x`. -/
 theorem eventually_hasStrictFDerivAt_of_contDiffAt (h : ContDiffAt ℝ 1 f x) :
     ∀ᶠ y in 𝓝 x, HasStrictFDerivAt f (fderiv ℝ f y) y :=
   (h.eventually (by simp)).mono fun _ hy ↦ hy.hasStrictFDerivAt one_ne_zero
 
+/-- The derivative of a function of class `C¹` at `x` is continuous at `x`. -/
 theorem continuousAt_fderiv_of_contDiffAt (h : ContDiffAt ℝ 1 f x) :
     ContinuousAt (fderiv ℝ f) x :=
   (h.fderiv_right (m := 0) (by norm_num)).continuousAt
 
+/-- A function of class `C¹` at `x` is continuous on a neighborhood of `x`. -/
 theorem exists_continuousOn_of_contDiffAt (h : ContDiffAt ℝ 1 f x) :
     ∃ U ∈ 𝓝 x, ContinuousOn f U :=
   ⟨_, h.eventually (by simp), fun y hy ↦
     (show ContDiffAt ℝ 1 f y from hy).continuousAt.continuousWithinAt⟩
 
+/-- For `f` of class `C¹` at `x`, the limiting subdifferential is the gradient:
+`∂f(x) = {∇f(x)}`. -/
 theorem subdiff_of_contDiffAt (h : ContDiffAt ℝ 1 f x) :
     subdiff (fun y ↦ (f y : EReal)) x = {fderiv ℝ f x} :=
   subdiff_of_hasFDerivAt_of_continuousAt (eventually_hasFDerivAt_of_contDiffAt h)
@@ -306,6 +312,7 @@ variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [Fintype ι] [Finty
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
   [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [Fintype ι] [Fintype J] in
+/-- `gph G = {(x, y) | gᵢ(x, y) ≤ 0 for all i}` for the lower-level constraint map `G`. -/
 theorem graph_lowerFeasible : graph (lowerFeasible g) = {p : E × F | ∀ i, g i p ≤ 0} := rfl
 
 /-- Normals to the graph of the lower-level constraint map `G` (6.29) under lower-level
@@ -322,6 +329,8 @@ theorem normalCone_graph_lowerFeasible_subset (hg : ∀ i, ContDiffAt ℝ 1 (g i
   simpa using this
 
 omit [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [Fintype ι] in
+/-- `gph G` is locally closed around `(x₀, y₀)` if the finitely many `gᵢ` are of class `C¹` at
+`(x₀, y₀)`. -/
 theorem locallyClosed_graph_lowerFeasible [Finite ι] (hg : ∀ i, ContDiffAt ℝ 1 (g i) (x₀, y₀)) :
     ∃ ρ > 0, IsClosed (graph (lowerFeasible g) ∩ closedBall (x₀, y₀) ρ) := by
   have := Fintype.ofFinite ι

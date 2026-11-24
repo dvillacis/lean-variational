@@ -57,27 +57,34 @@ Empty if `x₀ ∉ Ω`. -/
 def regularNormalCone (Ω : Set E) (x₀ : E) : Set (StrongDual ℝ E) :=
   {v | x₀ ∈ Ω ∧ ∀ ε > 0, ∀ᶠ x in 𝓝[Ω] x₀, v (x - x₀) ≤ ε * ‖x - x₀‖}
 
+/-- The `ω`-normals with `ω = 0` are the regular normals: `N̂_0(x₀; Ω) = N̂(x₀; Ω)`. -/
 theorem epsNormalCone_zero : epsNormalCone 0 Ω x₀ = regularNormalCone Ω x₀ := by
   ext v; simp [epsNormalCone, regularNormalCone]
 
+/-- If `N̂(x₀; Ω)` is nonempty, then `x₀ ∈ Ω`. -/
 theorem mem_of_mem_regularNormalCone (hv : v ∈ regularNormalCone Ω x₀) : x₀ ∈ Ω := hv.1
 
+/-- If the set of `ω`-normals to `Ω` at `x₀` is nonempty, then `x₀ ∈ Ω`. -/
 theorem mem_of_mem_epsNormalCone (hv : v ∈ epsNormalCone ω Ω x₀) : x₀ ∈ Ω := hv.1
 
+/-- Regular normals are `ω`-normals for every `ω ≥ 0`. -/
 theorem regularNormalCone_subset_epsNormalCone (hω : 0 ≤ ω) :
     regularNormalCone Ω x₀ ⊆ epsNormalCone ω Ω x₀ := by
   refine fun v ⟨hx, hv⟩ ↦ ⟨hx, fun ε hε ↦ (hv ε hε).mono fun x hx ↦ hx.trans ?_⟩
   gcongr; linarith
 
+/-- The set of `ω`-normals is nondecreasing in `ω`: `ω₁`-normals are `ω₂`-normals if `ω₁ ≤ ω₂`. -/
 theorem epsNormalCone_mono {ω₁ ω₂ : ℝ} (h : ω₁ ≤ ω₂) :
     epsNormalCone ω₁ Ω x₀ ⊆ epsNormalCone ω₂ Ω x₀ := by
   refine fun v ⟨hx, hv⟩ ↦ ⟨hx, fun ε hε ↦ (hv ε hε).mono fun x hx ↦ hx.trans ?_⟩
   gcongr
 
+/-- `0 ∈ N̂(x₀; Ω)` for `x₀ ∈ Ω`. -/
 theorem zero_mem_regularNormalCone (hx : x₀ ∈ Ω) : (0 : StrongDual ℝ E) ∈ regularNormalCone Ω x₀ :=
   ⟨hx, fun ε hε ↦ Eventually.of_forall fun x ↦ by
     simpa using mul_nonneg hε.le (norm_nonneg (x - x₀))⟩
 
+/-- `N̂(x₀; Ω)` is a cone: it is closed under multiplication by `t ≥ 0`. -/
 theorem smul_mem_regularNormalCone (hv : v ∈ regularNormalCone Ω x₀) {t : ℝ} (ht : 0 ≤ t) :
     t • v ∈ regularNormalCone Ω x₀ := by
   refine ⟨hv.1, fun ε hε ↦ ?_⟩
@@ -90,6 +97,7 @@ theorem smul_mem_regularNormalCone (hv : v ∈ regularNormalCone Ω x₀) {t : �
         rw [div_le_one (by linarith)]; linarith
     _ = ε * ‖x - x₀‖ := one_mul _
 
+/-- `N̂(x₀; Ω)` is closed under addition (hence, being a cone, convex). -/
 theorem add_mem_regularNormalCone (hv : v ∈ regularNormalCone Ω x₀)
     (hw : w ∈ regularNormalCone Ω x₀) : v + w ∈ regularNormalCone Ω x₀ := by
   refine ⟨hv.1, fun ε hε ↦ ?_⟩

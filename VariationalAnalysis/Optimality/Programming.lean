@@ -80,6 +80,7 @@ def lagrangian (lam : K → ℝ) (x : E) : ℝ :=
 
 variable {φ Q Ω}
 
+/-- `ℓ(0, β) = -∑ₖ λₖ βₖ` for the multipliers `λ` of `ℓ`. -/
 theorem apply_zero_pi (ℓ : StrongDual ℝ (E × (K → ℝ))) (β : K → ℝ) :
     ℓ (0, β) = -∑ k, multipliers ℓ k * β k := by
   have h : ((0 : E), β) = ∑ k, β k • ((0 : E), (Pi.single k (1 : ℝ) : K → ℝ)) := by
@@ -91,6 +92,7 @@ theorem apply_zero_pi (ℓ : StrongDual ℝ (E × (K → ℝ))) (β : K → ℝ)
   rw [← Finset.sum_neg_distrib]
   exact Finset.sum_congr rfl fun k _ ↦ by ring
 
+/-- The decomposition `ℓ = (ℓ ∘ inl, -λ)`: `ℓ(a, β) = (ℓ ∘ inl)(a) - ∑ₖ λₖ βₖ`. -/
 theorem apply_prod (ℓ : StrongDual ℝ (E × (K → ℝ))) (a : E) (β : K → ℝ) :
     ℓ (a, β) = ℓ.comp (ContinuousLinearMap.inl ℝ E (K → ℝ)) a - ∑ k, multipliers ℓ k * β k := by
   have : ((a, β) : E × (K → ℝ)) = (a, 0) + (0, β) := by simp
@@ -98,6 +100,7 @@ theorem apply_prod (ℓ : StrongDual ℝ (E × (K → ℝ))) (a : E) (β : K →
   rfl
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [DecidableEq K] in
+/-- Increments of the Lagrangian: `L(y, λ) - L(x, λ) = ∑ₖ λₖ (φₖ(y) - φₖ(x))`. -/
 theorem lagrangian_sub (lam : K → ℝ) (x y : E) :
     lagrangian φ lam y - lagrangian φ lam x = ∑ k, lam k * (φ k y - φ k x) := by
   simp only [lagrangian, ← Finset.sum_sub_distrib, mul_sub]
@@ -304,6 +307,8 @@ theorem locallyClosed_epi_add_convex_indicator {f : E → ℝ} {U : Set E} {x₀
     (locallyClosed_prod hΩ ⟨1, one_pos, isClosed_univ.inter isClosed_closedBall⟩)
 
 omit [Fintype K] in
+/-- The multipliers depend continuously on the functional: if `wₙ → ℓ`, then
+`λₖ(wₙ) → λₖ(ℓ)` for each `k`. -/
 theorem tendsto_multipliers {w : ℕ → StrongDual ℝ (E × (K → ℝ))} {ℓ : StrongDual ℝ (E × (K → ℝ))}
     (hw : Tendsto w atTop (𝓝 ℓ)) (k : K) :
     Tendsto (fun n ↦ multipliers (w n) k) atTop (𝓝 (multipliers ℓ k)) :=
@@ -311,6 +316,7 @@ theorem tendsto_multipliers {w : ℕ → StrongDual ℝ (E × (K → ℝ))} {ℓ
     hw).neg
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [DecidableEq K] in
+/-- The Lagrangian is additive in the multipliers: `L(y, λ + μ) = L(y, λ) + L(y, μ)`. -/
 theorem lagrangian_add (lam μ : K → ℝ) (y : E) :
     lagrangian φ (lam + μ) y = lagrangian φ lam y + lagrangian φ μ y := by
   simp only [lagrangian, Pi.add_apply, add_mul, Finset.sum_add_distrib]
@@ -551,6 +557,7 @@ section Separate
 variable {φ : K → E → ℝ} {Q : Set K} {k₀ : K} {Ω : Set E} {x₀ : E}
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [DecidableEq K] in
+/-- The coercion `ℝ → EReal` commutes with finite sums. -/
 theorem coe_sum_ereal (a : K → ℝ) : (((∑ k, a k : ℝ)) : EReal) = ∑ k, ((a k : ℝ) : EReal) := by
   classical
   induction (Finset.univ : Finset K) using Finset.induction_on with
@@ -558,6 +565,7 @@ theorem coe_sum_ereal (a : K → ℝ) : (((∑ k, a k : ℝ)) : EReal) = ∑ k, 
   | insert j s hj ih => rw [Finset.sum_insert hj, Finset.sum_insert hj, EReal.coe_add, ih]
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [DecidableEq K] in
+/-- Finite sums of sets are monotone: if `A k ⊆ B k` for all `k`, then `∑ₖ A k ⊆ ∑ₖ B k`. -/
 theorem sum_subset_sum {F : Type*} [AddCommMonoid F] {A B : K → Set F} (h : ∀ k, A k ⊆ B k) :
     ∑ k, A k ⊆ ∑ k, B k := by
   intro v hv
@@ -657,6 +665,8 @@ def symmSeparateSubdiff (k : K) : Set (StrongDual ℝ E) :=
     (k ∈ Q ∧ v ∈ upperSubdiff (fun x ↦ (φ k x : EReal)) x₀)}
 
 omit [Fintype K] [DecidableEq K] [FiniteDimensional ℝ E] in
+/-- For `k ∈ Q` the set `symmSeparateSubdiff φ Q x₀ k` is the symmetric subdifferential
+`∂⁰φₖ(x₀)`. -/
 theorem symmSeparateSubdiff_of_mem {k : K} (hk : k ∈ Q) :
     symmSeparateSubdiff φ Q x₀ k = symmSubdiff (fun x ↦ (φ k x : EReal)) x₀ := by
   ext v; simp [symmSeparateSubdiff, symmSubdiff, hk]
@@ -877,9 +887,11 @@ def coordProj (k : K) : (E × (K → ℝ)) →L[ℝ] E × ℝ :=
     ((ContinuousLinearMap.proj k).comp (ContinuousLinearMap.snd ℝ E (K → ℝ)))
 
 omit [Fintype K] [DecidableEq K] in
+/-- `coordProj K k (x, α) = (x, αₖ)`. -/
 @[simp] theorem coordProj_apply (k : K) (p : E × (K → ℝ)) : coordProj K k p = (p.1, p.2 k) := rfl
 
 omit [Fintype K] [DecidableEq K] in
+/-- The projection `(x, α) ↦ (x, αₖ)` is surjective. -/
 theorem coordProj_surjective (k : K) : Function.Surjective (coordProj (E := E) K k) := by
   classical exact fun q ↦ ⟨(q.1, Pi.single k q.2), by simp⟩
 

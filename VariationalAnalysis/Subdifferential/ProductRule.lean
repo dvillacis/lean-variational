@@ -193,17 +193,21 @@ theorem subdiff_mul_eq (hU₁ : U₁ ∈ 𝓝 x₀) (hL₁ : LipschitzOnWith K�
   ring
 
 omit [NormedSpace ℝ E] [FiniteDimensional ℝ E] in
+/-- For `f₁` Lipschitz around `x₀` and `c ∈ ℝ`, the epigraph of `c f₁` is locally closed around
+`(x₀, r)` for every `r`: its intersection with some closed ball centred there is closed. -/
 theorem locallyClosed_epi_const_mul (hU₁ : U₁ ∈ 𝓝 x₀) (hL₁ : LipschitzOnWith K₁ f₁ U₁) (c r : ℝ) :
     ∃ ρ > 0, IsClosed ((fun x ↦ ((c * f₁ x : ℝ) : EReal)).Epi univ ∩
       closedBall ((x₀, r) : E × ℝ) ρ) :=
   locallyClosed_epi_of_continuousOn hU₁ (lipschitzOnWith_const_mul hL₁ c).continuousOn r
 
 omit [FiniteDimensional ℝ E] in
+/-- For `f₁` Lipschitz around `x₀` and `c ∈ ℝ`, `∂^∞(c f₁)(x₀) = {0}`. -/
 theorem singularSubdiff_const_mul_eq_zero (hU₁ : U₁ ∈ 𝓝 x₀) (hL₁ : LipschitzOnWith K₁ f₁ U₁)
     (c : ℝ) : singularSubdiff (fun x ↦ ((c * f₁ x : ℝ) : EReal)) x₀ = {0} :=
   singularSubdiff_eq_zero_of_lipschitz hU₁ (lipschitzOnWith_const_mul hL₁ c)
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] in
+/-- The function `c₁ f₁ + c₂ f₂`, viewed in `EReal`, is the `EReal` sum of `c₁ f₁` and `c₂ f₂`. -/
 theorem coe_add_fun (c₁ c₂ : ℝ) :
     (fun x ↦ ((c₁ * f₁ x + c₂ * f₂ x : ℝ) : EReal)) =
       fun x ↦ ((c₁ * f₁ x : ℝ) : EReal) + ((c₂ * f₂ x : ℝ) : EReal) :=

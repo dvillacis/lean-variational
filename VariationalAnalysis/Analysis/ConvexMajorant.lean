@@ -43,22 +43,26 @@ section
 variable (hmono : Monotone η) (h0 : ∀ t, 0 ≤ η t) (hneg : ∀ t ≤ 0, η t = 0)
 include hmono
 
+/-- For `η` nondecreasing and `s ≥ 0`, `w ↦ η(s w)` is integrable on every bounded interval. -/
 theorem intervalIntegrable_comp_mul {s : ℝ} (hs : 0 ≤ s) (a b : ℝ) :
     IntervalIntegrable (fun w ↦ η (s * w)) volume a b :=
   (hmono.comp (monotone_mul_left_of_nonneg hs)).intervalIntegrable
 
+/-- For `η` nondecreasing, the averaged modulus `g` is nondecreasing on `[0, ∞)`. -/
 theorem avgModulus_monotoneOn : MonotoneOn (avgModulus η) (Ici 0) := by
   intro s hs s' hs' hss'
   exact integral_mono_on (by norm_num) (intervalIntegrable_comp_mul hmono hs _ _)
     (intervalIntegrable_comp_mul hmono hs' _ _) fun w hw ↦
       hmono (mul_le_mul_of_nonneg_right hss' (by linarith [hw.1]))
 
+/-- For `η` nondecreasing, `η(s) ≤ g(s)` for `s ≥ 0`. -/
 theorem le_avgModulus {s : ℝ} (hs : 0 ≤ s) : η s ≤ avgModulus η s := by
   have h : ∫ _ in (1 : ℝ)..2, η s = η s := by simp; norm_num
   rw [← h]
   exact integral_mono_on (by norm_num) (by simp) (intervalIntegrable_comp_mul hmono hs _ _)
     fun w hw ↦ hmono (le_mul_of_one_le_right hs hw.1)
 
+/-- For `η` nondecreasing, `g(s) ≤ η(2s)` for `s ≥ 0`. -/
 theorem avgModulus_le {s : ℝ} (hs : 0 ≤ s) : avgModulus η s ≤ η (2 * s) := by
   have h : ∫ _ in (1 : ℝ)..2, η (2 * s) = η (2 * s) := by simp; norm_num
   rw [← h]
@@ -67,11 +71,13 @@ theorem avgModulus_le {s : ℝ} (hs : 0 ≤ s) : avgModulus η s ≤ η (2 * s) 
 
 omit hmono in
 include h0 in
+/-- If `η ≥ 0`, then `g ≥ 0`. -/
 theorem avgModulus_nonneg (s : ℝ) : 0 ≤ avgModulus η s :=
   integral_nonneg (by norm_num) fun w _ ↦ h0 _
 
 omit hmono in
 include hneg in
+/-- If `η` vanishes on `(-∞, 0]`, then so does `g`. -/
 theorem avgModulus_of_nonpos {s : ℝ} (hs : s ≤ 0) : avgModulus η s = 0 := by
   unfold avgModulus
   rw [integral_congr (g := fun _ ↦ (0 : ℝ)) fun w hw ↦ ?_]
@@ -80,6 +86,8 @@ theorem avgModulus_of_nonpos {s : ℝ} (hs : s ≤ 0) : avgModulus η s = 0 := b
     exact hneg _ (mul_nonpos_of_nonpos_of_nonneg hs (by linarith [hw.1]))
 
 include h0 hneg in
+/-- The averaged modulus `g` is continuous on `ℝ` if `η` is nondecreasing, nonnegative, zero on
+`(-∞, 0]` and `η(t) → 0` as `t ↓ 0`. -/
 theorem continuous_avgModulus (hlim : Tendsto η (𝓝[≥] 0) (𝓝 0)) :
     Continuous (avgModulus η) := by
   rw [continuous_iff_continuousAt]
@@ -116,6 +124,8 @@ theorem continuous_avgModulus (hlim : Tendsto η (𝓝[≥] 0) (𝓝 0)) :
 variable (hlim : Tendsto η (𝓝[≥] 0) (𝓝 0))
 include h0 hneg hlim
 
+/-- For `η` nondecreasing, nonnegative, zero on `(-∞, 0]` and `η(t) → 0` as `t ↓ 0`,
+the convex majorant `τ` is differentiable on `ℝ` with `τ'(t) = 2 g(2t) + 2t`. -/
 theorem hasDerivAt_convexMajorant (t : ℝ) :
     HasDerivAt (convexMajorant η) (convexMajorantDeriv η t) t := by
   have hg := continuous_avgModulus hmono h0 hneg hlim
@@ -127,17 +137,22 @@ theorem hasDerivAt_convexMajorant (t : ℝ) :
   rw [heq]
   exact h1.add h2
 
+/-- Under the same assumptions on `η`, the derivative `τ'` is continuous, so `τ` is of class
+`C¹`. -/
 theorem continuous_convexMajorantDeriv : Continuous (convexMajorantDeriv η) :=
   (continuous_const.mul ((continuous_avgModulus hmono h0 hneg hlim).comp
     (continuous_const.mul continuous_id))).add (continuous_const.mul continuous_id)
 
 omit hmono h0 hlim in
+/-- `τ'(0) = 0` if `η` vanishes on `(-∞, 0]`. -/
 theorem convexMajorantDeriv_zero : convexMajorantDeriv η 0 = 0 := by
   simp [convexMajorantDeriv, avgModulus_of_nonpos hneg le_rfl]
 
 omit hmono h0 hneg hlim in
+/-- `τ(0) = 0`. -/
 theorem convexMajorant_zero : convexMajorant η 0 = 0 := by simp [convexMajorant]
 
+/-- Under the same assumptions on `η`, the convex majorant `τ` is convex on `[0, ∞)`. -/
 theorem convexOn_convexMajorant : ConvexOn ℝ (Ici 0) (convexMajorant η) := by
   have hd := hasDerivAt_convexMajorant hmono h0 hneg hlim
   refine MonotoneOn.convexOn_of_deriv (convex_Ici 0)
@@ -151,6 +166,7 @@ theorem convexOn_convexMajorant : ConvexOn ℝ (Ici 0) (convexMajorant η) := by
     (mem_Ici.2 (by linarith : (0 : ℝ) ≤ 2 * s')) (by linarith)
   linarith
 
+/-- Under the same assumptions on `η`, the convex majorant `τ` is nondecreasing on `[0, ∞)`. -/
 theorem monotoneOn_convexMajorant : MonotoneOn (convexMajorant η) (Ici 0) := by
   have hd := hasDerivAt_convexMajorant hmono h0 hneg hlim
   refine monotoneOn_of_deriv_nonneg (convex_Ici 0)
@@ -162,6 +178,7 @@ theorem monotoneOn_convexMajorant : MonotoneOn (convexMajorant η) (Ici 0) := by
   have := avgModulus_nonneg h0 (2 * t)
   linarith
 
+/-- The majorant property, under the same assumptions on `η`: `t η(t) < τ(t)` for `t > 0`. -/
 theorem mul_lt_convexMajorant {t : ℝ} (ht : 0 < t) : t * η t < convexMajorant η t := by
   have hg := continuous_avgModulus hmono h0 hneg hlim
   have hint : ∀ a b, IntervalIntegrable (avgModulus η) volume a b :=

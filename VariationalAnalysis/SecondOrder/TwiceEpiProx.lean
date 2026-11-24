@@ -68,17 +68,22 @@ section Image
 variable {ι X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {l : Filter ι}
   {S : ι → Set X}
 
+/-- The image of an outer limit under a continuous map is contained in the outer limit of the
+images: `f '' Lim sup Sᵢ ⊆ Lim sup f '' Sᵢ`. -/
 theorem image_outerLimit_subset {f : X → Y} (hf : Continuous f) :
     f '' outerLimit l S ⊆ outerLimit l (fun i ↦ f '' S i) := by
   rintro _ ⟨y, ⟨a, v, ha, hv, hS⟩, rfl⟩
   exact ⟨a, f ∘ v, ha, (hf.tendsto y).comp hv, fun k ↦ mem_image_of_mem f (hS k)⟩
 
+/-- The image of an inner limit under a continuous map is contained in the inner limit of the
+images: `f '' Lim inf Sᵢ ⊆ Lim inf f '' Sᵢ`. -/
 theorem image_innerLimit_subset {f : X → Y} (hf : Continuous f) :
     f '' innerLimit l S ⊆ innerLimit l (fun i ↦ f '' S i) := by
   rintro _ ⟨y, hy, rfl⟩ a ha
   obtain ⟨v, hv, hS⟩ := hy a ha
   exact ⟨f ∘ v, (hf.tendsto y).comp hv, hS.mono fun k hk ↦ mem_image_of_mem f hk⟩
 
+/-- Outer limits commute with images under a homeomorphism: `Lim sup e '' Sᵢ = e '' Lim sup Sᵢ`. -/
 theorem outerLimit_image_homeomorph (e : X ≃ₜ Y) :
     outerLimit l (fun i ↦ e '' S i) = e '' outerLimit l S := by
   refine Subset.antisymm (fun y hy ↦ ?_) (image_outerLimit_subset e.continuous)
@@ -87,6 +92,7 @@ theorem outerLimit_image_homeomorph (e : X ≃ₜ Y) :
   simp only [← image_comp, Homeomorph.symm_comp_self, image_id] at h
   exact ⟨e.symm y, h, e.apply_symm_apply y⟩
 
+/-- Inner limits commute with images under a homeomorphism: `Lim inf e '' Sᵢ = e '' Lim inf Sᵢ`. -/
 theorem innerLimit_image_homeomorph (e : X ≃ₜ Y) :
     innerLimit l (fun i ↦ e '' S i) = e '' innerLimit l S := by
   refine Subset.antisymm (fun y hy ↦ ?_) (image_innerLimit_subset e.continuous)
@@ -148,6 +154,8 @@ theorem half_secondDiffQuot_ge (h0 : φ 0 = 0)
     _ ≤ ((t⁻¹ ^ 2 : ℝ) : EReal) * φ (t • w) :=
         (coe_mul_le_coe_mul_iff (by positivity)).2 (hφ _)
 
+/-- If `φ(0) = 0` and `φ(x) ≥ -(r/2)‖x‖²` for all `x`, then for all small `t > 0` the halved
+second-order difference quotients satisfy `½ Δ²_tφ(0, 0)(w) ≥ -(r/2)‖w‖²` for all `w`. -/
 theorem eventually_half_secondDiffQuot_ge (h0 : φ 0 = 0)
     (hφ : ∀ x, ((-(r / 2) * ‖x‖ ^ 2 : ℝ) : EReal) ≤ φ x) :
     ∀ᶠ t in 𝓝[>] (0 : ℝ), ∀ w : E, ((-(r / 2) * ‖w‖ ^ 2 : ℝ) : EReal) ≤
@@ -525,6 +533,7 @@ theorem ProxRegularFor.exists_tendsto_inv_smul_proximalMap {r : ℝ}
 noncomputable def shiftTilt (φ : E → EReal) (x₀ g : E) (x : E) : EReal :=
   φ (x₀ + x) + ((-((φ x₀).toReal + ⟪g, x⟫_ℝ) : ℝ) : EReal)
 
+/-- Adding a real number is strictly monotone on `EReal`: `a + c ≤ b + c ↔ a ≤ b` for `c : ℝ`. -/
 theorem add_coe_le_add_coe_iff {a b : EReal} {c : ℝ} : a + (c : EReal) ≤ b + c ↔ a ≤ b := by
   refine ⟨fun h ↦ ?_, fun h ↦ add_le_add h le_rfl⟩
   have := add_le_add h (le_refl ((-c : ℝ) : EReal))
@@ -532,6 +541,7 @@ theorem add_coe_le_add_coe_iff {a b : EReal} {c : ℝ} : a + (c : EReal) ≤ b +
     add_zero] at this
 
 omit [FiniteDimensional ℝ E] in
+/-- If `φ(x̄)` is finite, the shifted and tilted function vanishes at the origin. -/
 theorem shiftTilt_zero {r₀ : ℝ} {g : E} (hr₀ : φ x₀ = r₀) : shiftTilt φ x₀ g 0 = 0 := by
   rw [shiftTilt, add_zero, hr₀, EReal.toReal_coe, inner_zero_right, add_zero, ← EReal.coe_add,
     add_neg_cancel, EReal.coe_zero]

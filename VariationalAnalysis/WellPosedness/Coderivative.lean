@@ -82,12 +82,15 @@ theorem PosHomogeneous.invMap (hH : PosHomogeneous H) : PosHomogeneous (invMap H
   ⟨hH.1, fun t ht _ _ hx ↦ hH.2 t ht _ _ hx⟩
 
 omit [NormedSpace ℝ X] [NormedSpace ℝ Y] in
+/-- The norm `‖H‖` bounds the values on the unit ball: `‖y‖ ≤ ‖H‖` for `y ∈ H x`, `‖x‖ ≤ 1`. -/
 theorem nnnorm_le_posHomNorm {x : X} {y : Y} (hx : ‖x‖ ≤ 1) (hy : y ∈ H x) :
     (‖y‖₊ : ℝ≥0∞) ≤ posHomNorm H :=
   le_iSup₂_of_le (f := fun (x : X) (_ : ‖x‖ ≤ 1) ↦ ⨆ (y : Y) (_ : y ∈ H x), (‖y‖₊ : ℝ≥0∞))
     x hx (le_iSup₂_of_le (f := fun (y : Y) (_ : y ∈ H x) ↦ (‖y‖₊ : ℝ≥0∞)) y hy le_rfl)
 
 omit [NormedSpace ℝ X] [NormedSpace ℝ Y] in
+/-- The lower norm bounds the values on the unit sphere from below:
+`posHomLowerNorm H ≤ ‖y‖` for `y ∈ H x`, `‖x‖ = 1`. -/
 theorem posHomLowerNorm_le_nnnorm {x : X} {y : Y} (hx : ‖x‖ = 1) (hy : y ∈ H x) :
     posHomLowerNorm H ≤ ‖y‖₊ :=
   iInf₂_le_of_le (f := fun (x : X) (_ : ‖x‖ = 1) ↦ ⨅ (y : Y) (_ : y ∈ H x), (‖y‖₊ : ℝ≥0∞))
@@ -194,6 +197,8 @@ section Inverse
 def coderivKer (S : E → Set F) (x₀ : E) (y₀ : F) : Set (StrongDual ℝ F) :=
   {v | (0 : StrongDual ℝ E) ∈ coderiv S x₀ y₀ v}
 
+/-- Membership in the kernel of the coderivative: `v ∈ ker D*S(x₀, y₀)` iff
+`0 ∈ D*S(x₀, y₀)(v)`. -/
 theorem mem_coderivKer_iff : v ∈ coderivKer S x₀ y₀ ↔ (0 : StrongDual ℝ E) ∈ coderiv S x₀ y₀ v :=
   Iff.rfl
 
@@ -205,6 +210,7 @@ theorem posHomogeneous_coderiv (h₀ : y₀ ∈ S x₀) : PosHomogeneous (coderi
   rw [h0]
   exact zero_mem_normalCone (show (x₀, y₀) ∈ graph S from h₀)
 
+/-- For `(x₀, y₀) ∈ gph S`, the kernel `ker D*S(x₀, y₀)` contains `0`. -/
 theorem zero_mem_coderivKer (h₀ : y₀ ∈ S x₀) : (0 : StrongDual ℝ F) ∈ coderivKer S x₀ y₀ :=
   (posHomogeneous_coderiv h₀).1
 

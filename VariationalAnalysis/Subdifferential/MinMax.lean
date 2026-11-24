@@ -142,6 +142,7 @@ def maxMultipliers [Fintype ι] (a : ι → EReal) : Set (ι → ℝ) :=
   {θ | (∀ i, 0 ≤ θ i) ∧ ∑ i, θ i = 1 ∧ ∀ i, a i ≠ ⨆ j, a j → θ i = 0}
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] in
+/-- Membership in the active index set: `i ∈ I_max(x₀)` iff `φᵢ(x₀) = max φⱼ(x₀)`. -/
 theorem mem_maxActive [Fintype ι] {i : ι} : i ∈ maxActive φ x₀ ↔ φ i x₀ = ⨆ j, φ j x₀ := by
   classical
   simp [maxActive]
@@ -191,17 +192,20 @@ theorem epi_iSup_eventuallyEq (hr : ⨆ i, φ i x₀ = r)
     · exact hq i hi⟩
 
 omit [Fintype ι] in
+/-- A finite sum of dual elements `(aᵢ, bᵢ)` of `E × ℝ` is `(∑ aᵢ, ∑ bᵢ)`. -/
 theorem sum_coprod (s : Finset ι) (a : ι → StrongDual ℝ E) (b : ι → StrongDual ℝ ℝ) :
     ∑ i ∈ s, (a i).coprod (b i) = (∑ i ∈ s, a i).coprod (∑ i ∈ s, b i) := by
   ext z <;> simp
 
 omit [Fintype ι] in
+/-- Restriction to the first factor `E` of `E × ℝ` commutes with finite sums of functionals. -/
 theorem sum_comp_inl (s : Finset ι) (g : ι → StrongDual ℝ (E × ℝ)) :
     (∑ i ∈ s, g i).comp (ContinuousLinearMap.inl ℝ E ℝ) =
       ∑ i ∈ s, (g i).comp (ContinuousLinearMap.inl ℝ E ℝ) := by
   ext z; simp
 
 omit [Fintype ι] in
+/-- Evaluation at `(0, 1)` commutes with finite sums of functionals on `E × ℝ`. -/
 theorem sum_apply_zero_one (s : Finset ι) (g : ι → StrongDual ℝ (E × ℝ)) :
     (∑ i ∈ s, g i) (0, 1) = ∑ i ∈ s, g i (0, 1) := by
   simp
@@ -393,13 +397,16 @@ variable [Fintype ι] [Nonempty ι]
 noncomputable def vecMax (y : ι → ℝ) : ℝ := Finset.univ.sup' Finset.univ_nonempty y
 
 omit [Nonempty ι] in
+/-- Every component is at most the maximum: `yᵢ ≤ max_j yⱼ`. -/
 theorem le_vecMax [Nonempty ι] (y : ι → ℝ) (i : ι) : y i ≤ vecMax y :=
   Finset.le_sup' y (Finset.mem_univ i)
 
 omit [Nonempty ι] in
+/-- The maximum is at most `c` iff every component is: `max_i yᵢ ≤ c ↔ ∀ i, yᵢ ≤ c`. -/
 theorem vecMax_le_iff [Nonempty ι] {y : ι → ℝ} {c : ℝ} : vecMax y ≤ c ↔ ∀ i, y i ≤ c := by
   simp [vecMax, Finset.sup'_le_iff]
 
+/-- The supremum in `EReal` of finitely many real numbers `yᵢ` is the real maximum `vecMax y`. -/
 theorem iSup_coe_eq_vecMax (y : ι → ℝ) : ⨆ i, ((y i : ℝ) : EReal) = ((vecMax y : ℝ) : EReal) := by
   refine le_antisymm (iSup_le fun i ↦ EReal.coe_le_coe_iff.2 (le_vecMax y i)) ?_
   obtain ⟨i, -, hi⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty y
@@ -418,6 +425,7 @@ theorem lipschitzWith_vecMax : LipschitzWith 1 (vecMax : (ι → ℝ) → ℝ) :
   · linarith [key z y, dist_comm y z]
   · linarith [key y z]
 
+/-- The maximum `y ↦ max_i yᵢ` is continuous on `ι → ℝ`. -/
 theorem continuous_vecMax : Continuous (vecMax : (ι → ℝ) → ℝ) :=
   Continuous.finset_sup'_apply (f := fun i (y : ι → ℝ) ↦ y i) _ fun i _ ↦ continuous_apply i
 
@@ -432,6 +440,7 @@ theorem convex_epi_vecMax :
     Prod.smul_snd, Prod.snd_add]
   nlinarith [le_vecMax y i, le_vecMax z i]
 
+/-- Adding a constant to every component: `max_i (yᵢ + c) ≤ max_i yᵢ + c`. -/
 theorem vecMax_add_const_le (y : ι → ℝ) (c : ℝ) : vecMax (fun i ↦ y i + c) ≤ vecMax y + c :=
   vecMax_le_iff.2 fun i ↦ by linarith [le_vecMax y i]
 
@@ -507,6 +516,8 @@ variable [Fintype ι] [Nonempty ι]
 variable {f : ι → E → ℝ} {U : ι → Set E} {K : ι → ℝ≥0}
 
 omit [NormedSpace ℝ E] [Nonempty ι] in
+/-- If each `fᵢ` is `Kᵢ`-Lipschitz on `Uᵢ`, the vector function `x ↦ (fᵢ(x))ᵢ` is Lipschitz on
+`⋂ i, Uᵢ` with constant `max_i Kᵢ` (for the sup norm on `ι → ℝ`). -/
 theorem lipschitzOnWith_pi (hL : ∀ i, LipschitzOnWith (K i) (f i) (U i)) :
     LipschitzOnWith (Finset.univ.sup K) (fun x i ↦ f i x) (⋂ i, U i) := by
   refine LipschitzOnWith.of_dist_le_mul fun x hx y hy ↦
@@ -516,11 +527,14 @@ theorem lipschitzOnWith_pi (hL : ∀ i, LipschitzOnWith (K i) (f i) (U i)) :
     (NNReal.coe_le_coe.2 (Finset.le_sup (f := K) (Finset.mem_univ i))) dist_nonneg
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] in
+/-- The pointwise supremum in `EReal` of finitely many real functions `fᵢ` is the function
+`x ↦ vecMax (fᵢ(x))ᵢ`. -/
 theorem iSup_coe_fun_eq :
     (fun x ↦ ⨆ i, (f i x : EReal)) = fun x ↦ ((vecMax (fun i ↦ f i x) : ℝ) : EReal) :=
   funext fun _ ↦ iSup_coe_eq_vecMax _
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [Fintype ι] [Nonempty ι] in
+/-- The coercion `ℝ → EReal` commutes with finite sums. -/
 theorem coe_finset_sum_ereal (s : Finset ι) (a : ι → ℝ) :
     ((∑ i ∈ s, a i : ℝ) : EReal) = ∑ i ∈ s, ((a i : ℝ) : EReal) := by
   classical

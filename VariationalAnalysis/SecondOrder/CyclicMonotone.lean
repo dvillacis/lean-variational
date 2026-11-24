@@ -55,6 +55,8 @@ def resolventMap (T : E → Set E) (l : ℝ) (u : E) : Set E :=
 
 variable {T : E → Set E} {l : ℝ}
 
+/-- The resolvent of a monotone operator is firmly nonexpansive: for `λ ≥ 0`,
+`xᵢ ∈ (I + λT)⁻¹(uᵢ)` gives `‖x₁ - x₂‖² ≤ ⟨x₁ - x₂, u₁ - u₂⟩`. -/
 theorem IsMonotoneOp.sq_norm_le_of_mem_resolventMap (hT : IsMonotoneOp T) (hl : 0 ≤ l)
     {u₁ u₂ x₁ x₂ : E} (h₁ : x₁ ∈ resolventMap T l u₁) (h₂ : x₂ ∈ resolventMap T l u₂) :
     ‖x₁ - x₂‖ ^ 2 ≤ ⟪x₁ - x₂, u₁ - u₂⟫_ℝ := by
@@ -225,8 +227,11 @@ structure CMChain (T : E → Set (StrongDual ℝ E)) (x₀ : E) (v₀ : StrongDu
   pt : ℕ → E
   /-- The dual vectors `vᵢ`. -/
   dual : ℕ → StrongDual ℝ E
+  /-- The chain starts at the point `x₀`. -/
   pt_zero : pt 0 = x₀
+  /-- The chain starts with the dual vector `v₀`. -/
   dual_zero : dual 0 = v₀
+  /-- The pairs `(xᵢ, vᵢ)`, `i ≤ m`, lie in `gph T`. -/
   mem : ∀ i ≤ len, dual i ∈ T (pt i)
 
 /-- The affine function `⟨vₘ, x - xₘ⟩ + ⟨vₘ₋₁, xₘ - xₘ₋₁⟩ + ⋯ + ⟨v₀, x₁ - x₀⟩` of a chain. -/
@@ -248,6 +253,7 @@ def CMChain.base (h : v₀ ∈ T x₀) : CMChain T x₀ v₀ where
   dual_zero := rfl
   mem := fun _ _ ↦ h
 
+/-- The affine function of the trivial chain `(x₀, v₀)` is `y ↦ ⟨v₀, y - x₀⟩`. -/
 theorem CMChain.base_val (h : v₀ ∈ T x₀) (y : E) : (CMChain.base h).val y = v₀ (y - x₀) := by
   simp [CMChain.val, CMChain.base]
 
@@ -266,6 +272,8 @@ def CMChain.extend (c : CMChain T x₀ v₀) {x : E} {v : StrongDual ℝ E} (h :
     · simp only [hi', if_false]
       exact c.mem i (by omega)
 
+/-- The affine function of a chain `c` extended by `(x, v) ∈ gph T` is
+`y ↦ c.val x + ⟨v, y - x⟩`. -/
 theorem CMChain.extend_val (c : CMChain T x₀ v₀) {x : E} {v : StrongDual ℝ E} (h : v ∈ T x)
     (y : E) : (c.extend h).val y = c.val x + v (y - x) := by
   simp only [CMChain.val, CMChain.extend, sum_range_succ, if_true]
@@ -285,6 +293,7 @@ theorem CyclicallyMonotone.val_le (hT : CyclicallyMonotone T) (c : CMChain T x�
   have := hT c.len c.pt c.dual c.mem
   rwa [c.pt_zero] at this
 
+/-- Rockafellar's function dominates the affine function of every chain starting at `(x₀, v₀)`. -/
 theorem le_rockafellarFun (c : CMChain T x₀ v₀) (y : E) :
     (c.val y : EReal) ≤ rockafellarFun T x₀ v₀ y :=
   le_iSup (fun c : CMChain T x₀ v₀ ↦ (c.val y : EReal)) c
@@ -296,6 +305,7 @@ theorem rockafellarFun_zero (hT : CyclicallyMonotone T) (h : v₀ ∈ T x₀) :
   have := le_rockafellarFun (CMChain.base h) x₀
   rwa [CMChain.base_val, sub_self, map_zero, EReal.coe_zero] at this
 
+/-- If `v₀ ∈ T x₀`, Rockafellar's function does not take the value `-∞`. -/
 theorem rockafellarFun_ne_bot (h : v₀ ∈ T x₀) (y : E) : rockafellarFun T x₀ v₀ y ≠ ⊥ :=
   ne_bot_of_le_ne_bot (EReal.coe_ne_bot _) (le_rockafellarFun (CMChain.base h) y)
 
@@ -409,6 +419,7 @@ open InnerProductSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
+/-- In `EReal`, `c * a ≠ -∞` for real `c > 0` and `a ≠ -∞`. -/
 theorem coe_mul_ne_bot_of_pos {a : EReal} (ha : a ≠ ⊥) {c : ℝ} (hc : 0 < c) :
     (c : EReal) * a ≠ ⊥ := by
   induction a using EReal.rec with
@@ -416,6 +427,7 @@ theorem coe_mul_ne_bot_of_pos {a : EReal} (ha : a ≠ ⊥) {c : ℝ} (hc : 0 < c
   | coe r => rw [← EReal.coe_mul]; exact EReal.coe_ne_bot _
   | top => rw [EReal.coe_mul_top_of_pos hc]; exact top_ne_bot
 
+/-- In `EReal`, `c * a ≠ ∞` for real `c > 0` and `a ≠ ∞`. -/
 theorem coe_mul_ne_top_of_pos {a : EReal} (ha : a ≠ ⊤) {c : ℝ} (hc : 0 < c) :
     (c : EReal) * a ≠ ⊤ := by
   induction a using EReal.rec with

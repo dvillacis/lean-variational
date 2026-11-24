@@ -43,19 +43,24 @@ noncomputable def graphPairing : LinearMap.BilinForm ℝ (E × E) :=
   LinearMap.BilinForm.comp (innerₗ E) (LinearMap.snd ℝ E E) (LinearMap.fst ℝ E E) -
     LinearMap.BilinForm.comp (innerₗ E) (LinearMap.fst ℝ E E) (LinearMap.snd ℝ E E)
 
+/-- `ω(p, q) = ⟪p.2, q.1⟫ - ⟪p.1, q.2⟫`. -/
 @[simp] theorem graphPairing_apply (p q : E × E) :
     graphPairing p q = ⟪p.2, q.1⟫_ℝ - ⟪p.1, q.2⟫_ℝ := by
   simp [graphPairing, LinearMap.BilinForm.comp_apply]
 
+/-- The pairing is alternating: `ω(p, p) = 0`. -/
 theorem graphPairing_isAlt : LinearMap.IsAlt (graphPairing (E := E)) := fun p ↦ by
   simp [real_inner_comm]
 
+/-- The pairing is reflexive: `ω(p, q) = 0` implies `ω(q, p) = 0`. -/
 theorem graphPairing_isRefl : LinearMap.IsRefl (graphPairing (E := E)) :=
   graphPairing_isAlt.isRefl
 
+/-- Reflexivity of the pairing, stated as `LinearMap.BilinForm.IsRefl`. -/
 theorem graphPairing_isRefl' : LinearMap.BilinForm.IsRefl (graphPairing (E := E)) :=
   graphPairing_isRefl
 
+/-- The pairing separates points on the left: if `ω(p, q) = 0` for all `q`, then `p = 0`. -/
 theorem graphPairing_separatingLeft : LinearMap.SeparatingLeft (graphPairing (E := E)) := by
   intro p hp
   have := hp (-p.2, p.1)
@@ -65,6 +70,7 @@ theorem graphPairing_separatingLeft : LinearMap.SeparatingLeft (graphPairing (E 
   exact Prod.ext (norm_eq_zero.1 (pow_eq_zero_iff two_ne_zero |>.1 h2))
     (norm_eq_zero.1 (pow_eq_zero_iff two_ne_zero |>.1 h3))
 
+/-- The pairing is nondegenerate. -/
 theorem graphPairing_nondegenerate : LinearMap.BilinForm.Nondegenerate (graphPairing (E := E)) :=
   (LinearMap.IsRefl.nondegenerate_iff_separatingLeft graphPairing_isRefl).2
     graphPairing_separatingLeft
@@ -86,6 +92,7 @@ noncomputable def adjointSubspace (L : Submodule ℝ (E × E)) : Submodule ℝ (
 
 variable {L : Submodule ℝ (E × E)}
 
+/-- `(y*, x*) ∈ L*` iff `⟪x*, u⟫ = ⟪y*, v⟫` for all `(u, v) ∈ L`. -/
 theorem mem_adjointSubspace_iff {p : E × E} :
     p ∈ adjointSubspace L ↔ ∀ q ∈ L, ⟪p.2, q.1⟫_ℝ = ⟪p.1, q.2⟫_ℝ := by
   simp only [adjointSubspace, LinearMap.BilinForm.mem_orthogonal_iff, graphPairing_apply,
@@ -94,27 +101,33 @@ theorem mem_adjointSubspace_iff {p : E × E} :
   rw [real_inner_comm p.1 q.2, real_inner_comm p.2 q.1]
   exact eq_comm
 
+/-- `mem_adjointSubspace_iff` for explicit pairs: `(y, x) ∈ L*` iff `⟪x, u⟫ = ⟪y, v⟫` for all
+`(u, v) ∈ L`. -/
 theorem mk_mem_adjointSubspace_iff {y x : E} :
     (y, x) ∈ adjointSubspace L ↔ ∀ u v, (u, v) ∈ L → ⟪x, u⟫_ℝ = ⟪y, v⟫_ℝ := by
   rw [mem_adjointSubspace_iff]
   exact ⟨fun h u v huv ↦ h (u, v) huv, fun h q hq ↦ h q.1 q.2 hq⟩
 
+/-- If `(y*, x*) ∈ L*` and `(u, v) ∈ L`, then `⟪x*, u⟫ = ⟪y*, v⟫`. -/
 theorem inner_eq_of_mem_adjointSubspace {p q : E × E} (hp : p ∈ adjointSubspace L) (hq : q ∈ L) :
     ⟪p.2, q.1⟫_ℝ = ⟪p.1, q.2⟫_ℝ :=
   mem_adjointSubspace_iff.1 hp q hq
 
 variable [FiniteDimensional ℝ E]
 
+/-- `(L*)* = L` in finite dimensions. -/
 theorem adjointSubspace_adjointSubspace (L : Submodule ℝ (E × E)) :
     adjointSubspace (adjointSubspace L) = L := by
   change graphPairing.orthogonal (graphPairing.orthogonal L) = L
   exact LinearMap.BilinForm.orthogonal_orthogonal graphPairing_nondegenerate
     graphPairing_isRefl' L
 
+/-- `L ↦ L*` is injective in finite dimensions. -/
 theorem adjointSubspace_injective : Function.Injective (adjointSubspace (E := E)) :=
   fun L₁ L₂ h ↦ by
     rw [← adjointSubspace_adjointSubspace L₁, h, adjointSubspace_adjointSubspace]
 
+/-- `dim L* = 2n - dim L`, where `n = dim E`. -/
 theorem finrank_adjointSubspace (L : Submodule ℝ (E × E)) :
     finrank ℝ (adjointSubspace L) = 2 * finrank ℝ E - finrank ℝ L := by
   rw [adjointSubspace, LinearMap.BilinForm.finrank_orthogonal graphPairing_nondegenerate,
@@ -126,6 +139,7 @@ theorem finrank_adjointSubspace_of_eq (h : finrank ℝ L = finrank ℝ E) :
   rw [finrank_adjointSubspace, h]; omega
 
 omit [FiniteDimensional ℝ E] in
+/-- `L ↦ L*` is order-reversing: `L₁ ≤ L₂` implies `L₂* ≤ L₁*`. -/
 theorem adjointSubspace_anti {L₁ L₂ : Submodule ℝ (E × E)} (h : L₁ ≤ L₂) :
     adjointSubspace L₂ ≤ adjointSubspace L₁ := fun _ hp ↦
   mem_adjointSubspace_iff.2 fun _ hq ↦ inner_eq_of_mem_adjointSubspace hp (h hq)

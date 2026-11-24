@@ -46,14 +46,18 @@ Empty if `x₀ ∉ Ω`. -/
 def normalCone (Ω : Set E) (x₀ : E) : Set (StrongDual ℝ E) :=
   {v | x₀ ∈ Ω ∧ v ∈ outerLimit (𝓝[Ω] x₀) (regularNormalCone Ω)}
 
+/-- If `N(x₀; Ω)` is nonempty, then `x₀ ∈ Ω`. -/
 theorem mem_of_mem_normalCone (hv : v ∈ normalCone Ω x₀) : x₀ ∈ Ω := hv.1
 
+/-- Regular normals are limiting normals: `N̂(x₀; Ω) ⊆ N(x₀; Ω)`. -/
 theorem regularNormalCone_subset_normalCone : regularNormalCone Ω x₀ ⊆ normalCone Ω x₀ :=
   fun _ hv ↦ ⟨hv.1, subset_outerLimit (pure_le_nhdsWithin hv.1) _ hv⟩
 
+/-- `0 ∈ N(x₀; Ω)` for `x₀ ∈ Ω`. -/
 theorem zero_mem_normalCone (hx : x₀ ∈ Ω) : (0 : StrongDual ℝ E) ∈ normalCone Ω x₀ :=
   regularNormalCone_subset_normalCone (zero_mem_regularNormalCone hx)
 
+/-- `N(x₀; Ω)` is a cone: it is closed under multiplication by `t ≥ 0`. -/
 theorem smul_mem_normalCone (hv : v ∈ normalCone Ω x₀) {t : ℝ} (ht : 0 ≤ t) :
     t • v ∈ normalCone Ω x₀ := by
   obtain ⟨hx, a, w, ha, hw, hmem⟩ := hv

@@ -86,6 +86,8 @@ variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
 variable {φ₁ : E → EReal} {φ₂ : F → EReal} {a : E} {b : F} {r₁ r₂ : ℝ}
 
 omit [NormedSpace ℝ E] [NormedSpace ℝ F] [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] in
+/-- If `φ₁` is lower semicontinuous on a neighborhood of `a`, then the epigraph of
+`(x, y) ↦ φ₁ x` is locally closed around `((a, b), r₁)`. -/
 theorem locallyClosed_epi_comp_fst (r₁ : ℝ) (h₁ : ∃ U ∈ 𝓝 a, LowerSemicontinuousOn φ₁ U) :
     ∃ ρ > 0, IsClosed ((fun p : E × F ↦ φ₁ p.1).Epi univ ∩
       closedBall (((a, b), r₁) : (E × F) × ℝ) ρ) := by
@@ -94,6 +96,8 @@ theorem locallyClosed_epi_comp_fst (r₁ : ℝ) (h₁ : ∃ U ∈ 𝓝 a, LowerS
     (h.comp continuousOn_fst fun p hp ↦ hp.1) r₁
 
 omit [NormedSpace ℝ E] [NormedSpace ℝ F] [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] in
+/-- If `φ₂` is lower semicontinuous on a neighborhood of `b`, then the epigraph of
+`(x, y) ↦ φ₂ y` is locally closed around `((a, b), r₂)`. -/
 theorem locallyClosed_epi_comp_snd (r₂ : ℝ) (h₂ : ∃ U ∈ 𝓝 b, LowerSemicontinuousOn φ₂ U) :
     ∃ ρ > 0, IsClosed ((fun p : E × F ↦ φ₂ p.2).Epi univ ∩
       closedBall (((a, b), r₂) : (E × F) × ℝ) ρ) := by
@@ -158,9 +162,11 @@ section Convolution
 variable {φ₁ φ₂ : E → EReal} {x₀ : E} {r : ℝ}
 
 omit [NormedSpace ℝ E] in
+/-- `(x, (x₁, x₂))` belongs to the graph of the constraint `G` if and only if `x₁ + x₂ = x`. -/
 theorem mem_graph_convConstraint {q : E × (E × E)} :
     q ∈ graph (convConstraint : E → Set (E × E)) ↔ q.2.1 + q.2.2 = q.1 := Iff.rfl
 
+/-- The graph of the constraint `G(x) = {(x₁, x₂) | x₁ + x₂ = x}` is convex. -/
 theorem convex_graph_convConstraint : Convex ℝ (graph (convConstraint : E → Set (E × E))) := by
   intro a ha b hb s t _ _ _
   rw [mem_graph_convConstraint] at *
@@ -169,6 +175,7 @@ theorem convex_graph_convConstraint : Convex ℝ (graph (convConstraint : E → 
   abel
 
 omit [NormedSpace ℝ E] in
+/-- The graph of the constraint `G(x) = {(x₁, x₂) | x₁ + x₂ = x}` is closed. -/
 theorem isClosed_graph_convConstraint : IsClosed (graph (convConstraint : E → Set (E × E))) :=
   isClosed_eq ((continuous_fst.comp continuous_snd).add (continuous_snd.comp continuous_snd))
     continuous_fst

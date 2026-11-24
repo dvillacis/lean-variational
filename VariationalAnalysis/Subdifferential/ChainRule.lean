@@ -61,6 +61,7 @@ theorem marginal_singleton (φ : E × F → EReal) (g : E → F) :
   simp [marginal]
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- For a single-valued constraint `G = g` the argminimum mapping (4.2) is `M(x) = {g x}`. -/
 theorem argminMap_singleton (φ : E × F → EReal) (g : E → F) (x : E) :
     argminMap φ (fun x ↦ ({g x} : Set F)) x = {g x} := by
   ext y
@@ -77,6 +78,8 @@ theorem mem_innerLimit_singleton (hg : ContinuousAt g x₀) :
     Eventually.of_forall fun k ↦ by rw [argminMap_singleton]; rfl⟩
 
 omit [NormedSpace ℝ E] [NormedSpace ℝ F] in
+/-- If `φ` is lower semicontinuous at `(x₀, g x₀)` and `g` is continuous at `x₀`, then the
+composition `x ↦ φ(x, g x)` is lower semicontinuous at `x₀`. -/
 theorem lowerSemicontinuousAt_comp_prodMk (hφ : LowerSemicontinuousAt φ (x₀, g x₀))
     (hg : ContinuousAt g x₀) : LowerSemicontinuousAt (fun x ↦ φ (x, g x)) x₀ :=
   LowerSemicontinuousAt.comp (g := fun x ↦ (x, g x)) hφ (continuousAt_id.prodMk hg)
@@ -285,11 +288,15 @@ section Equality
 variable {φ : E × F → EReal} {g : E → F} {x₀ : E} {U : Set E} {K : ℝ≥0} {r : ℝ}
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- For a single-valued constraint `G = g`, the restriction of `φ` to `gph g` takes the value
+`φ(x, g x)` at `(x, g x)`. -/
 theorem graphRestrict_singleton (x : E) :
     graphRestrict φ (fun x ↦ ({g x} : Set F)) (x, g x) = φ (x, g x) :=
   graphRestrict_of_mem rfl
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- For a single-valued constraint `G = g`, the function `ϑ = φ + δ_{gph g}` takes the value
+`φ(x, g x)` at `(x, g x)`. -/
 theorem marginalPenalty_singleton (x : E) :
     marginalPenalty φ (fun x ↦ ({g x} : Set F)) (x, g x) = φ (x, g x) := by
   simp [marginalPenalty, convex_indicator_of_mem (show (x, g x) ∈ graph fun x ↦ ({g x} : Set F)
@@ -407,11 +414,15 @@ theorem comp_epiEmbed_mem_normalCone (hU : U ∈ 𝓝 x₀) (hg : LipschitzOnWit
   exact comp_epiEmbed_mem_epsNormalCone hVo hgV hk h
 
 omit [FiniteDimensional ℝ E] in
+/-- The functional `((x*, 0), c)` on `(E × F) × ℝ` composed with the embedding
+`(x, α) ↦ ((x, 0), α)` is the functional `(x*, c)` on `E × ℝ`. -/
 theorem coprod_comp_epiEmbed (x : StrongDual ℝ E) (c : StrongDual ℝ ℝ) :
     ((x.coprod (0 : StrongDual ℝ F)).coprod c).comp epiEmbed = x.coprod c := by
   ext <;> simp [epiEmbed]
 
 omit [FiniteDimensional ℝ E] in
+/-- The functional `((x*, 0), c)` on `(E × F) × ℝ` vanishes on the embedded copy
+`y ↦ ((0, y), 0)` of `F`. -/
 theorem coprod_comp_epiInr (x : StrongDual ℝ E) (c : StrongDual ℝ ℝ) :
     ((x.coprod (0 : StrongDual ℝ F)).coprod c).comp (epiInr (E := E)) = 0 := by
   ext; simp [epiInr]

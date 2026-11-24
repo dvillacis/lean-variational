@@ -88,6 +88,8 @@ def combinedSecondOrderSubdiff (φ : E → EReal) (x₀ : E) (v₀ : StrongDual 
     Set (StrongDual ℝ E) :=
   regularCoderiv (subdiff φ) x₀ v₀ (NormedSpace.inclusionInDoubleDual ℝ E u)
 
+/-- The combined second-order subdifferential is contained in the second-order subdifferential:
+`∂̆²φ(x₀, v₀)(u) ⊆ ∂²φ(x₀, v₀)(u)`, since `D̂*∂φ ⊆ D*∂φ`. -/
 theorem combinedSecondOrderSubdiff_subset_secondOrderSubdiff {φ : E → EReal} {x₀ u : E}
     {v₀ : StrongDual ℝ E} :
     combinedSecondOrderSubdiff φ x₀ v₀ u ⊆ secondOrderSubdiff φ x₀ v₀ u :=
@@ -402,6 +404,8 @@ theorem hasStrictFDerivAt_comp_inl {f' : E × F → StrongDual ℝ (E × F)}
       ((compL ℝ E (E × F) ℝ).flip (inl ℝ E F) ∘L f'') p :=
   ((compL ℝ E (E × F) ℝ).flip (inl ℝ E F)).hasStrictFDerivAt.comp p h
 
+/-- Fréchet version of `hasStrictFDerivAt_comp_inl`: if `f'` has derivative `f''` at `p`, then the
+partial gradient `p ↦ f'(p) ∘ inl` has derivative `w ↦ f''(w) ∘ inl` at `p`. -/
 theorem hasFDerivAt_comp_inl {f' : E × F → StrongDual ℝ (E × F)}
     {f'' : E × F →L[ℝ] StrongDual ℝ (E × F)} {p : E × F} (h : HasFDerivAt f' f'' p) :
     HasFDerivAt (fun p ↦ (f' p).comp (inl ℝ E F))

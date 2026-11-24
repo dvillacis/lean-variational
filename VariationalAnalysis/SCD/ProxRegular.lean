@@ -49,6 +49,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 noncomputable def proxSubspace (l : ℝ) (B : E →L[ℝ] E) : Submodule ℝ (E × E) :=
   LinearMap.range ((B : E →ₗ[ℝ] E).prod (l⁻¹ • (LinearMap.id - (B : E →ₗ[ℝ] E))))
 
+/-- `w ∈ rge(B, λ⁻¹(I - B))` iff `w = (B v, λ⁻¹(v - B v))` for some `v`. -/
 theorem mem_proxSubspace_iff {l : ℝ} {B : E →L[ℝ] E} {w : E × E} :
     w ∈ proxSubspace l B ↔ ∃ v, B v = w.1 ∧ l⁻¹ • (v - B v) = w.2 := by
   rw [proxSubspace, LinearMap.mem_range]

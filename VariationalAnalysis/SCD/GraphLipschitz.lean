@@ -82,6 +82,7 @@ theorem contingentCone_congr_of_inter_eq {Ω Ω' W : Set X} {x : X} (hW : W ∈ 
   exact ⟨this.1, (hzα k).2⟩
 
 omit [NormedAddCommGroup X] [NormedSpace ℝ X] in
+/-- If `Ω ∩ W = Ω' ∩ W` and `V ⊆ W`, then `Ω ∩ V = Ω' ∩ V`. -/
 theorem inter_eq_inter_of_subset {Ω Ω' W V : Set X} (h : Ω ∩ W = Ω' ∩ W) (hVW : V ⊆ W) :
     Ω ∩ V = Ω' ∩ V := by
   ext z
@@ -99,6 +100,8 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDim
 variable {F G : E → Set E} {p q : E × E} {W : Set (E × E)}
 
 omit [FiniteDimensional ℝ E] in
+/-- Graphical smoothness is local: if `gph F ∩ W = gph G ∩ W` for a neighborhood `W` of `q`,
+then `q ∈ O_F` iff `q ∈ O_G`. -/
 theorem graphicallySmoothAt_congr (hW : W ∈ 𝓝 q) (h : graph F ∩ W = graph G ∩ W) :
     GraphicallySmoothAt F q ↔ GraphicallySmoothAt G q := by
   have hq : q ∈ graph F ↔ q ∈ graph G := by
@@ -112,10 +115,14 @@ theorem graphicallySmoothAt_congr (hW : W ∈ 𝓝 q) (h : graph F ∩ W = graph
   rw [GraphicallySmoothAt, GraphicallySmoothAt, hq, contingentCone_congr_of_inter_eq hW h]
 
 omit [FiniteDimensional ℝ E] in
+/-- Tangent subspaces are local: if `gph F ∩ W = gph G ∩ W` for a neighborhood `W` of `q`, then
+`tangentSubspace F q = tangentSubspace G q`. -/
 theorem tangentSubspace_congr (hW : W ∈ 𝓝 q) (h : graph F ∩ W = graph G ∩ W) :
     tangentSubspace F q = tangentSubspace G q := by
   rw [tangentSubspace, tangentSubspace, contingentCone_congr_of_inter_eq hW h]
 
+/-- If `gph F ∩ W = gph G ∩ W` for a neighborhood `W` of `p`, then `𝒮F(p) ⊆ 𝒮G(p)`; one
+inclusion of `scDeriv_congr`. -/
 theorem scDeriv_subset_of_inter_eq (hW : W ∈ 𝓝 p) (h : graph F ∩ W = graph G ∩ W) :
     scDeriv F p ⊆ scDeriv G p := by
   rintro L ⟨q, hq, hqlim, hT⟩
@@ -134,14 +141,20 @@ theorem scDeriv_congr (hW : W ∈ 𝓝 p) (h : graph F ∩ W = graph G ∩ W) :
     scDeriv F p = scDeriv G p :=
   (scDeriv_subset_of_inter_eq hW h).antisymm (scDeriv_subset_of_inter_eq hW h.symm)
 
+/-- SC adjoint derivatives are local: if `gph F ∩ W = gph G ∩ W` for a neighborhood `W` of `p`,
+then `𝒮*F(p) = 𝒮*G(p)`. -/
 theorem scCoderiv_congr (hW : W ∈ 𝓝 p) (h : graph F ∩ W = graph G ∩ W) :
     scCoderiv F p = scCoderiv G p := by
   rw [scCoderiv, scCoderiv, scDeriv_congr hW h]
 
+/-- The SCD property at `p` only depends on the graph near `p`: if `gph F ∩ W = gph G ∩ W` for a
+neighborhood `W` of `p`, then `F` has the SCD property at `p` iff `G` does. -/
 theorem hasSCDPropertyAt_congr (hW : W ∈ 𝓝 p) (h : graph F ∩ W = graph G ∩ W) :
     HasSCDPropertyAt F p ↔ HasSCDPropertyAt G p := by
   rw [HasSCDPropertyAt, HasSCDPropertyAt, scDeriv_congr hW h]
 
+/-- If `F` has the SCD property around `p` and `gph F ∩ W = gph G ∩ W` for a neighborhood `W` of
+`p`, then `G` has the SCD property around `p`. -/
 theorem HasSCDPropertyAround.congr (hF : HasSCDPropertyAround F p) (hW : W ∈ 𝓝 p)
     (h : graph F ∩ W = graph G ∩ W) : HasSCDPropertyAround G p := by
   obtain ⟨U, hU, hUF⟩ := hF
@@ -169,6 +182,7 @@ def preimageMap (Φ : E × E → E × E) (G : E → Set E) : E → Set E :=
   fun x ↦ {y | Φ (x, y) ∈ graph G}
 
 omit [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] in
+/-- The graph of `preimageMap Φ G` is `Φ⁻¹(gph G)`. -/
 theorem graph_preimageMap (Φ : E × E → E × E) (G : E → Set E) :
     graph (preimageMap Φ G) = Φ ⁻¹' graph G := rfl
 
@@ -280,13 +294,21 @@ derivative `D q`, `D` continuous on `W`) and injective with invertible derivativ
 `Φ(gph F ∩ W)` is the graph of `f`, Lipschitz on the open set `U`, with modulus `K`. -/
 structure IsGraphLipschitzTransform (F : E → Set E) (W : Set (E × E)) (Φ : E × E → E × E)
     (D : E × E → (E × E) →L[ℝ] (E × E)) (U : Set E) (f : E → E) (K : ℝ≥0) : Prop where
+  /-- `W` is open. -/
   isOpen_W : IsOpen W
+  /-- `U` is open. -/
   isOpen_U : IsOpen U
+  /-- `Φ` has strict derivative `D q` at every `q ∈ W`. -/
   hasStrictFDerivAt : ∀ q ∈ W, HasStrictFDerivAt Φ (D q) q
+  /-- The derivative `D` is continuous on `W`. -/
   continuousOn : ContinuousOn D W
+  /-- The derivative `D q` is invertible for every `q ∈ W`. -/
   exists_equiv : ∀ q ∈ W, ∃ e : (E × E) ≃L[ℝ] (E × E), (e : (E × E) →L[ℝ] (E × E)) = D q
+  /-- `Φ` is injective on `W`. -/
   injOn : InjOn Φ W
+  /-- `f` is Lipschitz on `U` with modulus `K`. -/
   lipschitzOnWith : LipschitzOnWith K f U
+  /-- `Φ(gph F ∩ W)` is the part of `gph f` over `U`: `Φ(gph F ∩ W) = gph f ∩ (U × E)`. -/
   image_eq : Φ '' (graph F ∩ W) = graph (fun u ↦ ({f u} : Set E)) ∩ (U ×ˢ univ)
 
 /-- `F` is graphically Lipschitzian (of dimension `n = dim E`) at `p ∈ gph F`
@@ -335,11 +357,13 @@ theorem nhds_inter_eq (hq : q ∈ graph F) (hqW : q ∈ W) :
     exact ⟨hz'F, hz'W, by rw [h.injOn hz'W hzW hz']; exact hzU⟩
 
 omit [FiniteDimensional ℝ E] in
+/-- For `q ∈ W`, `Φ` has strict derivative `D q'` at every `q'` near `q`. -/
 theorem eventually_hasStrictFDerivAt (hqW : q ∈ W) :
     ∀ᶠ q' in 𝓝 q, HasStrictFDerivAt Φ (D q') q' :=
   eventually_of_mem (h.isOpen_W.mem_nhds hqW) h.hasStrictFDerivAt
 
 omit [FiniteDimensional ℝ E] in
+/-- The derivative `D` is continuous at every `q ∈ W`. -/
 theorem continuousAt (hqW : q ∈ W) : ContinuousAt D q :=
   h.continuousOn.continuousAt (h.isOpen_W.mem_nhds hqW)
 
@@ -450,17 +474,20 @@ noncomputable def addSwapEquiv (M : E →L[ℝ] E) : (E × E) ≃L[ℝ] (E × E)
   (shear M).trans (ContinuousLinearEquiv.prodComm ℝ E E)
 
 omit [FiniteDimensional ℝ E] in
+/-- `addSwapEquiv M` maps `(u, v)` to `(v + M u, u)`. -/
 @[simp] theorem addSwapEquiv_apply (M : E →L[ℝ] E) (w : E × E) :
     addSwapEquiv M w = (w.2 + M w.1, w.1) := by
   simp [addSwapEquiv, shear]
 
 omit [FiniteDimensional ℝ E] in
+/-- The inverse of `addSwapEquiv M` maps `(u, v)` to `(v, u - M v)`. -/
 @[simp] theorem addSwapEquiv_symm_apply (M : E →L[ℝ] E) (w : E × E) :
     (addSwapEquiv M).symm w = (w.2, w.1 - M w.2) := by
   apply (addSwapEquiv M).injective
   simp
 
 omit [FiniteDimensional ℝ E] in
+/-- `M ↦ addSwapEquiv M`, as a continuous linear map, is continuous in operator norm. -/
 theorem continuous_addSwapEquiv :
     Continuous fun M : E →L[ℝ] E ↦ ((addSwapEquiv M : (E × E) ≃L[ℝ] (E × E)) :
       (E × E) →L[ℝ] (E × E)) := by
@@ -473,6 +500,8 @@ theorem continuous_addSwapEquiv :
   exact continuous_const.clm_comp continuous_shearCLM
 
 omit [FiniteDimensional ℝ E] in
+/-- If `h` has strict derivative `M` at `q.1`, then `addSwap h` has strict derivative
+`addSwapEquiv M` at `q`. -/
 theorem hasStrictFDerivAt_addSwap {h : E → E} {M : E →L[ℝ] E} {q : E × E}
     (hq : HasStrictFDerivAt h M q.1) :
     HasStrictFDerivAt (addSwap h) ((addSwapEquiv M : (E × E) ≃L[ℝ] (E × E)) :

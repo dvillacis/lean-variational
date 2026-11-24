@@ -57,12 +57,15 @@ def LocallyBoundedAt (S : E → Set F) (x₀ : E) : Prop :=
 variable {S : E → Set F} {x₀ : E} {y₀ : F}
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- `x ∈ dom S` if and only if `S x` is nonempty. -/
 @[simp] theorem mem_dom_iff {x : E} : x ∈ dom S ↔ (S x).Nonempty := Iff.rfl
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- `x ∈ S⁻¹(y)` if and only if `y ∈ S x`. -/
 @[simp] theorem mem_invMap_iff {x : E} {y : F} : x ∈ invMap S y ↔ y ∈ S x := Iff.rfl
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
+/-- `(x, y) ∈ gph S` if and only if `y ∈ S x`. -/
 theorem mem_graph_iff {x : E} {y : F} : (x, y) ∈ graph S ↔ y ∈ S x := Iff.rfl
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] in
@@ -70,6 +73,8 @@ omit [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSp
 theorem graph_invMap : graph (invMap S) = Prod.swap ⁻¹' graph S := rfl
 
 omit [NormedSpace ℝ E] [NormedSpace ℝ F] in
+/-- Local boundedness around `x₀` passes to any mapping `T` with `T x ⊆ S x` for all `x`
+near `x₀`. -/
 theorem LocallyBoundedAt.mono {T : E → Set F} (h : LocallyBoundedAt S x₀)
     (hT : ∀ᶠ x in 𝓝 x₀, T x ⊆ S x) : LocallyBoundedAt T x₀ := by
   obtain ⟨U, hU, hb⟩ := h
@@ -120,10 +125,13 @@ regular at `(x₀, r)` [Mordukhovich 2018, Exercise 1.74]. -/
 def EpiRegularAt (φ : E → EReal) (x₀ : E) : Prop :=
   ∃ r : ℝ, φ x₀ = r ∧ NormallyRegularAt (φ.Epi univ) (x₀, r)
 
+/-- Convex sets are normally regular at every point. -/
 theorem normallyRegularAt_of_convex {Ω : Set E} {x₀ : E} (hΩ : Convex ℝ Ω) :
     NormallyRegularAt Ω x₀ :=
   normalCone_eq_regularNormalCone_of_convex hΩ
 
+/-- If `S` is graphically regular at `(x₀, y₀)`, then `D*S(x₀, y₀)(v) = D̂*S(x₀, y₀)(v)` for all
+`v`. -/
 theorem GraphicallyRegularAt.coderiv_eq {S : E → Set F} {x₀ : E} {y₀ : F}
     (h : GraphicallyRegularAt S x₀ y₀) (v : StrongDual ℝ F) :
     coderiv S x₀ y₀ v = regularCoderiv S x₀ y₀ v := by
@@ -131,6 +139,7 @@ theorem GraphicallyRegularAt.coderiv_eq {S : E → Set F} {x₀ : E} {y₀ : F}
   simp only [coderiv, regularCoderiv, mem_ofPred_eq]
   rw [show normalCone (graph S) (x₀, y₀) = _ from h]
 
+/-- Functions with convex epigraph are lower regular at every point. -/
 theorem lowerRegularAt_of_convex {φ : E → EReal} {x₀ : E} (hconv : Convex ℝ (φ.Epi univ)) :
     LowerRegularAt φ x₀ :=
   subdiff_eq_regularSubdiff_of_convex hconv

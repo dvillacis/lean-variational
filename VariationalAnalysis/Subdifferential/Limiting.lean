@@ -54,18 +54,21 @@ finite. -/
 def singularSubdiff (φ : E → EReal) (x₀ : E) : Set (StrongDual ℝ E) :=
   {v | ∃ r : ℝ, φ x₀ = r ∧ v.coprod 0 ∈ normalCone (φ.Epi univ) (x₀, r)}
 
+/-- If `φ x₀ = r` is finite, then `v ∈ ∂φ(x₀)` if and only if `(v, -1) ∈ N((x₀, r); epi φ)`. -/
 theorem mem_subdiff_iff (hr : φ x₀ = r) :
     v ∈ subdiff φ x₀ ↔ v.coprod (-1) ∈ normalCone (φ.Epi univ) (x₀, r) := by
   refine ⟨fun ⟨s, hs, h⟩ ↦ ?_, fun h ↦ ⟨r, hr, h⟩⟩
   rw [hr, EReal.coe_eq_coe_iff] at hs
   exact hs ▸ h
 
+/-- If `φ x₀ = r` is finite, then `v ∈ ∂^∞φ(x₀)` if and only if `(v, 0) ∈ N((x₀, r); epi φ)`. -/
 theorem mem_singularSubdiff_iff (hr : φ x₀ = r) :
     v ∈ singularSubdiff φ x₀ ↔ v.coprod 0 ∈ normalCone (φ.Epi univ) (x₀, r) := by
   refine ⟨fun ⟨s, hs, h⟩ ↦ ?_, fun h ↦ ⟨r, hr, h⟩⟩
   rw [hr, EReal.coe_eq_coe_iff] at hs
   exact hs ▸ h
 
+/-- If `φ x₀` is finite, then `0 ∈ ∂^∞φ(x₀)`. -/
 theorem zero_mem_singularSubdiff (hr : φ x₀ = r) :
     (0 : StrongDual ℝ E) ∈ singularSubdiff φ x₀ := by
   rw [mem_singularSubdiff_iff hr]
@@ -281,6 +284,7 @@ end Robustness
 section Indicator
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] in
+/-- The epigraph of the indicator function `δ_Ω` is `Ω × [0, ∞)`. -/
 theorem epi_convex_indicator (Ω : Set E) : Ω.convex_indicator.Epi univ = Ω ×ˢ Ici 0 := by
   ext ⟨x, α⟩
   by_cases hx : x ∈ Ω
@@ -307,6 +311,7 @@ end Indicator
 section Convex
 
 omit [NormedAddCommGroup E] [NormedSpace ℝ E] in
+/-- `x ∈ dom φ` if and only if `φ x ≤ α` for some real `α`. -/
 theorem mem_dom_iff_exists_le {x : E} : x ∈ dom univ φ ↔ ∃ α : ℝ, φ x ≤ α := by
   simp only [dom, mem_univ, true_and, mem_ofPred_eq]
   constructor

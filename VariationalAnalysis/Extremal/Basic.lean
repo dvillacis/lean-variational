@@ -146,6 +146,9 @@ def IsLocallyExtremal (Ω : ι → Set E) (x₀ : E) : Prop :=
 variable {Ω : ι → Set E} {x₀ : E}
 
 omit [NormedSpace ℝ E] in
+/-- Local extremality with the empty intersection written pointwise: `x₀ ∈ Ω i` for all `i`, and
+there are `aᵢₖ → 0` and a neighborhood `U` of `x₀` such that, for all large `k`, every `x ∈ U` has
+an index `i` with `x + aᵢₖ ∉ Ωᵢ`. -/
 theorem isLocallyExtremal_iff : IsLocallyExtremal Ω x₀ ↔
     (∀ i, x₀ ∈ Ω i) ∧ ∃ a : ι → ℕ → E, (∀ i, Tendsto (a i) atTop (𝓝 0)) ∧
       ∃ U ∈ 𝓝 x₀, ∀ᶠ k in atTop, ∀ x ∈ U, ∃ i, x + a i k ∉ Ω i := by

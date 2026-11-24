@@ -45,6 +45,7 @@ theorem norm_le_one_of_mem_regularSubdiff_distFun (hv : v ∈ regularSubdiff (di
   norm_le_one_of_mem_subdiff_distFun (regularSubdiff_subset_subdiff hv)
 
 omit [NormedSpace ℝ E] in
+/-- The distance function vanishes on the set: `d_Ω(x) = 0` for `x ∈ Ω`. -/
 theorem distFun_of_mem {x : E} (hx : x ∈ Ω) : distFun Ω x = ((0 : ℝ) : EReal) := by
   simp [distFun, infDist_zero_of_mem hx]
 

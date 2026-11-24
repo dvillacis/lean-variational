@@ -192,6 +192,7 @@ theorem GrassTendsto.map_of_tendsto {L : ℕ → Submodule ℝ V} {L₀ : Submod
     exact Submodule.mem_map.2 ⟨e.symm w₀, h.mem_of_eventually ha hv hlim, by simp⟩
 
 omit [FiniteDimensional ℝ V] in
+/-- For a linear isomorphism `e` and a subspace `L`, `e⁻¹(e L) = L`. -/
 theorem map_symm_map_eq (e : V ≃L[ℝ] V) (L : Submodule ℝ V) :
     (L.map ((e : V →L[ℝ] V) : V →ₗ[ℝ] V)).map ((e.symm : V →L[ℝ] V) : V →ₗ[ℝ] V) = L := by
   rw [← Submodule.map_comp]
@@ -199,6 +200,7 @@ theorem map_symm_map_eq (e : V ≃L[ℝ] V) (L : Submodule ℝ V) :
   ext v; simp
 
 omit [FiniteDimensional ℝ V] in
+/-- For a linear isomorphism `e` and a subspace `L`, `e(e⁻¹ L) = L`. -/
 theorem map_map_symm_eq (e : V ≃L[ℝ] V) (L : Submodule ℝ V) :
     (L.map ((e.symm : V →L[ℝ] V) : V →ₗ[ℝ] V)).map ((e : V →L[ℝ] V) : V →ₗ[ℝ] V) = L := by
   rw [← Submodule.map_comp]
@@ -232,6 +234,8 @@ theorem contingentCone_graph_eq_image_of_preimage :
     contingentCone (graph G) (Φ q) = e '' contingentCone (graph F) q := by
   rw [hFG]; exact contingentCone_eq_image_preimage hΦ
 
+/-- If `gph F = Φ⁻¹(gph G)` and `Φ` has invertible strict derivative `e` at `q`, then the tangent
+subspace of `G` at `Φ q` is the image under `e` of the tangent subspace of `F` at `q`. -/
 theorem tangentSubspace_eq_map_of_preimage :
     tangentSubspace G (Φ q) =
       (tangentSubspace F q).map ((e : (E × E) →L[ℝ] (E × E)) : (E × E) →ₗ[ℝ] (E × E)) := by
@@ -366,6 +370,7 @@ noncomputable def shearCLM (M : E →L[ℝ] E) : (E × E) →L[ℝ] (E × E) :=
     (ContinuousLinearMap.inr ℝ E E).comp (M.comp (ContinuousLinearMap.fst ℝ E E))
 
 omit [FiniteDimensional ℝ E] in
+/-- `shearCLM M` maps `(u, v)` to `(u, v + M u)`. -/
 @[simp] theorem shearCLM_apply (M : E →L[ℝ] E) (w : E × E) :
     shearCLM M w = (w.1, w.2 + M w.1) := by
   ext <;> simp [shearCLM]
@@ -376,14 +381,17 @@ noncomputable def shear (M : E →L[ℝ] E) : (E × E) ≃L[ℝ] (E × E) :=
     (fun w ↦ by simp) (fun w ↦ by simp)
 
 omit [FiniteDimensional ℝ E] in
+/-- The continuous linear map underlying `shear M` is `shearCLM M`. -/
 @[simp] theorem coe_shear (M : E →L[ℝ] E) :
     (shear M : (E × E) →L[ℝ] (E × E)) = shearCLM M := rfl
 
 omit [FiniteDimensional ℝ E] in
+/-- The inverse of `shear M` is the shear `shearCLM (-M)`, i.e. `[I 0; -M I]`. -/
 theorem coe_shear_symm (M : E →L[ℝ] E) :
     ((shear M).symm : (E × E) →L[ℝ] (E × E)) = shearCLM (-M) := rfl
 
 omit [FiniteDimensional ℝ E] in
+/-- `M ↦ shearCLM M` is continuous in operator norm. -/
 theorem continuous_shearCLM : Continuous (shearCLM (E := E)) :=
   continuous_const.add (continuous_const.clm_comp (continuous_id.clm_comp continuous_const))
 

@@ -33,6 +33,8 @@ variable {Ω : Set H} {x₀ : H}
 
 local notation "⟪" a ", " b "⟫" => @inner ℝ _ _ a b
 
+/-- In a Hilbert space, `x ↦ ‖x - w‖` is Fréchet differentiable at every `x₀ ≠ w`, with gradient
+`(x₀ - w) / ‖x₀ - w‖`. -/
 theorem hasFDerivAt_norm_sub [CompleteSpace H] {w : H} (h : x₀ ≠ w) :
     HasFDerivAt (fun x ↦ ‖x - w‖) (toDual ℝ H (‖x₀ - w‖⁻¹ • (x₀ - w))) x₀ := by
   have := (hasFDerivAt_norm_of_ne_zero (sub_ne_zero.2 h)).comp x₀
@@ -51,6 +53,7 @@ theorem norm_add_inner_le {a h : H} (ha : a ≠ 0) : ‖a‖ + ⟪‖a‖⁻¹ �
   exact le_of_mul_le_mul_left (h2 ▸ h1) hpos
 
 omit [InnerProductSpace ℝ H] in
+/-- `w ∈ Π(x; Ω)` if and only if `w ∈ Ω` and `dist(x; Ω) = dist x w`. -/
 theorem mem_euclideanProj_iff {x w : H} :
     w ∈ euclideanProj Ω x ↔ w ∈ Ω ∧ infDist x Ω = dist x w := by
   rw [euclideanProj, mem_ofPred_eq, dist_eq_norm, eq_comm]

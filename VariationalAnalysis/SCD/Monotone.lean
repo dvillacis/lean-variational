@@ -75,9 +75,11 @@ noncomputable def mintyInvCLM : (E × E) →L[ℝ] (E × E) :=
     (ContinuousLinearMap.fst ℝ E E - ContinuousLinearMap.snd ℝ E E)
 
 omit [FiniteDimensional ℝ E] in
+/-- `mintyCLM (x, y) = (x + y, x)`. -/
 @[simp] theorem mintyCLM_apply (w : E × E) : mintyCLM w = (w.1 + w.2, w.1) := rfl
 
 omit [FiniteDimensional ℝ E] in
+/-- `mintyInvCLM (u, x) = (x, u - x)`. -/
 @[simp] theorem mintyInvCLM_apply (w : E × E) : mintyInvCLM w = (w.2, w.1 - w.2) := rfl
 
 /-- The transformation mapping `Φ(x, y) = (x + y, x)` of [Gfrerer–Outrata 2022, Prop. 3.22]:
@@ -87,9 +89,11 @@ noncomputable def mintyMap : (E × E) ≃L[ℝ] (E × E) :=
     (fun w ↦ by simp)
 
 omit [FiniteDimensional ℝ E] in
+/-- `Φ(x, y) = (x + y, x)`. -/
 @[simp] theorem mintyMap_apply (w : E × E) : mintyMap w = (w.1 + w.2, w.1) := rfl
 
 omit [FiniteDimensional ℝ E] in
+/-- `Φ⁻¹(u, x) = (x, u - x)`. -/
 @[simp] theorem mintyMap_symm_apply (w : E × E) : mintyMap.symm w = (w.2, w.1 - w.2) := rfl
 
 /-- The subspace `rge(B, I - B) = {(B v, v - B v) | v ∈ E}`. -/
@@ -97,6 +101,7 @@ noncomputable def mintySubspace (B : E →L[ℝ] E) : Submodule ℝ (E × E) :=
   LinearMap.range ((B : E →ₗ[ℝ] E).prod (LinearMap.id - (B : E →ₗ[ℝ] E)))
 
 omit [FiniteDimensional ℝ E] in
+/-- `w ∈ rge(B, I - B)` iff `w = (B v, v - B v)` for some `v`. -/
 theorem mem_mintySubspace_iff {B : E →L[ℝ] E} {w : E × E} :
     w ∈ mintySubspace B ↔ ∃ v, B v = w.1 ∧ v - B v = w.2 := by
   rw [mintySubspace, LinearMap.mem_range]
@@ -164,6 +169,7 @@ def IsFirmlyNonexpansive (f : E → E) : Prop :=
   ∀ u₁ u₂, ‖f u₁ - f u₂‖ ^ 2 ≤ ⟪f u₁ - f u₂, u₁ - u₂⟫_ℝ
 
 omit [FiniteDimensional ℝ E] in
+/-- If `‖a‖² ≤ ⟪a, b⟫`, then `‖a‖ ≤ ‖b‖` (Cauchy–Schwarz). -/
 theorem norm_le_of_sq_le_inner {a b : E} (h : ‖a‖ ^ 2 ≤ ⟪a, b⟫_ℝ) : ‖a‖ ≤ ‖b‖ := by
   have h2 := real_inner_le_norm a b
   rcases (norm_nonneg a).eq_or_lt with ha | ha
@@ -185,6 +191,7 @@ theorem IsFirmlyNonexpansiveOp.norm_le_one (h : IsFirmlyNonexpansiveOp B) : ‖B
     rw [one_mul]; exact norm_le_of_sq_le_inner (h v)
 
 omit [FiniteDimensional ℝ E] in
+/-- The set of firmly nonexpansive linear maps is closed. -/
 theorem isClosed_setOf_isFirmlyNonexpansiveOp :
     IsClosed {B : E →L[ℝ] E | IsFirmlyNonexpansiveOp B} := by
   simp only [IsFirmlyNonexpansiveOp, ofPred_forall]
@@ -193,6 +200,7 @@ theorem isClosed_setOf_isFirmlyNonexpansiveOp :
   · exact (continuous_id.clm_apply continuous_const).inner continuous_const
 
 omit [FiniteDimensional ℝ E] in
+/-- A firmly nonexpansive mapping is nonexpansive, i.e. Lipschitz with constant `1`. -/
 theorem IsFirmlyNonexpansive.lipschitzWith (h : IsFirmlyNonexpansive f) : LipschitzWith 1 f :=
   LipschitzWith.of_dist_le_mul fun u₁ u₂ ↦ by
     rw [dist_eq_norm, dist_eq_norm, NNReal.coe_one, one_mul]
@@ -251,6 +259,7 @@ noncomputable def resolvent (F : E → Set E) (u : E) : E :=
 variable {F : E → Set E}
 
 omit [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] in
+/-- If `u ∈ rge(I + F)`, then the resolvent satisfies `u - (I + F)⁻¹ u ∈ F((I + F)⁻¹ u)`. -/
 theorem resolvent_spec {u : E} (h : ∃ x, u - x ∈ F x) :
     u - resolvent F u ∈ F (resolvent F u) := by
   classical
@@ -267,6 +276,8 @@ theorem IsMonotoneOp.sq_norm_le (hF : IsMonotoneOp F) {u₁ u₂ x₁ x₂ : E} 
   linarith [real_inner_comm (x₁ - x₂) (u₁ - u₂)]
 
 omit [FiniteDimensional ℝ E] in
+/-- For monotone `F`, the point `x` with `u - x ∈ F x` is unique: `(I + F)⁻¹` is at most
+single-valued. -/
 theorem IsMonotoneOp.eq_of_mem (hF : IsMonotoneOp F) {u x₁ x₂ : E} (h₁ : u - x₁ ∈ F x₁)
     (h₂ : u - x₂ ∈ F x₂) : x₁ = x₂ := by
   have := hF.sq_norm_le h₁ h₂
@@ -275,6 +286,7 @@ theorem IsMonotoneOp.eq_of_mem (hF : IsMonotoneOp F) {u x₁ x₂ : E} (h₁ : u
   exact sub_eq_zero.1 (norm_eq_zero.1 h0)
 
 omit [FiniteDimensional ℝ E] in
+/-- For monotone `F`, `u - x ∈ F x` implies `(I + F)⁻¹ u = x`. -/
 theorem IsMonotoneOp.resolvent_eq (hF : IsMonotoneOp F) {u x : E} (h : u - x ∈ F x) :
     resolvent F u = x :=
   hF.eq_of_mem (resolvent_spec ⟨x, h⟩) h
@@ -391,6 +403,7 @@ section Symmetric
 def IsSymmetricOp (B : E →L[ℝ] E) : Prop := ∀ v w, ⟪B v, w⟫_ℝ = ⟪B w, v⟫_ℝ
 
 omit [FiniteDimensional ℝ E] in
+/-- The set of symmetric linear maps is closed. -/
 theorem isClosed_setOf_isSymmetricOp : IsClosed {B : E →L[ℝ] E | IsSymmetricOp B} := by
   simp only [IsSymmetricOp, ofPred_forall]
   exact isClosed_iInter fun v ↦ isClosed_iInter fun w ↦ isClosed_eq
@@ -398,6 +411,7 @@ theorem isClosed_setOf_isSymmetricOp : IsClosed {B : E →L[ℝ] E | IsSymmetric
     ((continuous_id.clm_apply continuous_const).inner continuous_const)
 
 omit [FiniteDimensional ℝ E] in
+/-- A symmetric linear map is self-adjoint: `Bᵀ = B`. -/
 theorem IsSymmetricOp.adjoint_eq [CompleteSpace E] {B : E →L[ℝ] E} (h : IsSymmetricOp B) :
     ContinuousLinearMap.adjoint B = B :=
   ((ContinuousLinearMap.eq_adjoint_iff B B).2 fun v w ↦ by
@@ -416,6 +430,8 @@ through the Riesz map. -/
 noncomputable def subdiffMap (φ : E → EReal) (x : E) : Set E :=
   (toDual ℝ E).symm '' subdiff φ x
 
+/-- `y ∈ subdiffMap φ x` iff the functional `toDual ℝ E y = ⟪y, ·⟫` is a subgradient of `φ`
+at `x`. -/
 theorem mem_subdiffMap_iff {x y : E} : y ∈ subdiffMap φ x ↔ toDual ℝ E y ∈ subdiff φ x := by
   constructor
   · rintro ⟨v, hv, rfl⟩
@@ -540,6 +556,8 @@ theorem toDual_sub_resolvent_mem_subdiff (u : E) :
     toDual ℝ E (u - resolvent (subdiffMap φ) u) ∈ subdiff φ (resolvent (subdiffMap φ) u) :=
   mem_subdiffMap_iff.1 (resolvent_spec (exists_sub_mem_subdiffMap hconv hlsc hbot hdom u))
 
+/-- For a proper l.s.c. convex `φ`, the value `φ(prox u)` at the proximal point
+`prox u = (I + ∂φ)⁻¹ u` is finite. -/
 theorem resolvent_subdiffMap_eq_toReal (u : E) :
     φ (resolvent (subdiffMap φ) u) = ((φ (resolvent (subdiffMap φ) u)).toReal : EReal) := by
   obtain ⟨r, hr, -⟩ := toDual_sub_resolvent_mem_subdiff hconv hlsc hbot hdom u
@@ -607,6 +625,8 @@ theorem isSymmetricOp_of_hasFDerivAt_resolvent {A : E →L[ℝ] E} {x : E}
   simp only [ContinuousLinearMap.comp_apply] at this
   exact this
 
+/-- For a proper l.s.c. convex `φ`, every element `B ∈ ∇̄(I + ∂φ)⁻¹(u)` of the B-subdifferential
+of the proximal mapping is symmetric. -/
 theorem isSymmetricOp_of_mem_bSubdiff_resolvent {B : E →L[ℝ] E} {u : E}
     (hB : B ∈ bSubdiff (resolvent (subdiffMap φ)) u) : IsSymmetricOp B := by
   obtain ⟨y, hd, -, hlim⟩ := hB
@@ -664,6 +684,9 @@ theorem contingentCone_subset_of_inter_eq {Ω Ω' W : Set (E × E)} (hW : IsOpen
 variable {F G : E → Set E} {W : Set (E × E)}
 
 omit [FiniteDimensional ℝ E] in
+/-- Graphical smoothness and the tangent subspace only depend on the graph near the point: if
+`gph F` and `gph G` agree on an open set `W ∋ q` and `q ∈ O_F`, then `q ∈ O_G` and the tangent
+subspaces of `F` and `G` at `q` coincide. -/
 theorem graphicallySmoothAt_of_inter_eq (hW : IsOpen W) (h : graph F ∩ W = graph G ∩ W)
     {q : E × E} (hq : q ∈ W) (hsm : GraphicallySmoothAt F q) :
     GraphicallySmoothAt G q ∧ tangentSubspace F q = tangentSubspace G q := by
@@ -683,6 +706,7 @@ theorem scDeriv_subset_of_inter_eq_of_isOpen (hW : IsOpen W) (h : graph F ∩ W 
     (hev.mono fun k hk ↦ (graphicallySmoothAt_of_inter_eq hW h hk (hq k)).1) hqlim
     (hT.congr_eventually (hev.mono fun k hk ↦ (graphicallySmoothAt_of_inter_eq hW h hk (hq k)).2))
 
+/-- If `gph F` and `gph G` agree on an open set `W ∋ p`, then `𝒮F(p) = 𝒮G(p)`. -/
 theorem scDeriv_eq_of_inter_eq (hW : IsOpen W) (h : graph F ∩ W = graph G ∩ W) {p : E × E}
     (hp : p ∈ W) : scDeriv F p = scDeriv G p :=
   subset_antisymm (scDeriv_subset_of_inter_eq_of_isOpen hW h hp)
@@ -693,6 +717,7 @@ noncomputable def hypoMintySubspace (c : ℝ) (B : E →L[ℝ] E) : Submodule �
   LinearMap.range ((B : E →ₗ[ℝ] E).prod (LinearMap.id - c • (B : E →ₗ[ℝ] E)))
 
 omit [FiniteDimensional ℝ E] in
+/-- `w ∈ rge(B, I - c B)` iff `w = (B v, v - c B v)` for some `v`. -/
 theorem mem_hypoMintySubspace_iff {c : ℝ} {B : E →L[ℝ] E} {w : E × E} :
     w ∈ hypoMintySubspace c B ↔ ∃ v, B v = w.1 ∧ v - c • B v = w.2 := by
   rw [hypoMintySubspace, LinearMap.mem_range]
@@ -749,6 +774,8 @@ theorem map_shearCLM_mintySubspace (γ : ℝ) (B : E →L[ℝ] E) :
     abel_nf
 
 omit [FiniteDimensional ℝ E] in
+/-- `(x, y + γ x) ∈ gph(F + γ I)` iff `(x, y) ∈ gph F`, with `F + γ I` written as
+`x ↦ {y + γ x | y ∈ F x}`. -/
 theorem mem_graph_add_smul_iff (γ : ℝ) {q : E × E} :
     (q.1, q.2 + γ • q.1) ∈ graph (fun x ↦ (fun y ↦ y + γ • x) '' F x) ↔ q ∈ graph F := by
   constructor

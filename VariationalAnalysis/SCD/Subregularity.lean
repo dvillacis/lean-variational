@@ -98,19 +98,25 @@ section Metric
 variable {E F : Type*} [MetricSpace E] [MetricSpace F]
 variable {S : E → Set F} {x₀ : E} {y₀ : F} {κ κ' : ℝ≥0}
 
+/-- Strong metric subregularity with modulus `κ` implies it with any larger modulus `κ' ≥ κ`. -/
 theorem StronglyMetricallySubregularWith.mono (h : StronglyMetricallySubregularWith κ S x₀ y₀)
     (hle : κ ≤ κ') : StronglyMetricallySubregularWith κ' S x₀ y₀ := by
   obtain ⟨U, hU, h⟩ := h
   exact ⟨U, hU, fun x hx ↦ (h x hx).trans (by gcongr)⟩
 
+/-- Every modulus of strong metric subregularity at `(x₀, y₀)` bounds `subreg S (x₀, y₀)` from
+above. -/
 theorem StronglyMetricallySubregularWith.subregBound_le
     (h : StronglyMetricallySubregularWith κ S x₀ y₀) : subregBound S x₀ y₀ ≤ κ :=
   iInf₂_le κ h
 
+/-- Strong metric subregularity with some modulus `κ` gives strong metric subregularity at
+`(x₀, y₀)`. -/
 theorem StronglyMetricallySubregularWith.stronglyMetricallySubregularAt
     (h : StronglyMetricallySubregularWith κ S x₀ y₀) : StronglyMetricallySubregularAt S x₀ y₀ :=
   ⟨κ, h⟩
 
+/-- `S` is strongly metrically subregular at `(x₀, y₀)` iff `subreg S (x₀, y₀) < ∞`. -/
 theorem stronglyMetricallySubregularAt_iff_subregBound_lt_top :
     StronglyMetricallySubregularAt S x₀ y₀ ↔ subregBound S x₀ y₀ < ⊤ := by
   constructor
@@ -132,6 +138,9 @@ theorem StronglyMetricallySubregularWith.dist_le (h : StronglyMetricallySubregul
   rw [dist_nndist, dist_nndist]
   exact_mod_cast h1
 
+/-- Converse of `StronglyMetricallySubregularWith.dist_le` for `κ > 0`: if
+`dist x x₀ ≤ κ * dist y y₀` for all `x` near `x₀` and all `y ∈ S x`, then `S` is strongly
+metrically subregular at `(x₀, y₀)` with modulus `κ`. -/
 theorem stronglyMetricallySubregularWith_of_dist_le (hκ : 0 < κ)
     (h : ∀ᶠ x in 𝓝 x₀, ∀ y ∈ S x, dist x x₀ ≤ κ * dist y y₀) :
     StronglyMetricallySubregularWith κ S x₀ y₀ := by
@@ -175,11 +184,15 @@ theorem stronglyMetricallySubregularAt_iff_subregular_isolated (hp : (x₀, y₀
       rw [dist_comm z x] at this
       linarith
 
+/-- Strong metric subregularity around `(x₀, y₀)` in terms of the filter `𝓝[gph S] (x₀, y₀)`:
+some `κ` is a modulus at all points of `gph S` near `(x₀, y₀)`. -/
 theorem stronglyMetricallySubregularAround_iff_eventually :
     StronglyMetricallySubregularAround S x₀ y₀ ↔
       ∃ κ : ℝ≥0, ∀ᶠ p in 𝓝[graph S] (x₀, y₀), StronglyMetricallySubregularWith κ S p.1 p.2 := by
   simp only [StronglyMetricallySubregularAround, eventually_nhdsWithin_iff]
 
+/-- If `κ` is a modulus of strong metric subregularity at all points of `gph S` near `(x₀, y₀)`,
+then `l-subreg S (x₀, y₀) ≤ κ`. -/
 theorem lsubregBound_le_of_eventually
     (h : ∀ᶠ p in 𝓝 (x₀, y₀), p ∈ graph S → StronglyMetricallySubregularWith κ S p.1 p.2) :
     lsubregBound S x₀ y₀ ≤ κ := by
@@ -187,6 +200,8 @@ theorem lsubregBound_le_of_eventually
   rw [eventually_nhdsWithin_iff]
   filter_upwards [h] with p hp hpg using (hp hpg).subregBound_le
 
+/-- If `l-subreg S (x₀, y₀) < κ`, then `κ` is a modulus of strong metric subregularity at all
+points of `gph S` near `(x₀, y₀)`. -/
 theorem eventually_stronglyMetricallySubregularWith_of_lsubregBound_lt
     (hM : lsubregBound S x₀ y₀ < κ) :
     ∀ᶠ p in 𝓝 (x₀, y₀), p ∈ graph S → StronglyMetricallySubregularWith κ S p.1 p.2 := by
@@ -224,11 +239,13 @@ noncomputable def coneBound (C : Set (E × F)) : ℝ≥0∞ :=
 variable {C : Set (E × F)}
 
 omit [NormedSpace ℝ E] [NormedSpace ℝ F] in
+/-- `‖u‖ ≤ coneBound C` for every `(u, v) ∈ C` with `‖v‖ ≤ 1`. -/
 theorem le_coneBound {w : E × F} (hw : w ∈ C) (hw2 : ‖w.2‖ ≤ 1) :
     ENNReal.ofReal ‖w.1‖ ≤ coneBound C :=
   le_iSup₂_of_le w hw (le_iSup (fun _ : ‖w.2‖ ≤ 1 ↦ ENNReal.ofReal ‖w.1‖) hw2)
 
 omit [NormedSpace ℝ E] [NormedSpace ℝ F] in
+/-- If `‖u‖ ≤ κ ‖v‖` for all `(u, v) ∈ C`, then `coneBound C ≤ κ`. -/
 theorem coneBound_le {κ : ℝ≥0} (h : ∀ w ∈ C, ‖w.1‖ ≤ κ * ‖w.2‖) : coneBound C ≤ κ := by
   refine iSup₂_le fun w hw ↦ iSup_le fun hw2 ↦ ?_
   rw [← ENNReal.ofReal_coe_nnreal]
@@ -311,6 +328,8 @@ theorem exists_bound_of_isClosed_cone (hC : IsClosed C)
   rw [this, norm_zero] at hn1
   exact zero_ne_one hn1
 
+/-- In finite dimensions, a closed cone `C` has `coneBound C < ∞` iff `(u, 0) ∈ C` only for
+`u = 0`. -/
 theorem coneBound_ne_top_iff (hC : IsClosed C) (hcone : ∀ w ∈ C, ∀ t : ℝ, 0 ≤ t → t • w ∈ C) :
     coneBound C ≠ ⊤ ↔ ∀ u : E, (u, (0 : F)) ∈ C → u = 0 := by
   constructor
@@ -366,6 +385,8 @@ theorem StronglyMetricallySubregularWith.norm_fst_le
   exact le_of_tendsto_of_tendsto (((continuous_norm.comp continuous_fst).tendsto w).comp hlim)
     ((((continuous_norm.comp continuous_snd).tendsto w).comp hlim).const_mul (κ : ℝ)) hev
 
+/-- Strong metric subregularity at `(x₀, y₀)` gives `0 ∈ DS(x₀, y₀)(u) ⇒ u = 0`: if `(u, 0)`
+belongs to the contingent cone to `gph S` at `(x₀, y₀)`, then `u = 0`. -/
 theorem StronglyMetricallySubregularWith.eq_zero_of_mem_contingentCone
     (h : StronglyMetricallySubregularWith κ S x₀ y₀) {u : E}
     (hu : (u, (0 : F)) ∈ contingentCone (graph S) (x₀, y₀)) : u = 0 := by

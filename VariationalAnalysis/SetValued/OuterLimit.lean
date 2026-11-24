@@ -43,6 +43,8 @@ along a filter `l`: the set of limits `y = lim yₖ` of sequences `yₖ ∈ F x�
 def outerLimit (l : Filter α) (F : α → Set E) : Set E :=
   {y | ∃ a : ℕ → α, ∃ v : ℕ → E, Tendsto a atTop l ∧ Tendsto v atTop (𝓝 y) ∧ ∀ k, v k ∈ F (a k)}
 
+/-- `y` belongs to the outer limit of `F` along `l` if and only if `y = lim yₖ` for some sequences
+`xₖ → l` and `yₖ ∈ F xₖ`. -/
 theorem mem_outerLimit {l : Filter α} {F : α → Set E} {y : E} :
     y ∈ outerLimit l F ↔
       ∃ a : ℕ → α, ∃ v : ℕ → E, Tendsto a atTop l ∧ Tendsto v atTop (𝓝 y) ∧
@@ -56,11 +58,15 @@ theorem mem_outerLimit_of_eventually {l : Filter α} {F : α → Set E} {y : E} 
   exact ⟨fun k ↦ a (k + N), fun k ↦ v (k + N), (tendsto_add_atTop_iff_nat N).2 ha,
     (tendsto_add_atTop_iff_nat N).2 hv, fun k ↦ hN _ (Nat.le_add_left N k)⟩
 
+/-- The outer limit is monotone in the mapping: if `F a ⊆ G a` eventually along `l`, then
+`outerLimit l F ⊆ outerLimit l G`. -/
 theorem outerLimit_mono {l : Filter α} {F G : α → Set E} (h : ∀ᶠ a in l, F a ⊆ G a) :
     outerLimit l F ⊆ outerLimit l G := by
   rintro y ⟨a, v, ha, hv, hF⟩
   exact mem_outerLimit_of_eventually a v ha hv ((ha.eventually h).mono fun k hk ↦ hk (hF k))
 
+/-- The outer limit is monotone in the filter: if `l₁ ≤ l₂`, then
+`outerLimit l₁ F ⊆ outerLimit l₂ F`. -/
 theorem outerLimit_mono_filter {l₁ l₂ : Filter α} (h : l₁ ≤ l₂) (F : α → Set E) :
     outerLimit l₁ F ⊆ outerLimit l₂ F := by
   rintro y ⟨a, v, ha, hv, hF⟩
@@ -85,12 +91,15 @@ def funNhds {E β : Type*} [TopologicalSpace E] [TopologicalSpace β] (φ : E �
     Filter E :=
   𝓝 x₀ ⊓ comap φ (𝓝 (φ x₀))
 
+/-- A sequence converges `φ`-attentively, `xₖ →φ x₀`, if and only if `xₖ → x₀` and
+`φ xₖ → φ x₀`. -/
 theorem tendsto_funNhds_iff {E β : Type*} [TopologicalSpace E] [TopologicalSpace β]
     {φ : E → β} {x₀ : E} {a : ℕ → E} :
     Tendsto a atTop (funNhds φ x₀) ↔
       Tendsto a atTop (𝓝 x₀) ∧ Tendsto (fun k ↦ φ (a k)) atTop (𝓝 (φ x₀)) := by
   simp [funNhds, tendsto_inf, tendsto_comap_iff, Function.comp_def]
 
+/-- The filter of `φ`-attentive convergence to `x₀` contains `x₀`: `pure x₀ ≤ funNhds φ x₀`. -/
 theorem pure_le_funNhds {E β : Type*} [TopologicalSpace E] [TopologicalSpace β]
     (φ : E → β) (x₀ : E) : pure x₀ ≤ funNhds φ x₀ :=
   le_inf (pure_le_nhds x₀) (tendsto_pure_nhds φ x₀).le_comap

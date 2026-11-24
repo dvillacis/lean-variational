@@ -88,6 +88,7 @@ theorem mem_innerLimit_atTop_iff : y ∈ innerLimit atTop S ↔
   · rintro ⟨v, hv, hS⟩ a ha
     exact ⟨v ∘ a, hv.comp ha, ha.eventually hS⟩
 
+/-- The inner limit of a sequence of sets is contained in its outer limit. -/
 theorem innerLimit_subset_outerLimit_atTop : innerLimit atTop S ⊆ outerLimit atTop S :=
   fun y hy ↦ by
     obtain ⟨v, hv, hS⟩ := mem_innerLimit_atTop_iff.1 hy
@@ -129,6 +130,7 @@ theorem mem_innerLimit_atTop_iff_dist : y ∈ innerLimit atTop S ↔
     rw [dist_comm] at hzd
     linarith [(hc k hk).2]
 
+/-- The inner limit of a sequence of sets in a pseudometric space is closed. -/
 theorem isClosed_innerLimit_atTop : IsClosed (innerLimit atTop S) := by
   refine isClosed_of_closure_subset fun y hy ↦ mem_innerLimit_atTop_iff_dist.2 fun ε hε ↦ ?_
   obtain ⟨y', hy', hd⟩ := Metric.mem_closure_iff.1 hy (ε / 2) (half_pos hε)
@@ -178,6 +180,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Set E} {x�
 def proxNormalCone (Ω : Set E) (x₀ : E) : Set (StrongDual ℝ E) :=
   {v | x₀ ∈ Ω ∧ ∃ γ ≥ (0 : ℝ), ∀ x ∈ Ω, v (x - x₀) ≤ γ * ‖x - x₀‖ ^ 2}
 
+/-- `0` is a proximal normal to `Ω` at every `x₀ ∈ Ω`. -/
 theorem zero_mem_proxNormalCone (hx : x₀ ∈ Ω) : (0 : StrongDual ℝ E) ∈ proxNormalCone Ω x₀ :=
   ⟨hx, 0, le_rfl, fun x _ ↦ by simp⟩
 
@@ -342,6 +345,8 @@ theorem ProtoDifferentiableAt.invMap [CompleteSpace X] [CompleteSpace Y] {F : X 
     (e := ContinuousLinearEquiv.prodComm ℝ Y X) (W := univ) h univ_mem (by rw [graph_invMap])
     (ContinuousLinearEquiv.prodComm ℝ Y X).hasStrictFDerivAt hy
 
+/-- In Banach spaces and for `ȳ ∈ F(x̄)`, `F⁻¹` is proto-differentiable at `(ȳ, x̄)` iff `F` is
+proto-differentiable at `(x̄, ȳ)`. -/
 theorem protoDifferentiableAt_invMap_iff [CompleteSpace X] [CompleteSpace Y] {F : X → Set Y}
     {x₀ : X} {y₀ : Y} (hy : y₀ ∈ F x₀) :
     ProtoDifferentiableAt (invMap F) y₀ x₀ ↔ ProtoDifferentiableAt F x₀ y₀ :=

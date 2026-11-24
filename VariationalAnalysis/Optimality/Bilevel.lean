@@ -119,38 +119,50 @@ def IsLocalWeakSharpMin {Z : Type*} [PseudoMetricSpace Z] (ϕ : Z → ℝ) (P Q 
 
 variable {f φ : E × F → ℝ} {g : ι → E × F → ℝ} {Ω : Set E} {x₀ : E} {y₀ : F}
 
+/-- `y ∈ S(x)` iff `y ∈ G(x)` and `φ(x, y) = μ(x)`. -/
 theorem mem_lowerSolution_iff {x : E} {y : F} :
     y ∈ lowerSolution φ g x ↔ y ∈ lowerFeasible g x ∧ (φ (x, y) : EReal) = lowerValue φ g x :=
   Iff.rfl
 
+/-- `μ(x) = φ(x, y)` for a lower-level solution `y ∈ S(x)`. -/
 theorem lowerValue_eq_of_mem_lowerSolution {x : E} {y : F} (hy : y ∈ lowerSolution φ g x) :
     lowerValue φ g x = φ (x, y) :=
   hy.2.symm
 
+/-- `μ(x) ≤ φ(x, y)` for a lower-level feasible `y ∈ G(x)`. -/
 theorem lowerValue_le {x : E} {y : F} (hy : y ∈ lowerFeasible g x) :
     lowerValue φ g x ≤ φ (x, y) :=
   marginal_le hy
 
+/-- The feasible set of the value function reformulation is the graph of `S` over `Ω`: `(x, y)` is
+feasible iff `x ∈ Ω` and `y ∈ S(x)`. -/
 theorem mem_valueFeasible_iff {p : E × F} :
     p ∈ valueFeasible φ g Ω ↔ p.1 ∈ Ω ∧ p.2 ∈ lowerSolution φ g p.1 :=
   ⟨fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, le_antisymm h3 (lowerValue_le h2)⟩,
     fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3.le⟩⟩
 
+/-- `f_opt(x) ≤ f(x, y)` for a lower-level solution `y ∈ S(x)`. -/
 theorem optimisticValue_le {x : E} {y : F} (hy : y ∈ lowerSolution φ g x) :
     optimisticValue f φ g x ≤ f (x, y) :=
   iInf₂_le y hy
 
+/-- `μ(x) < ∞` if `G(x)` is nonempty. -/
 theorem lowerValue_ne_top {x : E} {y : F} (hy : y ∈ lowerFeasible g x) : lowerValue φ g x ≠ ⊤ :=
   ne_top_of_le_ne_top (EReal.coe_ne_top _) (lowerValue_le hy)
 
+/-- Where `μ(x) = c` is finite, the penalized objective at `(x, y)` is the real number
+`f(x, y) + κ φ(x, y) - κ c`. -/
 theorem penalizedObjective_of_eq {κ c : ℝ} {p : E × F} (h : lowerValue φ g p.1 = c) :
     penalizedObjective f φ g κ p = ((f p + κ * φ p - κ * c : ℝ) : EReal) := by
   rw [penalizedObjective, h, ← EReal.coe_mul, ← EReal.coe_sub]
 
+/-- Where `μ(x) = -∞`, the penalized objective with `κ > 0` equals `+∞`. -/
 theorem penalizedObjective_of_eq_bot {κ : ℝ} (hκ : 0 < κ) {p : E × F}
     (h : lowerValue φ g p.1 = ⊥) : penalizedObjective f φ g κ p = ⊤ := by
   rw [penalizedObjective, h, EReal.coe_mul_bot_of_pos hκ, EReal.coe_sub_bot]
 
+/-- On the feasible set of the value function reformulation the penalized objective equals `f`,
+for every `κ`. -/
 theorem penalizedObjective_of_mem_valueFeasible {κ : ℝ} {p : E × F}
     (hp : p ∈ valueFeasible φ g Ω) : penalizedObjective f φ g κ p = f p := by
   rw [penalizedObjective_of_eq (c := φ p) (mem_valueFeasible_iff.1 hp).2.2.symm]

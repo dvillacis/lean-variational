@@ -44,6 +44,8 @@ variable (hB : ∃ B, ∀ x ∈ S, x ≠ x₀ → q x ≤ B)
 include hB
 
 omit [InnerProductSpace ℝ H] in
+/-- If `q` is bounded above on `S \ {x₀}`, the set whose supremum defines `supModulus S x₀ q t`
+is bounded above. -/
 theorem bddAbove_supModulus (t : ℝ) :
     BddAbove (insert 0 (q '' {x | x ∈ S ∧ x ≠ x₀ ∧ ‖x - x₀‖ ≤ t})) := by
   obtain ⟨B, hB⟩ := hB
@@ -53,15 +55,18 @@ theorem bddAbove_supModulus (t : ℝ) :
   · exact (hB x hx hx0).trans (le_max_left _ _)
 
 omit [InnerProductSpace ℝ H] in
+/-- If `q` is bounded above on `S \ {x₀}`, the modulus is nonnegative: `0 ≤ η(t)`. -/
 theorem supModulus_nonneg (t : ℝ) : 0 ≤ supModulus S x₀ q t :=
   le_csSup (bddAbove_supModulus hB t) (mem_insert _ _)
 
 omit [InnerProductSpace ℝ H] in
+/-- If `q` is bounded above on `S \ {x₀}`, the modulus `η = supModulus S x₀ q` is monotone. -/
 theorem monotone_supModulus : Monotone (supModulus S x₀ q) := fun _ _ hst ↦
   csSup_le_csSup (bddAbove_supModulus hB _) (insert_nonempty _ _)
     (insert_subset_insert (image_mono fun _ ⟨hx, hx0, hxt⟩ ↦ ⟨hx, hx0, hxt.trans hst⟩))
 
 omit [InnerProductSpace ℝ H] hB in
+/-- The modulus vanishes on the nonpositive half-line: `η(t) = 0` for `t ≤ 0`. -/
 theorem supModulus_of_nonpos {t : ℝ} (ht : t ≤ 0) : supModulus S x₀ q t = 0 := by
   have : {x | x ∈ S ∧ x ≠ x₀ ∧ ‖x - x₀‖ ≤ t} = ∅ := by
     ext x
@@ -71,11 +76,15 @@ theorem supModulus_of_nonpos {t : ℝ} (ht : t ≤ 0) : supModulus S x₀ q t = 
   simp [supModulus, this]
 
 omit [InnerProductSpace ℝ H] in
+/-- If `q` is bounded above on `S \ {x₀}`, the modulus majorizes `q` along the distance to `x₀`:
+`q(x) ≤ η(‖x - x₀‖)` for `x ∈ S`, `x ≠ x₀`. -/
 theorem le_supModulus {x : H} (hx : x ∈ S) (hx0 : x ≠ x₀) :
     q x ≤ supModulus S x₀ q ‖x - x₀‖ :=
   le_csSup (bddAbove_supModulus hB _) (mem_insert_of_mem _ ⟨x, ⟨hx, hx0, le_rfl⟩, rfl⟩)
 
 omit [InnerProductSpace ℝ H] in
+/-- If `q` is bounded above on `S \ {x₀}` and for every `ε > 0` one has `q(x) ≤ ε` for all
+`x ∈ S \ {x₀}` close enough to `x₀`, then `η(t) → 0` as `t ↓ 0`. -/
 theorem tendsto_supModulus (hvan : ∀ ε > 0, ∃ δ > 0, ∀ x ∈ S, x ≠ x₀ → ‖x - x₀‖ < δ → q x ≤ ε) :
     Tendsto (supModulus S x₀ q) (𝓝[≥] 0) (𝓝 0) := by
   rw [tendsto_order]
@@ -100,6 +109,9 @@ include hmono h0 hneg hlim
 noncomputable def radialDeriv (η : ℝ → ℝ) (x₀ x : H) : StrongDual ℝ H :=
   convexMajorantDeriv η ‖x - x₀‖ • (‖x - x₀‖⁻¹ • innerSL ℝ (x - x₀))
 
+/-- For a monotone, nonnegative modulus `η` vanishing on `(-∞, 0]` with `η(t) → 0` as `t ↓ 0`,
+and `τ = convexMajorant η`: the function `y ↦ τ(‖y - x₀‖)` is Fréchet differentiable at every
+`x`, with derivative `radialDeriv η x₀ x`. -/
 theorem hasFDerivAt_radial (x : H) :
     HasFDerivAt (fun y ↦ convexMajorant η ‖y - x₀‖) (radialDeriv η x₀ x) x := by
   have hd := hasDerivAt_convexMajorant hmono h0 hneg hlim
@@ -125,6 +137,8 @@ theorem hasFDerivAt_radial (x : H) :
     refine this.congr_fderiv ?_
     simp [radialDeriv]
 
+/-- For a monotone, nonnegative modulus `η` vanishing on `(-∞, 0]` with `η(t) → 0` as `t ↓ 0`,
+the derivative `x ↦ radialDeriv η x₀ x` is continuous. -/
 theorem continuous_radialDeriv : Continuous (radialDeriv η x₀) := by
   have hc := continuous_convexMajorantDeriv hmono h0 hneg hlim
   rw [continuous_iff_continuousAt]
@@ -151,6 +165,8 @@ theorem continuous_radialDeriv : Continuous (radialDeriv η x₀) := by
       ((((continuous_id.sub continuous_const).norm.continuousAt).inv₀ hne).smul
         ((innerSL ℝ).continuous.comp (continuous_id.sub continuous_const)).continuousAt)
 
+/-- For a monotone, nonnegative modulus `η` vanishing on `(-∞, 0]` with `η(t) → 0` as `t ↓ 0`,
+and `τ = convexMajorant η`: the function `y ↦ τ(‖y - x₀‖)` is of class `C¹`. -/
 theorem contDiff_radial : ContDiff ℝ 1 (fun y : H ↦ convexMajorant η ‖y - x₀‖) := by
   rw [contDiff_one_iff_fderiv]
   refine ⟨fun x ↦ (hasFDerivAt_radial hmono h0 hneg hlim x).differentiableAt, ?_⟩
@@ -159,6 +175,8 @@ theorem contDiff_radial : ContDiff ℝ 1 (fun y : H ↦ convexMajorant η ‖y -
   rw [this]
   exact continuous_radialDeriv hmono h0 hneg hlim
 
+/-- For a monotone, nonnegative modulus `η` vanishing on `(-∞, 0]` with `η(t) → 0` as `t ↓ 0`,
+and `τ = convexMajorant η`: the function `y ↦ τ(‖y - x₀‖)` is convex. -/
 theorem convexOn_radial : ConvexOn ℝ univ (fun y : H ↦ convexMajorant η ‖y - x₀‖) := by
   have := (radial_convexOn (E := H) (convexOn_convexMajorant hmono h0 hneg hlim)
     (monotoneOn_convexMajorant hmono h0 hneg hlim)).translate_right (-x₀)
