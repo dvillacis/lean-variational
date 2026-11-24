@@ -1,0 +1,41 @@
+name: Documentation
+
+# On every push to master: build the API documentation with doc-gen4 and publish it on
+# GitHub Pages, at https://dvillacis.github.io/lean-variational/docs/.
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  docs:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    # The first build after a dependency update also documents Mathlib; later builds
+    # take its documentation from the cache.
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: leanprover/lean-action@ba3fdfe5c4476c925da13bf11a005ddb47e47aee # v1.7.1
+        with:
+          lint: false
+
+      # The documentation goes to docs/docs; send the root of the site there.
+      - name: Site root
+        run: |
+          mkdir -p docs
+          echo '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=docs/"><title>VariationalAnalysis</title><a href="docs/">Documentation</a>' > docs/index.html
+
+      # No tagged releases; pinned to a commit of main.
+      - uses: leanprover-community/docgen-action@dacc1acc2a3f532cc577266979ba9c36c7593f7c
+        with:
+          build-page: false

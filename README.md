@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/dvillacis/lean-variational/actions/workflows/ci.yml/badge.svg)](https://github.com/dvillacis/lean-variational/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/dvillacis/lean-variational)](https://github.com/dvillacis/lean-variational/releases)
+[![Documentation](https://img.shields.io/badge/docs-API-blue)](https://dvillacis.github.io/lean-variational/docs/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
 Variational analysis and generalized differentiation for Lean 4 / Mathlib (v4.33.1), following
@@ -175,7 +176,8 @@ At a tagged `rev`, Lake downloads the compiled library from the GitHub release i
 compiling it (Linux x86_64 and, from the next release on, macOS arm64; on other platforms it is
 compiled locally). Mathlib and `ConvexAnalysis` come as transitive dependencies.
 
-Everything lives in the namespace `VariationalAnalysis`:
+The [API documentation](https://dvillacis.github.io/lean-variational/docs/) is rebuilt on every
+push to `master`. Everything lives in the namespace `VariationalAnalysis`:
 
 ```lean
 import VariationalAnalysis
@@ -203,6 +205,7 @@ Every pull request is checked by CI (`.github/workflows/ci.yml`), which runs
 | Build, with no warnings from this package | `lake build` |
 | The root file imports every module | `lake exe mk_all --check` (`lake exe mk_all` to fix) |
 | Environment linters of Batteries | `lake lint` |
+| Every definition has a docstring | `lake env lean scripts/LintDocs.lean` |
 | No axiom beyond `propext`, `Classical.choice`, `Quot.sound` | `lake env lean scripts/AuditAxioms.lean` |
 
 Mathlib's standard set of style linters is enabled in `lakefile.toml`.
