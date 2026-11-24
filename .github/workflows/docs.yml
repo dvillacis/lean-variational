@@ -4,7 +4,7 @@ name: Documentation
 # GitHub Pages, at https://david.villacis.net/lean-variational/docs/.
 on:
   push:
-    branches: [master, docs-oom-fix]
+    branches: [master]
 
 concurrency:
   group: pages
@@ -51,4 +51,3 @@ jobs:
       - uses: leanprover-community/docgen-action@dacc1acc2a3f532cc577266979ba9c36c7593f7c
         with:
           build-page: false
-          deploy: ${{ github.ref == 'refs/heads/master' }}
