@@ -1,7 +1,7 @@
 name: Documentation
 
 # On every push to master: build the API documentation with doc-gen4 and publish it on
-# GitHub Pages, at https://dvillacis.github.io/lean-variational/docs/.
+# GitHub Pages, at https://david.villacis.net/lean-variational/docs/.
 on:
   push:
     branches: [master]
