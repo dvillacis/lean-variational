@@ -31,11 +31,11 @@ jobs:
           mk_all-check: true
 
       # The build is up to date here, so this only replays the logs. Warnings of
-      # dependencies are replayed too; only those of this package fail the job.
+      # dependencies are replayed too; only those of this package are shown and fail the job.
       - name: No warnings
         run: |
-          lake build 2>&1 | tee build.log
-          if grep -E '^warning: (\./)?VariationalAnalysis' build.log; then
+          lake build > build.log 2>&1 || { cat build.log; exit 1; }
+          if grep -A 8 -E '^warning: (\./)?VariationalAnalysis' build.log; then
             echo "::error::The build has warnings in VariationalAnalysis (listed above)."
             exit 1
           fi
