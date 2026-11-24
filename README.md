@@ -5,36 +5,99 @@
 [![Documentation](https://img.shields.io/badge/docs-API-blue)](https://david.villacis.net/lean-variational/docs/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
-Variational analysis and generalized differentiation for Lean 4 / Mathlib (v4.33.1), following
+A Lean 4 / Mathlib library of variational analysis and generalized differentiation: normal cones,
+subdifferentials, coderivatives, variational and extremal principles, well-posedness, optimality
+conditions, SCD mappings and second-order theory. It follows the monographs of Mordukhovich
+(2018, 2024) and the papers of Gfrerer and Outrata on SCD mappings; see [References](#references).
 
-- B. S. Mordukhovich, *Variational Analysis and Applications*, Springer Monographs in
-  Mathematics, 2018 ([doi:10.1007/978-3-319-92775-6](https://doi.org/10.1007/978-3-319-92775-6)),
-  cited as [Mordukhovich 2018];
-- C. Clason and T. Valkonen, *Introduction to Nonsmooth Analysis and Optimization*,
-  [arXiv:2001.00216](https://arxiv.org/abs/2001.00216) (v7), cited as [Clason–Valkonen].
-
-The generalized gradient follows Ch. 7 of B. S. Mordukhovich and N. M. Nam, *Convex Analysis and
-Beyond, Vol. I: Basic Theory*, Springer, 2022, cited as [Mordukhovich–Nam 2022].
-Second-order subdifferentials, prox-regularity, Moreau envelopes and subgradient graphical
-derivatives follow Ch. 1 of B. S. Mordukhovich, *Second-Order Variational Analysis in
-Optimization, Variational Stability, and Control*, Springer, 2024, cited as [Mordukhovich 2024];
-Motzkin's theorem of the alternative follows its Lemma 3.1.
-
-The theory of SCD (subspace containing derivative) mappings follows H. Gfrerer and J. V. Outrata,
-*On (local) analysis of multifunctions via subspaces contained in graphs of generalized
-derivatives*, J. Math. Anal. Appl., 2022 ([arXiv:2106.00519](https://arxiv.org/abs/2106.00519)),
-cited as [Gfrerer–Outrata 2022], together with the product rule of H. Gfrerer, M. Mandlmayr,
-J. V. Outrata and J. Valdman, *On the SCD semismooth\* Newton method for generalized equations
-with application to a class of static contact problems with Coulomb friction*, Comput. Optim.
-Appl. 86 (2023), 1159–1191 ([doi:10.1007/s10589-022-00429-0](https://doi.org/10.1007/s10589-022-00429-0)),
-cited as [Gfrerer–Mandlmayr–Outrata–Valdman 2023], and Sect. 2.5 of H. Gfrerer and J. V. Outrata,
-*On the role of semismoothness in nonsmooth numerical analysis: Theory*
-([arXiv:2405.14637](https://arxiv.org/abs/2405.14637)), cited as [Gfrerer–Outrata 2024].
+- **Verified.** The library compiles against Mathlib v4.33.1 with no `sorry`, and no declaration
+  depends on an axiom beyond `propext`, `Classical.choice`, `Quot.sound`. CI checks both on every
+  change.
+- **Documented.** Every definition and theorem has a docstring; see the
+  [API documentation](https://david.villacis.net/lean-variational/docs/VariationalAnalysis.html).
+- **Traceable.** [`ROADMAP.md`](ROADMAP.md) lists the statements of the sources one by one, with
+  their Lean names or status, and records where a statement had to be corrected.
 
 It builds on [`ConvexAnalysis`](https://github.com/dvillacis/lean-convex) (convex analysis,
-subgradients and the port of OptLib), pinned in `lakefile.toml`.
+subgradients and the port of OptLib).
+
+## Example
+
+Everything lives in the namespace `VariationalAnalysis`:
+
+```lean
+import VariationalAnalysis
+
+open VariationalAnalysis
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+
+/-- The generalized Fermat rule: `0 ∈ ∂φ(x₀)` at a local minimizer where `φ` is finite. -/
+example {φ : E → EReal} {x₀ : E} {r : ℝ} (hmin : IsLocalMin φ x₀) (hr : φ x₀ = r) :
+    (0 : StrongDual ℝ E) ∈ subdiff φ x₀ :=
+  zero_mem_subdiff_of_isLocalMin hmin hr
+```
+
+## Selected results
+
+| Result | Lean name | Source |
+|---|---|---|
+| Fermat rule: `0 ∈ ∂φ(x₀)` at a local minimizer | [`zero_mem_subdiff_of_isLocalMin`](https://david.villacis.net/lean-variational/docs/VariationalAnalysis/Subdifferential/Limiting.html#VariationalAnalysis.zero_mem_subdiff_of_isLocalMin) | M Prop. 1.30(i) |
+| Ekeland's variational principle | [`ekeland_variational_principle`](https://david.villacis.net/lean-variational/docs/VariationalAnalysis/Principle/Variational.html#VariationalAnalysis.ekeland_variational_principle) | M Thm. 2.13 |
+| Basic extremal principle | [`IsLocallyExtremal.exists_mem_normalCone`](https://david.villacis.net/lean-variational/docs/VariationalAnalysis/Extremal/Basic.html#VariationalAnalysis.IsLocallyExtremal.exists_mem_normalCone) | M Thm. 2.3 |
+| Normals to intersections: `N(x; Ω₁ ∩ Ω₂) ⊆ N(x; Ω₁) + N(x; Ω₂)` | [`normalCone_inter_subset`](https://david.villacis.net/lean-variational/docs/VariationalAnalysis/Normal/Intersection.html#VariationalAnalysis.normalCone_inter_subset) | M Thm. 2.16 |
+| Subdifferential sum rule: `∂(φ₁ + φ₂) ⊆ ∂φ₁ + ∂φ₂` | [`subdiff_add_subset`](https://david.villacis.net/lean-variational/docs/VariationalAnalysis/Subdifferential/SumRule.html#VariationalAnalysis.subdiff_add_subset) | M Thm. 2.19 |
+| Mordukhovich criterion for metric regularity | [`metricallyRegularAt_iff_coderivKer_eq`](https://david.villacis.net/lean-variational/docs/VariationalAnalysis/WellPosedness/Criterion.html#VariationalAnalysis.metricallyRegularAt_iff_coderivKer_eq) | M Thm. 3.3 |
+| Coderivative chain rule | [`coderiv_setComp_subset`](https://david.villacis.net/lean-variational/docs/VariationalAnalysis/Coderivative/ChainRule.html#VariationalAnalysis.coderiv_setComp_subset) | M Thm. 3.11 |
+| Symmetric mean value theorem | [`symmetric_mean_value`](https://david.villacis.net/lean-variational/docs/VariationalAnalysis/Subdifferential/SymmetricMeanValue.html#VariationalAnalysis.symmetric_mean_value) | M Thm. 4.11 |
+| Minty's theorem | [`isMaximalMonotoneOp_iff`](https://david.villacis.net/lean-variational/docs/VariationalAnalysis/SCD/Minty.html#VariationalAnalysis.isMaximalMonotoneOp_iff) |  |
+| Local superlinear convergence of the SCD semismooth\* Newton method | [`IsSCDSemismoothStarAt.scdNewton_converges`](https://david.villacis.net/lean-variational/docs/VariationalAnalysis/SCD/Semismooth.html#VariationalAnalysis.IsSCDSemismoothStarAt.scdNewton_converges) | GO Thm. 5.4 |
+| Rockafellar's theorem on cyclically monotone mappings | [`maximalCyclicallyMonotone_iff`](https://david.villacis.net/lean-variational/docs/VariationalAnalysis/SecondOrder/CyclicMonotone.html#VariationalAnalysis.maximalCyclicallyMonotone_iff) | M24 Lemma 1.97 |
+| Twice epi-differentiability of `φ` ⇔ proto-differentiability of `∂φ` | [`ContinuouslyProxRegularFor.twiceEpiDifferentiableAt_iff_protoDifferentiableAt`](https://david.villacis.net/lean-variational/docs/VariationalAnalysis/SecondOrder/ProtoTwiceEpi.html#VariationalAnalysis.ContinuouslyProxRegularFor.twiceEpiDifferentiableAt_iff_protoDifferentiableAt) | M24 Thm. 1.98 |
+
+M = [Mordukhovich 2018], M24 = [Mordukhovich 2024], GO = [Gfrerer–Outrata 2022].
+
+## Installation
+
+Add the library to the `lakefile.toml` of a project that uses the same Lean toolchain
+(`leanprover/lean4:v4.33.1`):
+
+```toml
+[[require]]
+name = "variationalanalysis"
+git = "https://github.com/dvillacis/lean-variational"
+rev = "v0.1.0"
+```
+
+and run
+
+```
+lake update variationalanalysis
+lake exe cache get
+lake build
+```
+
+At a tagged `rev`, Lake downloads the compiled library from the GitHub release instead of
+compiling it (Linux x86_64 and, from the next release on, macOS arm64; on other platforms it is
+compiled locally). Mathlib and `ConvexAnalysis` come as transitive dependencies.
 
 ## Contents
+
+| Area | Folder | Contents |
+|---|---|---|
+| Set-valued maps | `SetValued` | Painlevé–Kuratowski limits, semicontinuity, regularity notions |
+| Normal and tangent cones | `Normal`, `Tangent` | regular, limiting and projection-based normals; products, intersections, changes of variables; contingent cone |
+| Subdifferentials | `Subdifferential` | regular, limiting and singular subgradients; sum, chain, marginal and mean value rules; distance function; Clarke generalized gradient |
+| Coderivatives | `Coderivative` | coderivatives and their calculus; implicit multifunctions; parametric variational systems |
+| Variational and extremal principles | `Principle`, `Extremal` | Ekeland's and the general variational principle; extremal principle |
+| Well-posedness | `WellPosedness` | covering, metric regularity, Lipschitz-like property; coderivative criteria; monotone operators |
+| Optimality conditions | `Optimality` | geometric constraints, nondifferentiable programming, bilevel programming |
+| SCD mappings | `SCD` | SC derivatives, SCD regularity, semismooth\* Newton method, Minty's theorem |
+| Second-order theory | `SecondOrder` | second-order subdifferentials, prox-regularity, Moreau envelopes, epi-convergence, twice epi-differentiability |
+| Auxiliary analysis | `Analysis` | convex majorants; theorems of the alternative (Motzkin, Farkas) |
+
+<details>
+<summary>Contents file by file</summary>
 
 | Area | File | Contents |
 |---|---|---|
@@ -90,37 +153,41 @@ subgradients and the port of OptLib), pinned in `lakefile.toml`.
 | Nondifferentiable programming | `Optimality/Programming` | Fritz John conditions via normals to epigraphs and graphs, via separate and symmetric subgradients, condensed Lagrangian conditions, abstract maximum principle, upper subdifferential conditions (M Thm. 6.5–Thm. 6.12) |
 | Bilevel programming | `Optimality/Bilevel`, `Optimality/BilevelSmooth`, `Subdifferential/NegConvexHull` | value function reformulation, partial calmness, weak sharp minima (M Prop. 6.13–6.18); difference rule (M Lemma 6.22); value function subgradients; optimality conditions for smooth bilevel programs (M Thm. 6.21, 6.23); `∂(-f) ⊆ -co ∂f` for Lipschitz `f` |
 
-M = [Mordukhovich 2018], M24 = [Mordukhovich 2024], CV = [Clason–Valkonen]. `ROADMAP.md` lists every statement of
-[Mordukhovich 2018, Ch. 1–6] with its Lean name or status, and the corresponding results of
-[Clason–Valkonen]. All numbered results of Ch. 1, 3 and 4 are formalized, and those of Ch. 2
-except Cor. 2.4, the bound `‖x̄ − x₀‖ ≤ λ` in Thm. 2.14, the epi-regular part of Thm. 2.19 and
-the countable extremal principles of Sect. 2.2. All numbered theorems, propositions and
-corollaries of Sect. 6.1–6.2 are formalized, and those of Sect. 6.3 except the Lipschitzian
-Thm. 6.25–6.26. In Ch. 1, the inclusion `⊆` in (1.38) and
-Prop. 1.37(ii) remain; the worked examples are not formalized. `ROADMAP.md` also records the
-places where a statement of the book had to be corrected (Thm. 2.12, 2.14, 3.14, 3.25, 4.1,
-Cor. 4.8, Thm. 4.18, Prop. 6.13, Thm. 6.21).
+M = [Mordukhovich 2018], M24 = [Mordukhovich 2024], CV = [Clason–Valkonen].
 
-For [Mordukhovich 2024, Ch. 1], `ROADMAP.md` lists the statements of Sect. 1.2–1.4 with their Lean
-names or status. Formalized: the second-order subdifferentials of Sect. 1.2, Thm. 1.65, the
-Moreau envelope results Lemma 1.68–Cor. 1.72, Def. 1.73–Lemma 1.81, Thm. 1.84 (with a proof
-that avoids Lemma 1.81), Def. 1.85–Thm. 1.86, and in Sect. 1.5 Def. 1.88–Lemma 1.97
-(with Def. 1.59 for Thm. 1.91) and Def. 1.100. Thm. 1.70–1.71
-assume prox-boundedness, which the book omits (a correction). Of the exercises used in
-Sect. 1.5, Ex. 1.133, 1.134(i), (iii), 1.135, 1.136 and 1.139(iii) are formalized.
-The equivalence of Thm. 1.98 is formalized (`SecondOrder/ProtoTwiceEpi`); so is Cor. 1.101 (`SecondOrder/ProxSemidiff`, `SecondOrder/EnvelopeTwiceEpi`; for l.s.c., prox-bounded, continuously prox-regular functions); formula (1.135) is open; Cor. 1.87 and
-Cor. 1.99 remain, which need Ex. 1.139(ii).
+</details>
 
-For SCD mappings, `ROADMAP.md` lists the results of [Gfrerer–Outrata 2022, Sect. 3–6] and their
-Lean names. Everything there is formalized except the local maximal hypomonotonicity of `∂q`
-for prox-regular `q` (the first claim of Prop. 3.26; the rest of Prop. 3.26 and Cor. 3.27 are in
-`SCD/ProxRegular`),
-quadratic bundles (3.30–3.34), the adjoint formulas (21) and (24b) for a general change of
-variables, and the worked examples. Minty's theorem is proved (`SCD/Minty`, via the Fitzpatrick
-function), so maximally monotone mappings are SCD; Prop. 3.22–Cor. 3.24 are proved for the
-local notions of Def. 3.20 (`SCD/LocalMonotone`), through a maximally monotone extension
-(Zorn's lemma). Sect. 7 (strong
-metric regularity, tilt stability) is not started.
+## Coverage
+
+**[Mordukhovich 2018, Ch. 1–6].** [`ROADMAP.md`](ROADMAP.md) lists every statement of these
+chapters with its Lean name or status, and the corresponding results of [Clason–Valkonen]. All
+numbered results of Ch. 1, 3 and 4 are formalized, and those of Ch. 2 except Cor. 2.4, the bound
+`‖x̄ − x₀‖ ≤ λ` in Thm. 2.14, the epi-regular part of Thm. 2.19 and the countable extremal
+principles of Sect. 2.2. All numbered theorems, propositions and corollaries of Sect. 6.1–6.2 are
+formalized, and those of Sect. 6.3 except the Lipschitzian Thm. 6.25–6.26. In Ch. 1, the inclusion
+`⊆` in (1.38) and Prop. 1.37(ii) remain; the worked examples are not formalized. `ROADMAP.md` also
+records the places where a statement of the book had to be corrected (Thm. 2.12, 2.14, 3.14, 3.25,
+4.1, Cor. 4.8, Thm. 4.18, Prop. 6.13, Thm. 6.21).
+
+**[Mordukhovich 2024, Ch. 1].** `ROADMAP.md` lists the statements of Sect. 1.2–1.4 with their Lean
+names or status. Formalized: the second-order subdifferentials of Sect. 1.2, Thm. 1.65, the Moreau
+envelope results Lemma 1.68–Cor. 1.72, Def. 1.73–Lemma 1.81, Thm. 1.84 (with a proof that avoids
+Lemma 1.81), Def. 1.85–Thm. 1.86, and in Sect. 1.5 Def. 1.88–Lemma 1.97 (with Def. 1.59 for Thm.
+1.91) and Def. 1.100. Thm. 1.70–1.71 assume prox-boundedness, which the book omits (a correction).
+Of the exercises used in Sect. 1.5, Ex. 1.133, 1.134(i), (iii), 1.135, 1.136 and 1.139(iii) are
+formalized. The equivalence of Thm. 1.98 is formalized (`SecondOrder/ProtoTwiceEpi`); so is Cor.
+1.101 (`SecondOrder/ProxSemidiff`, `SecondOrder/EnvelopeTwiceEpi`; for l.s.c., prox-bounded,
+continuously prox-regular functions); formula (1.135) is open; Cor. 1.87 and Cor. 1.99 remain, which
+need Ex. 1.139(ii).
+
+**SCD mappings.** `ROADMAP.md` lists the results of [Gfrerer–Outrata 2022, Sect. 3–6] and their Lean
+names. Everything there is formalized except the local maximal hypomonotonicity of `∂q` for
+prox-regular `q` (the first claim of Prop. 3.26; the rest of Prop. 3.26 and Cor. 3.27 are in
+`SCD/ProxRegular`), quadratic bundles (3.30–3.34), the adjoint formulas (21) and (24b) for a general
+change of variables, and the worked examples. Minty's theorem is proved (`SCD/Minty`, via the
+Fitzpatrick function), so maximally monotone mappings are SCD; Prop. 3.22–Cor. 3.24 are proved for
+the local notions of Def. 3.20 (`SCD/LocalMonotone`), through a maximally monotone extension (Zorn's
+lemma). Sect. 7 (strong metric regularity, tilt stability) is not started.
 
 ## Conventions
 
@@ -152,46 +219,6 @@ metric regularity, tilt stability) is not started.
   adjoint subspace is the orthogonal complement for `ω((u, v), (y*, x*)) = ⟪v, y*⟫ - ⟪u, x*⟫`, and
   `𝒮*F` is defined as `{L* | L ∈ 𝒮F}` ([Gfrerer–Outrata 2022, Remark 3.5]).
 
-## Installation
-
-Add the library to the `lakefile.toml` of a project that uses the same Lean toolchain
-(`leanprover/lean4:v4.33.1`):
-
-```toml
-[[require]]
-name = "variationalanalysis"
-git = "https://github.com/dvillacis/lean-variational"
-rev = "v0.1.0"
-```
-
-and run
-
-```
-lake update variationalanalysis
-lake exe cache get
-lake build
-```
-
-At a tagged `rev`, Lake downloads the compiled library from the GitHub release instead of
-compiling it (Linux x86_64 and, from the next release on, macOS arm64; on other platforms it is
-compiled locally). Mathlib and `ConvexAnalysis` come as transitive dependencies.
-
-The [API documentation](https://david.villacis.net/lean-variational/docs/) is rebuilt on every
-push to `master`. Everything lives in the namespace `VariationalAnalysis`:
-
-```lean
-import VariationalAnalysis
-
-open VariationalAnalysis
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-
-/-- The generalized Fermat rule: `0 ∈ ∂φ(x₀)` at a local minimizer where `φ` is finite. -/
-example {φ : E → EReal} {x₀ : E} {r : ℝ} (hmin : IsLocalMin φ x₀) (hr : φ x₀ = r) :
-    (0 : StrongDual ℝ E) ∈ subdiff φ x₀ :=
-  zero_mem_subdiff_of_isLocalMin hmin hr
-```
-
 ## Development
 
 ```
@@ -213,7 +240,36 @@ Mathlib's standard set of style linters is enabled in `lakefile.toml`.
 A release is made by pushing a tag `vX.Y.Z`; `.github/workflows/release.yml` then builds the
 library and attaches it to the GitHub release.
 
-## Status
+## References
 
-The library compiles against Mathlib v4.33.1 with no `sorry`, and no declaration depends on an
-axiom beyond `propext`, `Classical.choice`, `Quot.sound`; CI checks both on every change.
+- [Mordukhovich 2018] B. S. Mordukhovich, *Variational Analysis and Applications*, Springer
+  Monographs in Mathematics, 2018
+  ([doi:10.1007/978-3-319-92775-6](https://doi.org/10.1007/978-3-319-92775-6)). The main source.
+- [Clason–Valkonen] C. Clason and T. Valkonen, *Introduction to Nonsmooth Analysis and
+  Optimization*, [arXiv:2001.00216](https://arxiv.org/abs/2001.00216) (v7).
+- [Mordukhovich–Nam 2022] B. S. Mordukhovich and N. M. Nam, *Convex Analysis and Beyond, Vol. I:
+  Basic Theory*, Springer, 2022. Ch. 7, for the generalized gradient.
+- [Mordukhovich 2024] B. S. Mordukhovich, *Second-Order Variational Analysis in Optimization,
+  Variational Stability, and Control*, Springer, 2024. Ch. 1, for second-order subdifferentials,
+  prox-regularity, Moreau envelopes and subgradient graphical derivatives; Lemma 3.1, for
+  Motzkin's theorem of the alternative.
+- [Gfrerer–Outrata 2022] H. Gfrerer and J. V. Outrata, *On (local) analysis of multifunctions via
+  subspaces contained in graphs of generalized derivatives*, J. Math. Anal. Appl., 2022
+  ([arXiv:2106.00519](https://arxiv.org/abs/2106.00519)). For SCD mappings.
+- [Gfrerer–Mandlmayr–Outrata–Valdman 2023] H. Gfrerer, M. Mandlmayr, J. V. Outrata and
+  J. Valdman, *On the SCD semismooth\* Newton method for generalized equations with application
+  to a class of static contact problems with Coulomb friction*, Comput. Optim. Appl. 86 (2023),
+  1159–1191 ([doi:10.1007/s10589-022-00429-0](https://doi.org/10.1007/s10589-022-00429-0)). For
+  the product rule.
+- [Gfrerer–Outrata 2024] H. Gfrerer and J. V. Outrata, *On the role of semismoothness in
+  nonsmooth numerical analysis: Theory* ([arXiv:2405.14637](https://arxiv.org/abs/2405.14637)).
+  Sect. 2.5.
+
+- [Mordukhovich 2006] B. S. Mordukhovich, *Variational Analysis and Generalized Differentiation I:
+  Basic Theory*, Springer, 2006. Cor. 4.34, for implicit multifunctions.
+- [Rockafellar–Wets 1998] R. T. Rockafellar and R. J.-B. Wets, *Variational Analysis*, Springer,
+  1998. For conventions.
+
+## License
+
+Apache 2.0; see [LICENSE](LICENSE).
