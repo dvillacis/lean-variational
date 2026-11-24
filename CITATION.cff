@@ -12,6 +12,10 @@ authors:
 version: 0.2.0
 date-released: 2026-11-24
 license: Apache-2.0
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.24512822
+    description: "All versions (the DOI of the latest version resolves from here)"
 repository-code: "https://github.com/dvillacis/lean-variational"
 url: "https://david.villacis.net/lean-variational/docs/"
 keywords:
