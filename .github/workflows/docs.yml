@@ -29,6 +29,18 @@ jobs:
         with:
           lint: false
 
+      # doc-gen4 analyses Mathlib with many processes at once and runs out of memory on the
+      # hosted runner ("cannot allocate memory" when Lake spawns a process). Add swap, and
+      # let process creation succeed while the build has a large address space.
+      - name: More memory
+        run: |
+          sudo fallocate -l 24G /mnt/docs.swap
+          sudo chmod 600 /mnt/docs.swap
+          sudo mkswap /mnt/docs.swap
+          sudo swapon /mnt/docs.swap
+          sudo sysctl -w vm.overcommit_memory=1
+          free -h
+
       # The documentation goes to docs/docs; send the root of the site there.
       - name: Site root
         run: |
