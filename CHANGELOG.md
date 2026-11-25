@@ -18,6 +18,11 @@ All notable changes to this library are recorded here. The format follows
   and it compiles the example of the README.
 - `CONTRIBUTING.md`.
 
+### Changed
+
+- `ConvexAnalysis` is pinned to `v0.1.2` (style linters and definition docstrings there; no
+  declaration renamed, no statement changed).
+
 ## [0.2.0] - 2026-11-24
 
 ### Added
